@@ -3,9 +3,10 @@ import { UsuarioService } from '../../service/usuario.service';
 import { Usuario } from '../../entity/usuario';
 
 @Component({
-  selector: 'app-listusuarios',
-  templateUrl: './listusuarios.component.html',
-  styleUrls: ['./listusuarios.component.css']
+    selector: 'app-listusuarios',
+    templateUrl: './listusuarios.component.html',
+    styleUrls: ['./listusuarios.component.css'],
+    standalone: false
 })
 export class ListusuariosComponent implements OnInit {
   usuarios: Usuario[] = [];
