@@ -91,6 +91,7 @@ public class UsuariosController {
     // Inicia sesión de un usuario buscando por correo electrónico y contraseña
     @PostMapping("user/login")
     public Usuario login(@RequestBody Usuario usuarios) {
+        
         return usuariosService.login(usuarios);
     }
 }

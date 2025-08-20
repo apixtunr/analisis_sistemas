@@ -8,5 +8,5 @@ import com.SystemAnalisys.Project.entity.Usuario;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, String> {
     Optional<Usuario> findById(String id);
-    Optional<Usuario> findByCorreoElectronicoAndNombre(String correoElectronico, String nombre);
+    Optional<Usuario> findByCorreoElectronicoAndPassword(String correoElectronico, String password);
 }

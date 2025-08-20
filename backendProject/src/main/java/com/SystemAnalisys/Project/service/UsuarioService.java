@@ -32,7 +32,7 @@ public class UsuarioService {
         }
 
         public Usuario login(Usuario usuario){
-            Optional<Usuario> listUsuario = usuarioRepository.findByCorreoElectronicoAndNombre(usuario.getCorreoElectronico(),usuario.getNombre());
+            Optional<Usuario> listUsuario = usuarioRepository.findByCorreoElectronicoAndPassword(usuario.getCorreoElectronico(),usuario.getPassword());
             Usuario usuarioReturn = null;
     
             if(listUsuario.isPresent()){
