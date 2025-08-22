@@ -6,13 +6,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ListusuariosComponent } from './component/listusuarios/listusuarios.component';
 import { LoginusuariosComponent } from './component/loginusuarios/loginusuarios/loginusuarios.component';
-;
+import { CrudempresasComponent } from './component/crudempresas/crudempresas.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ListusuariosComponent,
-    LoginusuariosComponent
+    LoginusuariosComponent,
+    CrudempresasComponent
   ],
   bootstrap: [AppComponent],
   imports: [
