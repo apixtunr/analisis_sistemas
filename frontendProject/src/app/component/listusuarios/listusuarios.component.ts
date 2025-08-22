@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UsuarioService } from '../../service/usuario.service';
 import { Usuario } from '../../entity/usuario';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-listusuarios',
@@ -13,7 +14,7 @@ export class ListusuariosComponent implements OnInit {
   loading = true;
   error = '';
 
-  constructor(private usuarioService: UsuarioService) {}
+  constructor(private usuarioService: UsuarioService, private router: Router) {}
 
   ngOnInit(): void {
     this.usuarioService.getUsuarios().subscribe({
@@ -26,5 +27,10 @@ export class ListusuariosComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  //Método para redirigir a modulo de empresas
+  onEmpresas() {
+    this.router.navigate(['/crudempresas']);
   }
 }

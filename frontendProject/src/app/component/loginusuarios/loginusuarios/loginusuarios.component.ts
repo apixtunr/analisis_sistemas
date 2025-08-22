@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
   selector: 'app-loginusuarios',
   standalone: false,
   templateUrl: './loginusuarios.component.html',
-  styleUrl: './loginusuarios.component.css'
+  styleUrls: ['./loginusuarios.component.css']
 })
 export class LoginusuariosComponent {
 
