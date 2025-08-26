@@ -7,13 +7,17 @@ import { AppComponent } from './app.component';
 import { ListusuariosComponent } from './component/listusuarios/listusuarios.component';
 import { LoginusuariosComponent } from './component/loginusuarios/loginusuarios/loginusuarios.component';
 import { CrudempresasComponent } from './component/crudempresas/crudempresas.component';
+import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.component';
+import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursales.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ListusuariosComponent,
     LoginusuariosComponent,
-    CrudempresasComponent
+    CrudempresasComponent,
+    CrudusuariosComponent,
+    CrudsucursalesComponent
   ],
   bootstrap: [AppComponent],
   imports: [
