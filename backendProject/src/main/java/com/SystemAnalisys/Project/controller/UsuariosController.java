@@ -1,5 +1,6 @@
 package com.SystemAnalisys.Project.controller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +30,10 @@ public class UsuariosController {
     // Crea un nuevo usuario
     @PostMapping("api/create_usuario")
     public Usuario createUsuarios(@RequestBody Usuario user) {
+        Optional<Usuario> existingUser = usuariosService.findById(user.getIdUsuario());
+        if (existingUser.isPresent()) {
+            throw new RuntimeException("El ID de usuario ya existe");
+        }
         return usuariosService.save(user);
     }
 
@@ -58,10 +63,10 @@ public class UsuariosController {
             user.setIdRole(updatedUsuario.getIdRole());
             user.setFechaCreacion(updatedUsuario.getFechaCreacion());
             user.setUsuarioCreacion(updatedUsuario.getUsuarioCreacion());
-            user.setFechaModificacion(updatedUsuario.getFechaModificacion());
-            user.setUsuarioModificacion(updatedUsuario.getUsuarioModificacion());
+            user.setFechaModificacion(new Date());
+            user.setUsuarioModificacion(null);
             return usuariosService.save(user);
-        } else {
+        } else {                                                                                                                                        
             return null;
         }
     }
