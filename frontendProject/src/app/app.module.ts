@@ -9,6 +9,8 @@ import { LoginusuariosComponent } from './component/loginusuarios/loginusuarios/
 import { CrudempresasComponent } from './component/crudempresas/crudempresas.component';
 import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.component';
 import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursales.component';
+import { CrudroleComponent } from './component/crudrole/crudrole.component';
+import { CrudmoduloComponent } from './component/crudmodulo/crudmodulo.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursal
     LoginusuariosComponent,
     CrudempresasComponent,
     CrudusuariosComponent,
-    CrudsucursalesComponent
+    CrudsucursalesComponent,
+    CrudroleComponent,
+    CrudmoduloComponent
   ],
   bootstrap: [AppComponent],
   imports: [
