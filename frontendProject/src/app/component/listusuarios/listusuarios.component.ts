@@ -33,4 +33,12 @@ export class ListusuariosComponent implements OnInit {
   onEmpresas() {
     this.router.navigate(['/crudempresas']);
   }
+
+  onRole() {
+    this.router.navigate(['/role']);
+  }
+
+  onOpcion() {
+    this.router.navigate(['/opcion']);
+  }
 }

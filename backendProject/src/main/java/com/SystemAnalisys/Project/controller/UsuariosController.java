@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.SystemAnalisys.Project.dto.UsuarioDTO;
 import com.SystemAnalisys.Project.entity.Usuario;
 import com.SystemAnalisys.Project.service.UsuarioService;
 
@@ -93,5 +94,23 @@ public class UsuariosController {
     public Usuario login(@RequestBody Usuario usuarios) {
         
         return usuariosService.login(usuarios);
+    }
+
+    /* Busca un usuario por su ID y actualiza su rol */
+    @PutMapping("/usuario/{id}/rol")
+    public void actualizarRolUsuario(@PathVariable("id") String idUsuario, @RequestBody Integer idRole) {
+        usuariosService.actualizarRolUsuario(idUsuario, idRole);
+    }
+
+    /* obtiene una lista de todos los usuarios existentes */
+    @GetMapping("/api/listusuarios")
+    public List<UsuarioDTO> getUsuarios() {
+        return usuariosService.getUsuarios();
+    }
+
+    /* obtiene una lista de los usuarios asociados a un rol */
+    @GetMapping("/api/usuarios/{idRole}")
+    public List<UsuarioDTO> getUsuariosPorRol(@PathVariable Integer idRole) {
+    return usuariosService.getUsuariosPorRol(idRole);
     }
 }

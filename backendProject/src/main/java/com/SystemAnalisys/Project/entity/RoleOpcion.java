@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "role_opcion", schema = "proyectoanalisis")
+@IdClass(RoleOpcionId.class)
 public class RoleOpcion {
 
     public RoleOpcion() {}
