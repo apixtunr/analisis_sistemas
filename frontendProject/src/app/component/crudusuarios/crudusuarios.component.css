@@ -1,4 +1,4 @@
-.sticky-buttons {
+.text-center {
   position: sticky;
   right: 0;             /* pegado a la derecha */
   z-index: 5;           /* que quede encima de otras celdas */
