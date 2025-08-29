@@ -1,6 +1,7 @@
 import { Sucursal } from './../../entity/sucursal';
 import { Component, OnInit } from '@angular/core';
 import { SucursalService } from '../../service/sucursal.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-crudsucursales',
@@ -9,24 +10,30 @@ import { SucursalService } from '../../service/sucursal.service';
   styleUrl: './crudsucursales.component.css',
 })
 export class CrudsucursalesComponent implements OnInit {
-  constructor(private sucursalService: SucursalService) {}
+  constructor(
+    private sucursalService: SucursalService,
+    private fb: FormBuilder
+  ) {}
+
   loading = true;
   error = '';
-  sucursales: Sucursal[] = []; // lista de sucursales
-  sucursal: Sucursal = {
-    // objeto para crear/editar
-    idSucursal: 0,
-    nombre: '',
-    direccion: '',
-    idEmpresa: 0,
-    fechaCreacion: new Date(),
-    usuarioCreacion: '',
-    fechaModificacion: new Date(),
-    usuarioModificacion: '',
-  };
+
+  sucursalForm!: FormGroup;
+  sucursales: any[] = []; // lista de sucursales
 
   //Método para inicializar el componente
   ngOnInit(): void {
+    this.sucursalForm = this.fb.group({
+      idSucursal: [0],
+      nombre: ['', Validators.required],
+      direccion: ['', Validators.required],
+      idEmpresa: [0, Validators.required],
+      fechaCreacion: [new Date(), Validators.required],
+      usuarioCreacion: ['', Validators.required],
+      fechaModificacion: [new Date(), Validators.required],
+      usuarioModificacion: ['', Validators.required],
+    });
+
     this.sucursalService.getSucursales().subscribe({
       next: (data) => {
         this.sucursales = data; // aquí cargás la lista
@@ -41,7 +48,21 @@ export class CrudsucursalesComponent implements OnInit {
 
   //Método para crear sucursal
   onSubmit() {
-    this.sucursalService.createSucursal(this.sucursal).subscribe({
+    if (this.sucursalForm.invalid) {
+      this.sucursalForm.markAllAsTouched();
+      return;
+    }
+
+    const sucursal: Sucursal = {
+      ...this.sucursalForm.value,
+      //Valores por default
+      fechaCreacion: new Date(),
+      usuarioCreacion: 'ADMIN',
+      fechaModificacion: new Date(),
+      usuarioModificacion: 'ADMIN',
+    };
+
+    this.sucursalService.createSucursal(sucursal).subscribe({
       next: () => {
         alert('Sucursal creada correctamente.');
         this.ngOnInit(); // recargar la lista
@@ -54,7 +75,7 @@ export class CrudsucursalesComponent implements OnInit {
 
   //Editar sucursal (trae los datos al formulario)
   onEdit(sucursal: Sucursal) {
-    this.sucursal = { ...sucursal }; // copia al form
+    this.sucursalForm.patchValue(sucursal); // copia al form
   }
 
   //Método para eliminar sucursal
@@ -72,7 +93,7 @@ export class CrudsucursalesComponent implements OnInit {
 
   //Método para resetear el formulario
   onReset() {
-    this.sucursal = {
+    this.sucursalForm.reset({
       idSucursal: 0,
       nombre: '',
       direccion: '',
@@ -81,6 +102,35 @@ export class CrudsucursalesComponent implements OnInit {
       usuarioCreacion: '',
       fechaModificacion: new Date(),
       usuarioModificacion: '',
+    });
+  }
+
+  onUpdate() {
+    if (this.sucursalForm.invalid) return;
+
+    const sucursal: Sucursal = {
+      ...this.sucursalForm.value,
+      //Valores por default
+      fechaCreacion: new Date(),
+      usuarioCreacion: 'ADMIN',
+      fechaModificacion: new Date(),
+      usuarioModificacion: 'ADMIN',
     };
+
+    if (!sucursal.idSucursal) {
+      alert('No se puede actualizar una sucursal sin ID');
+      return;
+    }
+
+    this.sucursalService.updateSucursal(sucursal).subscribe({
+      next: () => {
+        alert('Sucursal actualizada correctamente.');
+        this.ngOnInit(); // recargar la lista
+        this.onReset();
+      },
+      error: () => {
+        this.error = 'Error al actualizar sucursal';
+      },
+    });
   }
 }

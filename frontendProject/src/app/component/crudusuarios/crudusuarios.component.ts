@@ -96,7 +96,6 @@ export class CrudusuariosComponent implements OnInit {
   // Si quieres mostrar la foto en el formulario
   if (fotografia) {
     this.usuarioForm.get('fotografia')?.setValue(fotografia);
-    console.log('Base64 de foto:', this.usuarioForm.get('fotografia')?.value);
   } else {
     this.imagenPreview = null;
   }
@@ -154,24 +153,18 @@ export class CrudusuariosComponent implements OnInit {
   //Método para resetear el formulario
   onReset() {
     this.usuarioForm.reset({
+      idUsuario: '',
+      nombre: '',
+      apellido: '',
+      fechaNacimiento: '',
       password: '',
       idGenero: 0,
-      ultimaFechaIngreso: '',
-      intentosDeAcceso: 0,
-      sesionActual: '',
-      ultimaFechaCambioPassword: '',
       correoElectronico: '',
-      requiereCambiarPassword: 0,
-      fotografia: null,
+      fotografia: '',
       telefonoMovil: '',
       idSucursal: 0,
       pregunta: '',
-      respuesta: '',
-      idRole: 0,
-      fechaCreacion: '',
-      usuarioCreacion: '',
-      fechaModificacion: '',
-      usuarioModificacion: '',
+      respuesta: ''
       });
     };
   }
