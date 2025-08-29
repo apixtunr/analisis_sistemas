@@ -1,5 +1,6 @@
 package com.SystemAnalisys.Project.controller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.SystemAnalisys.Project.dto.UsuarioDTO;
@@ -23,33 +23,23 @@ public class UsuariosController {
     private UsuarioService usuariosService;
 
     // Obtiene la lista de todos los usuarios
-    @GetMapping("api/list_usuarios")
+    @GetMapping("api/list_usuario")
     public List<Usuario> getAllUsuarios() {
         return usuariosService.getAllUsuarios();
     }
 
-    // Obtiene un usuario por su ID utilizando RequestParam
-    @GetMapping("api/list_usuarios_id")
-    public Usuario getUsuariossByIdRequestParam(@RequestParam("id") String userId) {
-        Optional<Usuario> userOptional = usuariosService.findById(userId);
-        return userOptional.orElse(null);
-    }
-
-    // Obtiene un usuario por su ID utilizando PathVariable
-    @GetMapping("api/list_usuarios_id/{id}")
-    public Usuario getUsuariosByIdPathVariable(@PathVariable("id") String userId) {
-        Optional<Usuario> userOptional = usuariosService.findById(userId);
-        return userOptional.orElse(null);
-    }
-
     // Crea un nuevo usuario
-    @PostMapping("api/create_usuarios")
+    @PostMapping("api/create_usuario")
     public Usuario createUsuarios(@RequestBody Usuario user) {
+        Optional<Usuario> existingUser = usuariosService.findById(user.getIdUsuario());
+        if (existingUser.isPresent()) {
+            throw new RuntimeException("El ID de usuario ya existe");
+        }
         return usuariosService.save(user);
     }
 
     // Actualiza un usuario existente
-    @PutMapping("/usuarios/{id}")
+    @PutMapping("api/update_usuario/{id}")
     public Usuario updateUsuarios(@PathVariable("id") String idUsuario, @RequestBody Usuario updatedUsuario) {
         Optional<Usuario> userOptional = usuariosService.findById(idUsuario);
         if (userOptional.isPresent()) {
@@ -74,17 +64,17 @@ public class UsuariosController {
             user.setIdRole(updatedUsuario.getIdRole());
             user.setFechaCreacion(updatedUsuario.getFechaCreacion());
             user.setUsuarioCreacion(updatedUsuario.getUsuarioCreacion());
-            user.setFechaModificacion(updatedUsuario.getFechaModificacion());
-            user.setUsuarioModificacion(updatedUsuario.getUsuarioModificacion());
+            user.setFechaModificacion(new Date());
+            user.setUsuarioModificacion(null);
             return usuariosService.save(user);
-        } else {
+        } else {                                                                                                                                        
             return null;
         }
     }
 
     // Elimina un usuario existente
-    @DeleteMapping("/usuarios/{id}")
-    public void deleteUsuarios(@PathVariable("id") String userId) {
+    @DeleteMapping("api/delete_usuario/{id}")
+    public void deleteUsuario(@PathVariable("id") String userId) {
         Optional<Usuario> userOptional = usuariosService.findById(userId);
         userOptional.ifPresent(usuariosService::delete);
     }

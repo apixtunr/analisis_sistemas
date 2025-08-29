@@ -34,6 +34,16 @@ export class ListusuariosComponent implements OnInit {
     this.router.navigate(['/crudempresas']);
   }
 
+  //Método para redirigir a modulo de usuarios
+  onUsuarios() {
+    this.router.navigate(['/crudusuarios']);
+  }
+
+  //Método para redirigir a modulo de sucursales
+  onSucursales() {
+    this.router.navigate(['/crudsucursales']);
+  }
+
   onRole() {
     this.router.navigate(['/role']);
   }

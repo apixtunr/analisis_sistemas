@@ -12,6 +12,20 @@ export class UsuarioService {
 	constructor(private http: HttpClient) {}
 
 	getUsuarios(): Observable<Usuario[]> {
+		return this.http.get<Usuario[]>(this.apiUrl + '/api/list_usuario');
+	}
+
+  deleteUsuario(idUsuario: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/api/delete_usuario/${idUsuario}`);
+  }
+
+  updateUsuario(idUsuario: string, usuario: Usuario): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.apiUrl}/api/update_usuario/${usuario.idUsuario}`, usuario);
+  }
+
+  createUsuario(usuario: Usuario): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/api/create_usuario`, usuario);
+  }
 		return this.http.get<Usuario[]>(this.apiUrl + '/api/list_usuarios');
 	}
 

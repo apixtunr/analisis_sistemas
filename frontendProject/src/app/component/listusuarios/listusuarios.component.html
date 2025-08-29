@@ -27,6 +27,12 @@
 	<div *ngIf="!usuarios.length && !loading && !error" class="alert alert-warning">No hay usuarios para mostrar.</div>
   <td>
     <button type="button" class="btn btn-secondary" (click)="onEmpresas()">Empresas</button>
+    <br>
+    <br>
+    <button type="button" class="btn btn-secondary" (click)="onUsuarios()">Usuarios</button>
+    <br>
+    <br>
+    <button type="button" class="btn btn-secondary" (click)="onSucursales()">Sucursales</button>
   </td>
   <td>
     <button type="button" class="btn btn-secondary" (click)="onRole()">Role</button>

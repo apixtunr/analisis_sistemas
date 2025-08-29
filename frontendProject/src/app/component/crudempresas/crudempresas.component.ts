@@ -50,7 +50,7 @@ export class CrudempresasComponent implements OnInit {
 
   // Crear nueva empresa
   onSubmit() {
-    // crear el payload con fechas formateadas para el backend
+    // crear el Json con fechas formateadas para el backend
   const payload = {
     ...this.empresa,
     fechaCreacion: this.formatDateTime(this.empresa.fechaCreacion),
@@ -74,21 +74,7 @@ export class CrudempresasComponent implements OnInit {
     this.empresa = { ...emp }; // copia al form
   }
 
-  // Actualizar empresa
-  onUpdate() {
-    this.empresaService.updateEmpresa(this.empresa).subscribe({
-      next: () => {
-        alert('Empresa actualizada.');
-        this.ngOnInit();
-        this.onReset();
-      },
-      error: () => {
-        this.error = 'Error al actualizar empresa.';
-      }
-    });
-  }
-
-  // Eliminar
+  //Método para eliminar empresa
   onDelete(nit: string) {
     this.empresaService.deleteEmpresa(nit).subscribe({
       next: () => {
@@ -126,7 +112,7 @@ export class CrudempresasComponent implements OnInit {
   // Formatear fecha para enviar al backend
 formatDateTime(date: string): string {
   if (!date) return '';
-  // Si solo querés agregar "T00:00:00" para LocalDateTime de Spring
+  // Para LocalDateTime de Spring
   if (!date.includes('T')) {
     return date + 'T00:00:00';
   }

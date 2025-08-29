@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.SystemAnalisys.Project.entity.Empresa;
@@ -25,20 +24,6 @@ public class EmpresaController {
     @GetMapping("api/list_empresa")
     public List<Empresa> getAllEmpresas() {
         return empresaService.getAllEmpresas();
-    }
-
-    // Obtiene una empresa por su NIT utilizando RequestParam
-    @GetMapping("api/list_empresa_nit")
-    public Empresa getEmpresasByNitRequestParam(@RequestParam("nit") String nit) {
-        Optional<Empresa> empresaOptional = empresaService.findByNit(nit);
-        return empresaOptional.orElse(null);
-    }
-
-    // Obtiene una empresa por su NIT utilizando PathVariable
-    @GetMapping("api/list_empresa_nit/{nit}")
-    public Empresa getEmpresasByNitPathVariable(@PathVariable("nit") String nit) {
-        Optional<Empresa> empresaOptional = empresaService.findByNit(nit);
-        return empresaOptional.orElse(null);
     }
 
     // Crea una nueva empresa
