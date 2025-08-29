@@ -1,127 +1,160 @@
-<div class="container my-4">
+<div class="container my-5">
   <h2 class="mb-4 text-center">Gestión de Usuarios</h2>
 
   <!-- Formulario para agregar/editar usuario -->
   <div class="card mb-5 shadow-sm">
     <div class="card-body">
-      <form #usuarioForm="ngForm" (ngSubmit)="onSubmit()">
+      <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
         <div class="row g-3">
           <div class="col-md-3">
-            <label for="idUsuario" class="form-label">ID Usuario</label>
-            <input type="text" id="idUsuario" name="idUsuario" class="form-control" [(ngModel)]="usuario.idUsuario" required>
+            <label class="form-label">Usuario</label>
+            <input
+              type="text"
+              formControlName="idUsuario"
+              class="form-control"
+              placeholder="Ingrese Usuario"
+            />
           </div>
           <div class="col-md-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" id="nombre" name="nombre" class="form-control" [(ngModel)]="usuario.nombre" required>
+            <label class="form-label">Nombre</label>
+            <input
+              type="text"
+              formControlName="nombre"
+              class="form-control"
+              placeholder="Ingrese nombre"
+            />
           </div>
           <div class="col-md-3">
-            <label for="apellido" class="form-label">Apellido</label>
-            <input type="text" id="apellido" name="apellido" class="form-control" [(ngModel)]="usuario.apellido" required>
+            <label class="form-label">Apellido</label>
+            <input
+              type="text"
+              formControlName="apellido"
+              class="form-control"
+              placeholder="Ingrese apellido"
+            />
           </div>
           <div class="col-md-3">
-            <label for="fechaNacimiento" class="form-label">Fecha Nacimiento</label>
-            <input type="date" id="fechaNacimiento" name="fechaNacimiento" class="form-control" [(ngModel)]="usuario.fechaNacimiento">
-          </div>
-        </div>
-
-        <div class="row g-3 mt-2">
-          <div class="col-md-3">
-            <label for="idStatusUsuario" class="form-label">Status Usuario</label>
-            <input type="number" id="idStatusUsuario" name="idStatusUsuario" class="form-control" [(ngModel)]="usuario.idStatusUsuario">
-          </div>
-          <div class="col-md-3">
-            <label for="password" class="form-label">Contraseña</label>
-            <input type="password" id="password" name="password" class="form-control" [(ngModel)]="usuario.password" required>
-          </div>
-          <div class="col-md-3">
-            <label for="idGenero" class="form-label">Género</label>
-            <input type="number" id="idGenero" name="idGenero" class="form-control" [(ngModel)]="usuario.idGenero">
-          </div>
-          <div class="col-md-3">
-            <label for="ultimaFechaIngreso" class="form-label">Última Fecha Ingreso</label>
-            <input type="date" id="ultimaFechaIngreso" name="ultimaFechaIngreso" class="form-control" [(ngModel)]="usuario.ultimaFechaIngreso">
-          </div>
-        </div>
-
-        <div class="row g-3 mt-2">
-          <div class="col-md-3">
-            <label for="intentosDeAcceso" class="form-label">Intentos de Acceso</label>
-            <input type="number" id="intentosDeAcceso" name="intentosDeAcceso" class="form-control" [(ngModel)]="usuario.intentosDeAcceso">
-          </div>
-          <div class="col-md-3">
-            <label for="sesionActual" class="form-label">Sesión Actual</label>
-            <input type="text" id="sesionActual" name="sesionActual" class="form-control" [(ngModel)]="usuario.sesionActual">
-          </div>
-          <div class="col-md-3">
-            <label for="ultimaFechaCambioPassword" class="form-label">Última Fecha Cambio Password</label>
-            <input type="date" id="ultimaFechaCambioPassword" name="ultimaFechaCambioPassword" class="form-control" [(ngModel)]="usuario.ultimaFechaCambioPassword">
-          </div>
-          <div class="col-md-3">
-            <label for="correoElectronico" class="form-label">Correo Electrónico</label>
-            <input type="email" id="correoElectronico" name="correoElectronico" class="form-control" [(ngModel)]="usuario.correoElectronico" required>
-          </div>
-        </div>
-
-        <div class="row g-3 mt-2">
-          <div class="col-md-3">
-            <label for="requiereCambiarPassword" class="form-label">Requiere Cambiar Password</label>
-            <input type="number" id="requiereCambiarPassword" name="requiereCambiarPassword" class="form-control" [(ngModel)]="usuario.requiereCambiarPassword">
-          </div>
-          <div class="col-md-3">
-            <label for="fotografia" class="form-label">Fotografía (URL/Base64)</label>
-            <input type="text" id="fotografia" name="fotografia" class="form-control" [(ngModel)]="usuario.fotografia">
-          </div>
-          <div class="col-md-3">
-            <label for="telefonoMovil" class="form-label">Teléfono Móvil</label>
-            <input type="text" id="telefonoMovil" name="telefonoMovil" class="form-control" [(ngModel)]="usuario.telefonoMovil">
-          </div>
-          <div class="col-md-3">
-            <label for="idSucursal" class="form-label">ID Sucursal</label>
-            <input type="number" id="idSucursal" name="idSucursal" class="form-control" [(ngModel)]="usuario.idSucursal">
-          </div>
-        </div>
-
-        <div class="row g-3 mt-2">
-          <div class="col-md-3">
-            <label for="pregunta" class="form-label">Pregunta</label>
-            <input type="text" id="pregunta" name="pregunta" class="form-control" [(ngModel)]="usuario.pregunta">
-          </div>
-          <div class="col-md-3">
-            <label for="respuesta" class="form-label">Respuesta</label>
-            <input type="text" id="respuesta" name="respuesta" class="form-control" [(ngModel)]="usuario.respuesta">
-          </div>
-          <div class="col-md-3">
-            <label for="idRole" class="form-label">ID Rol</label>
-            <input type="number" id="idRole" name="idRole" class="form-control" [(ngModel)]="usuario.idRole">
-          </div>
-          <div class="col-md-3">
-            <label for="fechaCreacion" class="form-label">Fecha Creación</label>
-            <input type="date" id="fechaCreacion" name="fechaCreacion" class="form-control" [(ngModel)]="usuario.fechaCreacion">
-          </div>
-        </div>
-
-        <div class="row g-3 mt-2">
-          <div class="col-md-3">
-            <label for="usuarioCreacion" class="form-label">Usuario Creación</label>
-            <input type="text" id="usuarioCreacion" name="usuarioCreacion" class="form-control" [(ngModel)]="usuario.usuarioCreacion">
-          </div>
-          <div class="col-md-3">
-            <label for="fechaModificacion" class="form-label">Fecha Modificación</label>
-            <input type="date" id="fechaModificacion" name="fechaModificacion" class="form-control" [(ngModel)]="usuario.fechaModificacion">
-          </div>
-          <div class="col-md-3">
-            <label for="usuarioModificacion" class="form-label">Usuario Modificación</label>
-            <input type="text" id="usuarioModificacion" name="usuarioModificacion" class="form-control" [(ngModel)]="usuario.usuarioModificacion">
+            <label class="form-label">Fecha Nacimiento</label>
+            <input
+              type="date"
+              formControlName="fechaNacimiento"
+              class="form-control"
+            />
           </div>
         </div>
 
         <div class="row g-3 mt-3">
-          <div class="col-md-12 d-flex gap-2">
-            <button type="submit" class="btn btn-primary" [disabled]="!usuarioForm.form.valid">
-              Agregar
-            </button>
-            <button type="button" class="btn btn-secondary" (click)="onReset()">Limpiar</button>
+          <div class="col-md-3">
+            <label class="form-label">Contraseña</label>
+            <input
+              type="password"
+              formControlName="password"
+              class="form-control"
+              placeholder="Ingrese contraseña"
+            />
           </div>
+          <div class="col-md-3">
+            <label class="form-label">Género</label>
+            <input
+              type="number"
+              formControlName="idGenero"
+              class="form-control"
+              placeholder="ID Género"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Correo Electrónico</label>
+            <input
+              type="email"
+              formControlName="correoElectronico"
+              class="form-control"
+              placeholder="Ingrese correo"
+            />
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-3">
+            <label class="form-label">Fotografía</label>
+            <input
+              type="text"
+              formControlName="fotografia"
+              class="form-control"
+              placeholder="URL o Base64"
+            />
+          </div>
+          <div class="col-md-3 mt-2">
+            <label class="form-label d-block">Vista previa</label>
+            <img
+              *ngIf="usuarioForm.get('fotografia')?.value"
+              [src]="'data:image/png;base64,' + usuarioForm.get('fotografia')?.value"
+              alt="Foto de perfil"
+              class="img-thumbnail"
+              style="width: 100px; height: 100px; object-fit: cover"
+            />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Teléfono</label>
+            <input
+              type="text"
+              formControlName="telefonoMovil"
+              class="form-control"
+              placeholder="Ingrese teléfono"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Sucursal</label>
+            <input
+              type="number"
+              formControlName="idSucursal"
+              class="form-control"
+              placeholder="ID Sucursal"
+            />
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-3">
+            <label class="form-label">Pregunta</label>
+            <input
+              type="text"
+              formControlName="pregunta"
+              class="form-control"
+              placeholder="Ingrese pregunta"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Respuesta</label>
+            <input
+              type="text"
+              formControlName="respuesta"
+              class="form-control"
+              placeholder="Ingrese respuesta"
+            />
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="mt-4 d-flex gap-2">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="usuarioForm.invalid"
+          >
+            Agregar
+          </button>
+          <button
+            type="button"
+            class="btn btn-success"
+            [disabled]="usuarioForm.invalid"
+            (click)="onUpdate()"
+          >
+            Actualizar
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="onReset()">
+            Limpiar
+          </button>
         </div>
       </form>
     </div>
@@ -132,29 +165,18 @@
     <table class="table table-striped table-bordered align-middle">
       <thead class="table-dark">
         <tr>
-          <th>ID Usuario</th>
+          <th>Usuario</th>
           <th>Nombre</th>
           <th>Apellido</th>
           <th>Fecha Nacimiento</th>
-          <th>Status</th>
-          <th>Correo</th>
           <th>Género</th>
-          <th>Últ. Ingreso</th>
-          <th>Intentos</th>
-          <th>Sesión</th>
-          <th>Últ. Cambio Pass</th>
-          <th>Requiere Cambiar Pass</th>
+          <th>Correo</th>
           <th>Fotografía</th>
           <th>Teléfono</th>
           <th>Sucursal</th>
           <th>Pregunta</th>
           <th>Respuesta</th>
-          <th>Rol</th>
-          <th>Fecha Creación</th>
-          <th>Usuario Creación</th>
-          <th>Fecha Modificación</th>
-          <th>Usuario Modificación</th>
-          <th class="sticky-buttons">Acciones</th>
+          <th class="text-center">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -162,35 +184,35 @@
           <td>{{ usr.idUsuario }}</td>
           <td>{{ usr.nombre }}</td>
           <td>{{ usr.apellido }}</td>
-          <td>{{ usr.fechaNacimiento }}</td>
-          <td>{{ usr.idStatusUsuario }}</td>
-          <td>{{ usr.correoElectronico }}</td>
+          <td>{{ usr.fechaNacimiento | date : "dd/MM/yyyy" }}</td>
           <td>{{ usr.idGenero }}</td>
-          <td>{{ usr.ultimaFechaIngreso }}</td>
-          <td>{{ usr.intentosDeAcceso }}</td>
-          <td>{{ usr.sesionActual }}</td>
-          <td>{{ usr.ultimaFechaCambioPassword }}</td>
-          <td>{{ usr.requiereCambiarPassword }}</td>
-          <td>{{ usr.fotografia }}</td>
+          <td>{{ usr.correoElectronico }}</td>
+          <td>
+            <img
+              *ngIf="usr.fotografia"
+              [src]="'data:image/png;base64,' + usr.fotografia"
+              alt="Foto de perfil"
+              class="img-thumbnail"
+              style="width: 50px; height: 50px; object-fit: cover"
+            />
+          </td>
           <td>{{ usr.telefonoMovil }}</td>
           <td>{{ usr.idSucursal }}</td>
           <td>{{ usr.pregunta }}</td>
           <td>{{ usr.respuesta }}</td>
-          <td>{{ usr.idRole }}</td>
-          <td>{{ usr.fechaCreacion }}</td>
-          <td>{{ usr.usuarioCreacion }}</td>
-          <td>{{ usr.fechaModificacion }}</td>
-          <td>{{ usr.usuarioModificacion }}</td>
-          <td class="sticky-buttons">
-            <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-info" (click)="onEdit(usr)">
-                Editar
-              </button>
-              <button class="btn btn-sm btn-danger" (click)="onDelete(usr.idUsuario)">
-                Eliminar
-              </button>
-            </div>
+          <td class="text-center">
+            <button class="btn btn-sm btn-info" (click)="onEdit(usr)">
+              Editar
+            </button>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="onDelete(usr.idUsuario)"
+            >
+              Eliminar
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
+  </div>
+</div>

@@ -17,8 +17,8 @@ export class UsuarioService {
     return this.http.delete<void>(`${this.apiUrl}/api/delete_usuario/${idUsuario}`);
   }
 
-  updateUsuario(usuario: Usuario): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/api/update_usuario/${usuario.idUsuario}`, usuario);
+  updateUsuario(idUsuario: string, usuario: Usuario): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.apiUrl}/api/update_usuario/${usuario.idUsuario}`, usuario);
   }
 
   createUsuario(usuario: Usuario): Observable<void> {
