@@ -26,28 +26,6 @@ export class UsuarioService {
   createUsuario(usuario: Usuario): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/api/create_usuario`, usuario);
   }
-		return this.http.get<Usuario[]>(this.apiUrl + '/api/list_usuarios');
-	}
-
-  actualizarRolUsuario(idUsuario: string, idRole: number): Observable<void> {
-  const httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json'
-    })
-  };
-  return this.http.put<void>(
-    `${this.apiUrl}/usuario/${idUsuario}/rol`,
-    JSON.stringify(idRole),
-    httpOptions
-  );
-}
-  getRoles(): Observable<Role[]> {
-  return this.http.get<Role[]>(this.apiUrl + '/role/list');
-}
-
-getUsuariosPorRol(idRole: number): Observable<Usuario[]> {
-  return this.http.get<Usuario[]>(`${this.apiUrl}/api/usuarios/${idRole}`);
-}
 
 	login(usuario: Usuario){
     let httpOptions = {
