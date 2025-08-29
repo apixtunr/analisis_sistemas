@@ -12,14 +12,16 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "role", schema = "proyectoanalisis")
-public class Role {
+@Table(name = "modulo", schema = "proyectoanalisis")
+public class Modulo {
 
-    public Role() {}
+    public Modulo() {}
 
-    public Role(Integer idRole, String nombre, LocalDateTime fechacreacion, String usuariocreacion, LocalDateTime fechamodificacion, String usuariomodificacion) {
-        this.idRole = idRole;
+    public Modulo(Integer idModulo, String nombre, Integer ordenmenu, LocalDateTime fechacreacion,
+                  String usuariocreacion, LocalDateTime fechamodificacion, String usuariomodificacion) {
+        this.idModulo = idModulo;
         this.nombre = nombre;
+        this.ordenmenu = ordenmenu;
         this.fechacreacion = fechacreacion;
         this.usuariocreacion = usuariocreacion;
         this.fechamodificacion = fechamodificacion;
@@ -28,21 +30,24 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idrole")
-    private Integer idRole;
+    @Column(name = "idmodulo")
+    private Integer idModulo;
 
     @Column(name = "nombre", length = 50, nullable = false)
     private String nombre;
 
-    @Column(name = "fechacreacion")
+    @Column(name = "ordenmenu", nullable = false)
+    private Integer ordenmenu;
+
+    @Column(name = "fechacreacion", nullable = false)
     private LocalDateTime fechacreacion;
 
-    @Column(name = "usuariocreacion", length = 50, nullable = false)
+    @Column(name = "usuariocreacion", length = 100, nullable = false)
     private String usuariocreacion;
 
     @Column(name = "fechamodificacion", nullable = true)
     private LocalDateTime fechamodificacion;
-    
-    @Column(name = "usuariomodificacion", length = 50, nullable = true)
+
+    @Column(name = "usuariomodificacion", length = 100, nullable = true)
     private String usuariomodificacion;
 }
