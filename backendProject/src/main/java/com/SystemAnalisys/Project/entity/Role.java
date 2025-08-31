@@ -1,6 +1,6 @@
 package com.SystemAnalisys.Project.entity;
 
-import java.time.LocalDateTime;
+import java.sql.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +17,7 @@ public class Role {
 
     public Role() {}
 
-    public Role(Integer idRole, String nombre, LocalDateTime fechacreacion, String usuariocreacion, LocalDateTime fechamodificacion, String usuariomodificacion) {
+    public Role(Integer idRole, String nombre, Date fechacreacion, String usuariocreacion, Date fechamodificacion, String usuariomodificacion) {
         this.idRole = idRole;
         this.nombre = nombre;
         this.fechacreacion = fechacreacion;
@@ -25,6 +25,7 @@ public class Role {
         this.fechamodificacion = fechamodificacion;
         this.usuariomodificacion = usuariomodificacion;
     }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idrole")
@@ -34,13 +35,13 @@ public class Role {
     private String nombre;
 
     @Column(name = "fechacreacion")
-    private LocalDateTime fechacreacion;
+    private Date fechacreacion;
 
     @Column(name = "usuariocreacion", length = 50, nullable = false)
     private String usuariocreacion;
 
     @Column(name = "fechamodificacion", nullable = true)
-    private LocalDateTime fechamodificacion;
+    private Date fechamodificacion;
     
     @Column(name = "usuariomodificacion", length = 50, nullable = true)
     private String usuariomodificacion;
