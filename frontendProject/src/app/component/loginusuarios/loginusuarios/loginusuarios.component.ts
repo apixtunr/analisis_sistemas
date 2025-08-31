@@ -43,7 +43,7 @@ export class LoginusuariosComponent {
     if (usuario) {
       localStorage.setItem("usuario", JSON.stringify(usuario));
       if (usuario.idRole === 2) {
-        this.router.navigate(['/listusuarios']);
+        this.router.navigate(['/menu']);
         alert("Bienvenido " + usuario.nombre + " " + usuario.apellido);
       }
     } else {

@@ -10,6 +10,9 @@ import { CrudempresasComponent } from './component/crudempresas/crudempresas.com
 import { CommonModule } from '@angular/common';
 import { CrudroleComponent } from './component/crudrole/crudrole.component';
 import { CrudmoduloComponent } from './component/crudmodulo/crudmodulo.component';
+import { CrudopcionesComponent } from './component/crudopciones/crudopciones.component';
+import { CrudmenuComponent } from './component/crudmenu/crudmenu.component';
+import { MenuComponent } from './component/menu/menu.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +21,12 @@ import { CrudmoduloComponent } from './component/crudmodulo/crudmodulo.component
     LoginusuariosComponent,
     CrudempresasComponent,
     CrudroleComponent,
-    CrudmoduloComponent
+    CrudmoduloComponent,
+    CrudmenuComponent,
+    CrudopcionesComponent,
+    MenuComponent
+
+
   ],
   bootstrap: [AppComponent],
   imports: [

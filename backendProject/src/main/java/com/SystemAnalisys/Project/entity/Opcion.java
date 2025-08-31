@@ -52,4 +52,26 @@ public class Opcion {
 
     @Column(name = "usuariomodificacion", length = 100)
     private String usuarioModificacion;
+
+    @Column(name = "ordenmenu", nullable = false)
+    private Integer ordenmenu;
+
+    @Column(name = "pagina", nullable = false)
+    private String pagina;
+
+    public Integer getOrdenmenu() {
+        return ordenmenu;
+    }
+
+    public void setOrdenmenu(Integer ordenmenu) {
+        this.ordenmenu = ordenmenu;
+    }
+
+    public String getPagina() {
+        return pagina;
+    }
+
+    public void setPagina(String pagina) {
+        this.pagina = pagina;
+    }
 }

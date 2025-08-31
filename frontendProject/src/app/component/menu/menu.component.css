@@ -1,0 +1,67 @@
+/* Tipo de letra para el menú */
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+  font-family: 'Urbanist', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Título de sección en el sidebar */
+.sidebar-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px 5px 20px;
+  letter-spacing: 1px;
+  opacity: 0.7;
+}
+.sidebar{
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 200px;
+  padding-top: 20px;
+  background-color: #00488b;
+  transition: with 0,3s;
+}
+
+.sidebar .nav-link{
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 20px;
+  color: #fff;
+}
+
+.sidebar .descripcion{
+  font-size: 14px;
+}
+
+.sidebar .nav-link:hover{
+  background-color: #d8a602;
+}
+
+.sidebar .sub-menu{
+  background-color: #023565;
+  padding-left: 3%;
+}
+
+
+/* Let's add configuration for mobile view / smaller view */
+@media (max-width: 480px) {
+  .sidebar {
+    width: 60px;
+  }
+  .sidebar .description {
+    display: none;
+  }
+  .sidebar .nav-link {
+    justify-content: center;
+  }
+  .main-content {
+    margin-left: 60px;
+  }
+}
+
+

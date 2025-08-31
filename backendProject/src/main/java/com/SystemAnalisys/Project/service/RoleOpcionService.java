@@ -33,6 +33,6 @@ public class RoleOpcionService {
     }
 
     public List<RoleOpcion> getPermisosPorRol(Integer idRole) {
-    return roleOpcionRepository.findByIdRole(idRole);
+    return roleOpcionRepository.findById_IdRole(idRole);
 }
 }

@@ -1,13 +1,9 @@
-export interface Opcion {
-  idOpcion: number;
-  idMenu: number;
+export interface Modulo {
+  idModulo: number;
   nombre: string;
   ordenmenu: number;
-  pagina: string;
   fechacreacion: string;
   usuariocreacion: string;
   fechamodificacion: string;
   usuariomodificacion: string;
-  descripcion: string;
-  url: string;
 }
