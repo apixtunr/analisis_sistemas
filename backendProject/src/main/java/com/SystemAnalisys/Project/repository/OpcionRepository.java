@@ -10,11 +10,20 @@ import org.springframework.data.jpa.repository.Query;
 
 @Repository
 public interface OpcionRepository extends JpaRepository<Opcion, Integer> {
-    // Puedes agregar métodos personalizados aquí si necesitas filtrar por usuario, rol, etc.
-   
 
-    // Query nativo para traer la estructura completa de modulo, menu y opcion
-    @Query(value = "SELECT mo.idmodulo, mo.nombre as modulo_nombre, me.idmenu, me.nombre as menu_nombre, op.idopcion, op.nombre as opcion_nombre, op.url, op.descripcion FROM proyectoanalisis.modulo mo JOIN proyectoanalisis.menu me ON mo.idmodulo = me.idmodulo JOIN proyectoanalisis.opcion op ON me.idmenu = op.idmenu ORDER BY mo.ordenmenu, me.ordenmenu, op.ordenmenu", nativeQuery = true)
+    @Query(value = "SELECT \n" +
+            "  mo.idmodulo, \n" +
+            "  mo.nombre AS modulo_nombre, \n" +
+            "  me.idmenu, \n" +
+            "  me.nombre AS menu_nombre, \n" +
+            "  op.idopcion, \n" +
+            "  op.nombre AS opcion_nombre, \n" +
+            "  op.url, \n" +
+            "  op.descripcion \n" +
+            "FROM proyectoanalisis.modulo mo \n" +
+            "JOIN proyectoanalisis.menu me ON mo.idmodulo = me.idmodulo \n" +
+            "JOIN proyectoanalisis.opcion op ON me.idmenu = op.idmenu \n" +
+            "ORDER BY mo.ordenmenu, me.ordenmenu, op.ordenmenu", nativeQuery = true)
     List<Object[]> obtenerEstructuraMenuCompleta();
 }
 

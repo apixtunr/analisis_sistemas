@@ -37,12 +37,16 @@ export class UsuarioService {
   }
   
     getRoles(): Observable<Role[]> {
-      return this.http.get<Role[]>(this.apiUrl + '/api/list_roles');
+      return this.http.get<Role[]>(this.apiUrl + '/api/list_role');
     }
 
-    actualizarRolUsuario(idUsuario: string, idRol: string): Observable<void> {
-      return this.http.put<void>(`${this.apiUrl}/api/update_rol_usuario/${idUsuario}`, { idRol });
-    }
+    actualizarRolUsuario(idUsuario: string, idRol: number): Observable<void> {
+  return this.http.put<void>(
+    `${this.apiUrl}/usuario/${idUsuario}/rol`,
+    idRol,
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+}
 }
 
 

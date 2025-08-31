@@ -1,0 +1,40 @@
+<div class="container">
+  <h2>Asignar Opciones y Permisos a un Rol</h2>
+  <form [formGroup]="formularioAsignacion">
+    <div class="mb-3">
+      <label for="rolSelect">Rol:</label>
+      <select id="rolSelect" formControlName="rol" (change)="cargarPermisosPorRol(formularioAsignacion.get('rol')?.value?.idRole)">
+        <option [ngValue]="null">Seleccione rol</option>
+        <option *ngFor="let rol of roles" [ngValue]="rol">{{ rol.nombre }}</option>
+      </select>
+    </div>
+    <div class="table-responsive" *ngIf="formularioAsignacion.get('rol')?.value">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Opción</th>
+            <th>Alta</th>
+            <th>Baja</th>
+            <th>Cambio</th>
+            <th>Imprimir</th>
+            <th>Exportar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let control of permisosArray.controls; let i = index" [formGroup]="asFormGroup(control)">
+            <td>{{ opciones[i].nombre }}</td>
+            <td><input type="checkbox" formControlName="alta"></td>
+            <td><input type="checkbox" formControlName="baja"></td>
+            <td><input type="checkbox" formControlName="cambio"></td>
+            <td><input type="checkbox" formControlName="imprimir"></td>
+            <td><input type="checkbox" formControlName="exportar"></td>
+          </tr>
+        </tbody>
+        <button class="btn btn-primary mt-3" type="button" (click)="guardarPermisos()" [disabled]="!formularioAsignacion.get('rol')?.value">
+      Guardar
+    </button>
+      </table>
+    </div>
+  </form>
+  <button class="btn btn-secondary mb-3" routerLink="/menu">Volver al menú</button>
+</div>
