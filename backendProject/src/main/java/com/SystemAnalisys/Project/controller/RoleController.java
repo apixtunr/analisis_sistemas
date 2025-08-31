@@ -30,12 +30,13 @@ public class RoleController {
     // Crea un nuevo rol
     @PostMapping("api/create_role")
     public Role createRole(@RequestBody Role role) {
-        return roleService.save(role);
+    role.setIdRole(null);
+    return roleService.save(role);
     }
 
    // Actualiza un rol existente
 @PutMapping("api/update_role/{idrole}")
-public Role updateRole(@PathVariable Integer idrole, @RequestBody Role updatedRole) {
+public Role updateRole(@PathVariable("idrole") Integer idrole, @RequestBody Role updatedRole) {
     Optional<Role> roleOptional = roleService.findById(idrole);
     if (roleOptional.isPresent()) {
         Role role = roleOptional.get();
