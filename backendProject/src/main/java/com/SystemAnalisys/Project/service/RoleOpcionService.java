@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.SystemAnalisys.Project.dto.RoleOpcionDTO;
 import com.SystemAnalisys.Project.entity.RoleOpcion;
+import com.SystemAnalisys.Project.entity.RoleOpcionId;
 import com.SystemAnalisys.Project.repository.RoleOpcionRepository;
 
 @Service
@@ -15,9 +16,9 @@ public class RoleOpcionService {
     private RoleOpcionRepository roleOpcionRepository;
 
     public RoleOpcion guardarRoleOpcion(RoleOpcionDTO dto) {
+        RoleOpcionId id = new RoleOpcionId(dto.getIdRole(), dto.getIdOpcion());
         RoleOpcion roleOpcion = new RoleOpcion(
-            dto.getIdRole(),
-            dto.getIdOpcion(),
+            id,
             dto.getAlta(),
             dto.getBaja(),
             dto.getCambio(),

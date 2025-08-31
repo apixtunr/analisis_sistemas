@@ -8,14 +8,15 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "role_opcion", schema = "proyectoanalisis")
-@IdClass(RoleOpcionId.class)
 public class RoleOpcion {
+
+    @EmbeddedId
+    private RoleOpcionId id;
 
     public RoleOpcion() {}
 
-    public RoleOpcion(Integer idRole, Integer idOpcion, Boolean alta, Boolean baja, Boolean cambio, Boolean imprimir, Boolean exportar, LocalDateTime fechaCreacion, String usuarioCreacion, LocalDateTime fechaModificacion, String usuarioModificacion) {
-        this.idRole = idRole;
-        this.idOpcion = idOpcion;
+    public RoleOpcion(RoleOpcionId id, Boolean alta, Boolean baja, Boolean cambio, Boolean imprimir, Boolean exportar, LocalDateTime fechaCreacion, String usuarioCreacion, LocalDateTime fechaModificacion, String usuarioModificacion) {
+        this.id = id;
         this.alta = alta;
         this.baja = baja;
         this.cambio = cambio;
@@ -26,14 +27,6 @@ public class RoleOpcion {
         this.fechaModificacion = fechaModificacion;
         this.usuarioModificacion = usuarioModificacion;
     }
-
-    @Id
-    @Column(name = "idrole")
-    private Integer idRole;
-
-    @Id
-    @Column(name = "idopcion")
-    private Integer idOpcion;
 
     @Column(name = "alta", nullable = false)
     private Boolean alta;

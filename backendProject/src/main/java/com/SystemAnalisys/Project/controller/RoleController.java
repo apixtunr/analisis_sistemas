@@ -35,7 +35,7 @@ public class RoleController {
 
    // Actualiza un rol existente
 @PutMapping("api/update_role/{idrole}")
-public Role updateRole(@PathVariable("idrole") Integer idrole, @RequestBody Role updatedRole) {
+public Role updateRole(@PathVariable Integer idrole, @RequestBody Role updatedRole) {
     Optional<Role> roleOptional = roleService.findById(idrole);
     if (roleOptional.isPresent()) {
         Role role = roleOptional.get();

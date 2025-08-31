@@ -25,7 +25,6 @@ public class Role {
         this.fechamodificacion = fechamodificacion;
         this.usuariomodificacion = usuariomodificacion;
     }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idrole")
