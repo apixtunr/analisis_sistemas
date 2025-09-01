@@ -27,8 +27,7 @@ const routes: Routes = [
   { path: 'crudstatususuario', component: CrudstatususuarioComponent },
   { path: 'crudusuarios', component: CrudusuariosComponent },
   { path: 'asignacionrolopcion', component: AsignacionrolopcionComponent },
-
-  
+  { path: 'menu', component: MenuComponent },
   { path: '', redirectTo: 'loginusuarios', pathMatch: 'full' },
   { path: '**', redirectTo: 'loginusuarios', pathMatch: 'full' },
   { path: '', redirectTo: 'menu', pathMatch: 'full' },
