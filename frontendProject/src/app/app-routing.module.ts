@@ -22,8 +22,6 @@ const routes: Routes = [
   { path: 'loginusuarios', component: LoginusuariosComponent },
   { path: 'menu', component: MenuComponent },
   { path: 'crudusuarios', component: CrudusuariosComponent },
-  { path: '', redirectTo: 'loginusuarios', pathMatch: 'full' },
-  { path: '**', redirectTo: 'loginusuarios', pathMatch: 'full' },
   { path: 'asignacionrolopcion', component: AsignacionrolopcionComponent },
   { path: '', redirectTo: 'menu', pathMatch: 'full' },
   { path: '**', redirectTo: 'menu', pathMatch: 'full' }
