@@ -16,6 +16,8 @@ import { MenuComponent } from './component/menu/menu.component';
 import { CrudGeneroComponent } from './component/crudgenero/crud-genero.component';
 import { StatusUsuarioComponent } from './component/status-usuario/status-usuario.component';
 import { CrudstatususuarioComponent } from './component/crudstatususuario/crudstatususuario.component';
+import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.component';
+import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/asignacionrolopcion.component';
 
 @NgModule({
   declarations: [
@@ -30,9 +32,9 @@ import { CrudstatususuarioComponent } from './component/crudstatususuario/crudst
     MenuComponent,
     CrudGeneroComponent,
     StatusUsuarioComponent,
-    CrudstatususuarioComponent
-
-
+    CrudstatususuarioComponent,
+    CrudusuariosComponent,
+    AsignacionrolopcionComponent
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -41,7 +43,7 @@ import { CrudstatususuarioComponent } from './component/crudstatususuario/crudst
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    
+
   ],
   providers: [provideHttpClient(withInterceptorsFromDi())]
 })

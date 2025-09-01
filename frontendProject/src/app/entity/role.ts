@@ -1,8 +1,8 @@
 export interface Role {
-  idRole: number;
+  idRole: number | null;
   nombre: string;
-  fechacreacion?: string;
-  usuariocreacion?: string;
-  fechamodificacion?: string;
-  usuariomodificacion?: string;
+  fechacreacion: Date | null;
+  usuariocreacion: string;
+  fechamodificacion: Date | null;
+  usuariomodificacion: string | null;
 }

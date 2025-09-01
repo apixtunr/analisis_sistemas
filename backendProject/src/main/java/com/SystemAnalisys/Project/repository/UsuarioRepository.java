@@ -24,4 +24,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String> {
 
     @Query("SELECT new com.SystemAnalisys.Project.dto.UsuarioDTO(u.idUsuario, u.nombre, u.apellido) FROM Usuario u")
     List<UsuarioDTO> getUsuarios();
+
+    //Busca un usuario activo por su correo electrónico.    
+    Optional<Usuario> findActiveUserByCorreoElectronico(String correoElectronico);
+
 }
