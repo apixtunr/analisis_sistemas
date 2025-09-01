@@ -58,12 +58,16 @@ export class CrudmenuComponent implements OnInit {
       this.menuForm.markAllAsTouched();
       return;
     }
+    // Obtener usuario del localStorage
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const nombreUsuario = usuario?.nombre || 'system';
+
     const menu: Menu = {
       ...this.menuForm.value,
-      fechacreacion: new Date().toISOString(),
-      usuariocreacion: 'ADMIN',
-      fechamodificacion: '',
-      usuariomodificacion: ''
+      fechacreacion: new Date(), // <-- Esto envía un objeto Date, no string
+      usuariocreacion: nombreUsuario,
+      fechamodificacion: null,
+      usuariomodificacion: null
     };
     this.crudmenuService.createMenu(menu).subscribe({
       next: () => {
@@ -83,10 +87,14 @@ export class CrudmenuComponent implements OnInit {
 
   onUpdate() {
     if (this.menuForm.invalid || this.idEditando == null) return;
+    // Obtener usuario del localStorage
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const nombreUsuario = usuario?.nombre || 'system';
+
     const menu: Menu = {
       ...this.menuForm.value,
       fechamodificacion: new Date().toISOString(),
-      usuariomodificacion: 'ADMIN'
+      usuariomodificacion: nombreUsuario
     };
     this.crudmenuService.updateMenu(this.idEditando, menu).subscribe({
       next: () => {
