@@ -1,1 +1,65 @@
-<p>crudmodulo works!</p>
+<div class="container my-4">
+  <h2 class="mb-4 text-center">Gestión de Módulos</h2>
+
+  <!-- Formulario para agregar/editar módulo -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <form #moduloForm="ngForm" (ngSubmit)="onSubmit()">
+        <div class="row g-3">
+          <div class="col-md-9">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" [(ngModel)]="modulo.nombre" required>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-12 d-flex gap-2">
+            <button type="submit" class="btn btn-primary" [disabled]="!moduloForm.form.valid">
+              Guardar
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="onReset()">Limpiar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla de módulos -->
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>ID Módulo</th>
+          <th>Nombre</th>
+          <th>OrdenMenu</th>
+          <th>Fecha Creación</th>
+          <th>Usuario Creación</th>
+          <th>Fecha Modificación</th>
+          <th>Usuario Modificación</th>
+          <th class="sticky-buttons">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let m of modulos">
+          <td>{{ m.idModulo }}</td>
+          <td>{{ m.nombre }}</td>
+          <td>{{ m.ordenmenu }}</td>
+          <td>{{ m.fechacreacion | date:'d, MMMM yyyy' }}</td>
+          <td>{{ m.usuariocreacion }}</td>
+          <td>{{ m.fechamodificacion | date:'d, MMMM yyyy' }}</td>
+          <td>{{ m.usuariomodificacion }}</td>
+          <td class="sticky-buttons">
+            <div class="d-flex justify-content-center gap-2">
+              <button class="btn btn-sm btn-info" (click)="onEdit(m)">
+                Editar
+              </button>
+              <button class="btn btn-sm btn-danger" (click)="onDelete(m.idModulo!)">
+                Eliminar
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

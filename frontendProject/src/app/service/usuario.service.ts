@@ -27,22 +27,27 @@ export class UsuarioService {
     return this.http.post<void>(`${this.apiUrl}/api/create_usuario`, usuario);
   }
 
-	login(usuario: Usuario){
+  login(usuario: Usuario): Observable<any> {
     let httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       })
     };
-    return this.http.post<Usuario>(this.apiUrl + "/user/login", usuario, httpOptions);
+    // El backend retorna un objeto { success, message, usuario }
+    return this.http.post<any>(this.apiUrl + "/api/login", usuario, httpOptions);
   }
-  
+
     getRoles(): Observable<Role[]> {
-      return this.http.get<Role[]>(this.apiUrl + '/api/list_roles');
+      return this.http.get<Role[]>(this.apiUrl + '/api/list_role');
     }
 
-    actualizarRolUsuario(idUsuario: string, idRol: string): Observable<void> {
-      return this.http.put<void>(`${this.apiUrl}/api/update_rol_usuario/${idUsuario}`, { idRol });
-    }
+    actualizarRolUsuario(idUsuario: string, idRol: number): Observable<void> {
+  return this.http.put<void>(
+    `${this.apiUrl}/usuario/${idUsuario}/rol`,
+    idRol,
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+}
 }
 
 

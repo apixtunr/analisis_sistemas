@@ -1,6 +1,6 @@
 package com.SystemAnalisys.Project.entity;
 
-import java.time.LocalDateTime;
+import java.sql.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,8 +17,8 @@ public class Modulo {
 
     public Modulo() {}
 
-    public Modulo(Integer idModulo, String nombre, Integer ordenmenu, LocalDateTime fechacreacion,
-                  String usuariocreacion, LocalDateTime fechamodificacion, String usuariomodificacion) {
+    public Modulo(Integer idModulo, String nombre, Integer ordenmenu, Date fechacreacion,
+                  String usuariocreacion, Date fechamodificacion, String usuariomodificacion) {
         this.idModulo = idModulo;
         this.nombre = nombre;
         this.ordenmenu = ordenmenu;
@@ -40,13 +40,13 @@ public class Modulo {
     private Integer ordenmenu;
 
     @Column(name = "fechacreacion", nullable = false)
-    private LocalDateTime fechacreacion;
+    private Date fechacreacion;
 
     @Column(name = "usuariocreacion", length = 100, nullable = false)
     private String usuariocreacion;
 
     @Column(name = "fechamodificacion", nullable = true)
-    private LocalDateTime fechamodificacion;
+    private Date fechamodificacion;
 
     @Column(name = "usuariomodificacion", length = 100, nullable = true)
     private String usuariomodificacion;
