@@ -13,6 +13,9 @@ import { CrudmoduloComponent } from './component/crudmodulo/crudmodulo.component
 import { CrudopcionesComponent } from './component/crudopciones/crudopciones.component';
 import { CrudmenuComponent } from './component/crudmenu/crudmenu.component';
 import { MenuComponent } from './component/menu/menu.component';
+import { CrudGeneroComponent } from './component/crudgenero/crud-genero.component';
+import { StatusUsuarioComponent } from './component/status-usuario/status-usuario.component';
+import { CrudstatususuarioComponent } from './component/crudstatususuario/crudstatususuario.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +27,10 @@ import { MenuComponent } from './component/menu/menu.component';
     CrudmoduloComponent,
     CrudmenuComponent,
     CrudopcionesComponent,
-    MenuComponent
+    MenuComponent,
+    CrudGeneroComponent,
+    StatusUsuarioComponent,
+    CrudstatususuarioComponent
 
 
   ],
