@@ -1,9 +1,9 @@
 export interface Modulo {
-  idModulo: number;
+  idModulo: number | null;
   nombre: string;
   ordenmenu: number;
-  fechacreacion: string;
+  fechacreacion: Date | null;
   usuariocreacion: string;
-  fechamodificacion: string;
-  usuariomodificacion: string;
+  fechamodificacion: Date | null;
+  usuariomodificacion: string | null;
 }

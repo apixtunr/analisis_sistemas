@@ -15,13 +15,14 @@ public class RoleOpcionController {
     @Autowired
     private RoleOpcionService roleOpcionService;
 
-    @PostMapping("/guardar")
-    public RoleOpcion guardarRoleOpcion(@RequestBody RoleOpcionDTO dto) {
-        return roleOpcionService.guardarRoleOpcion(dto);
-    }
-
     @GetMapping("/permisos/{idRole}")
 public List<RoleOpcion> getPermisosPorRol(@PathVariable Integer idRole) {
     return roleOpcionService.getPermisosPorRol(idRole);
 }
+
+@PostMapping("/guardar")
+public List<RoleOpcion> guardarRoleOpcionMasivo(@RequestBody List<RoleOpcionDTO> dtos) {
+    return roleOpcionService.guardarRoleOpcion(dtos);
+}
+
 }
