@@ -21,6 +21,7 @@ export class AsignacionrolopcionComponent implements OnInit {
   permisos: RolOpcion[] = [];
   formularioAsignacion: FormGroup;
   mensajeExito: string | null = null;
+  cargando: boolean = false;
 
   constructor(
     private usuarioService: UsuarioService,
@@ -120,52 +121,54 @@ export class AsignacionrolopcionComponent implements OnInit {
   }
 
   guardarPermisos() {
-  const rol = this.formularioAsignacion.get('rol')?.value;
-  const ahora = new Date().toISOString();
-  const permisos: RolOpcion[] = this.opciones.map((opcion, i) => {
-    const permiso = this.permisosArray.at(i).value;
-    return {
-      id: {
-        idRole: rol.idRole,
-        idOpcion: opcion.idOpcion
+    this.cargando = true;
+    const rol = this.formularioAsignacion.get('rol')?.value;
+    const ahora = new Date().toISOString();
+    const permisos: RolOpcion[] = this.opciones.map((opcion, i) => {
+      const permiso = this.permisosArray.at(i).value;
+      return {
+        id: {
+          idRole: rol.idRole,
+          idOpcion: opcion.idOpcion
+        },
+        alta: permiso.alta,
+        baja: permiso.baja,
+        cambio: permiso.cambio,
+        imprimir: permiso.imprimir,
+        exportar: permiso.exportar,
+        usuarioCreacion: 'admin',
+        usuarioModificacion: 'admin',
+        fechaCreacion: ahora,
+        fechaModificacion: ahora
+      };
+    });
+
+    // Transformar al formato plano que espera el backend (DTO)
+    const permisosDTO = permisos.map(p => ({
+      idRole: p.id.idRole,
+      idOpcion: p.id.idOpcion,
+      alta: p.alta,
+      baja: p.baja,
+      cambio: p.cambio,
+      imprimir: p.imprimir,
+      exportar: p.exportar,
+      fechaCreacion: p.fechaCreacion,
+      usuarioCreacion: p.usuarioCreacion,
+      fechaModificacion: p.fechaModificacion,
+      usuarioModificacion: p.usuarioModificacion
+    }));
+    this.rolOpcionService.guardarRoleOpcion(permisosDTO).subscribe(
+      (resp) => {
+        this.mensajeExito = 'Permisos guardados correctamente';
+        this.cargando = false;
+        setTimeout(() => { this.mensajeExito = null; }, 3000);
       },
-      alta: permiso.alta,
-      baja: permiso.baja,
-      cambio: permiso.cambio,
-      imprimir: permiso.imprimir,
-      exportar: permiso.exportar,
-      usuarioCreacion: 'admin',
-      usuarioModificacion: 'admin',
-      fechaCreacion: ahora,
-      fechaModificacion: ahora
-    };
-  });
-
-  // Transformar al formato plano que espera el backend (DTO)
-  const permisosDTO = permisos.map(p => ({
-    idRole: p.id.idRole,
-    idOpcion: p.id.idOpcion,
-    alta: p.alta,
-    baja: p.baja,
-    cambio: p.cambio,
-    imprimir: p.imprimir,
-    exportar: p.exportar,
-    fechaCreacion: p.fechaCreacion,
-    usuarioCreacion: p.usuarioCreacion,
-    fechaModificacion: p.fechaModificacion,
-    usuarioModificacion: p.usuarioModificacion
-  }));
-  this.rolOpcionService.guardarRoleOpcion(permisosDTO).subscribe(
-    (resp) => {
-      this.mensajeExito = 'Permisos guardados correctamente';
-      setTimeout(() => { this.mensajeExito = null; }, 3000);
-    },
-    (error) => {
-      console.error('Error al guardar permisos:', error);
-      this.mensajeExito = null;
-    }
-  );
-
+      (error) => {
+        console.error('Error al guardar permisos:', error);
+        this.mensajeExito = null;
+        this.cargando = false;
+      }
+    );
 }
 
   get permisosArray() {
