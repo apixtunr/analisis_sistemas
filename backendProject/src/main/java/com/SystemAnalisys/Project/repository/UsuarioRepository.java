@@ -16,7 +16,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String> {
    
     Optional<Usuario> findByCorreoElectronicoAndPassword(String correoElectronico, String password);
     @SuppressWarnings("null")
-    Optional<Usuario> findById(String id);
+    Optional<Usuario> findById(String idUsuario);
 
     @Modifying
     @Query("UPDATE Usuario u SET u.idRole = :idRole WHERE u.idUsuario = :idUsuario")
