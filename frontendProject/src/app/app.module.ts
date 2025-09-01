@@ -14,6 +14,7 @@ import { CrudopcionesComponent } from './component/crudopciones/crudopciones.com
 import { CrudmenuComponent } from './component/crudmenu/crudmenu.component';
 import { MenuComponent } from './component/menu/menu.component';
 import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.component';
+import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/asignacionrolopcion.component';
 
 @NgModule({
   declarations: [
@@ -26,9 +27,8 @@ import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.com
     CrudmenuComponent,
     CrudopcionesComponent,
     MenuComponent,
-    CrudusuariosComponent
-
-
+    CrudusuariosComponent,
+    AsignacionrolopcionComponent
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -37,7 +37,7 @@ import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.com
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    
+
   ],
   providers: [provideHttpClient(withInterceptorsFromDi())]
 })

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { RolOpcion } from '../entity/rolopcion';
+import { RolOpcion, RolOpcionDTO } from '../entity/rolopcion';
 import { Opcion } from '../entity/opcion';
 
 
@@ -17,10 +17,10 @@ export class RolOpcionService {
   }
 
   // Guardar o actualizar un permiso
-  guardarRoleOpcion(roleOpcion: RolOpcion): Observable<RolOpcion> {
-    return this.http.post<RolOpcion>(`${this.apiUrl}/guardar`, roleOpcion);
-  }
-
+  guardarRoleOpcion(roleOpciones: RolOpcionDTO[]): Observable<any> {
+  return this.http.post(`${this.apiUrl}/guardar`, roleOpciones);
+}
+  
   // Obtener todas las opciones
   getOpciones(): Observable<Opcion[]> {
     return this.http.get<Opcion[]>('http://localhost:8080/opcion/list');

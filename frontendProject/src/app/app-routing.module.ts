@@ -9,6 +9,7 @@ import { MenuComponent } from './component/menu/menu.component';
 import { CrudmoduloComponent } from './component/crudmodulo/crudmodulo.component';
 import { CrudroleComponent } from './component/crudrole/crudrole.component';
 import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.component';
+import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/asignacionrolopcion.component';
 
 const routes: Routes = [
 
@@ -22,7 +23,10 @@ const routes: Routes = [
   { path: 'menu', component: MenuComponent },
   { path: 'crudusuarios', component: CrudusuariosComponent },
   { path: '', redirectTo: 'loginusuarios', pathMatch: 'full' },
-  { path: '**', redirectTo: 'loginusuarios', pathMatch: 'full' }
+  { path: '**', redirectTo: 'loginusuarios', pathMatch: 'full' },
+  { path: 'asignacionrolopcion', component: AsignacionrolopcionComponent },
+  { path: '', redirectTo: 'menu', pathMatch: 'full' },
+  { path: '**', redirectTo: 'menu', pathMatch: 'full' }
 ];
 
 @NgModule({

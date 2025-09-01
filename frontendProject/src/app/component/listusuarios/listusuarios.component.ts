@@ -45,7 +45,7 @@ export class ListusuariosComponent implements OnInit {
   }
 
   onRole() {
-    this.router.navigate(['/role']);
+    this.router.navigate(['/crudrole']);
   }
 
   onOpcion() {

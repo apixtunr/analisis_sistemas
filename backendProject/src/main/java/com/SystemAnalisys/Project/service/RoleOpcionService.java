@@ -15,7 +15,21 @@ public class RoleOpcionService {
     @Autowired
     private RoleOpcionRepository roleOpcionRepository;
 
-    public RoleOpcion guardarRoleOpcion(RoleOpcionDTO dto) {
+
+    public List<RoleOpcion> getPermisosPorRol(Integer idRole) {
+        return roleOpcionRepository.findById_IdRole(idRole);
+    }
+
+    public List<RoleOpcion> guardarRoleOpcion(List<RoleOpcionDTO> dtos) {
+    if (dtos == null || dtos.isEmpty()) return java.util.Collections.emptyList();
+
+    Integer idRole = dtos.get(0).getIdRole();
+    // Elimina todos los permisos actuales del rol
+    roleOpcionRepository.deleteAll(roleOpcionRepository.findById_IdRole(idRole));
+
+    // Guarda los nuevos permisos
+    List<RoleOpcion> guardados = new java.util.ArrayList<>();
+    for (RoleOpcionDTO dto : dtos) {
         RoleOpcionId id = new RoleOpcionId(dto.getIdRole(), dto.getIdOpcion());
         RoleOpcion roleOpcion = new RoleOpcion(
             id,
@@ -29,10 +43,9 @@ public class RoleOpcionService {
             dto.getFechaModificacion(),
             dto.getUsuarioModificacion()
         );
-        return roleOpcionRepository.save(roleOpcion);
+        guardados.add(roleOpcionRepository.save(roleOpcion));
     }
-
-    public List<RoleOpcion> getPermisosPorRol(Integer idRole) {
-    return roleOpcionRepository.findById_IdRole(idRole);
+    return guardados;
 }
+
 }

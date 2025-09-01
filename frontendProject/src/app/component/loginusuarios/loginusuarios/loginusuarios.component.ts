@@ -24,30 +24,39 @@ export class LoginusuariosComponent {
   }
 
   login() {
-    if (this.loginForm.valid) {
-      const usuario = this.loginForm.value;
-      this.usuarioService.login(usuario).subscribe(
-        (u: any) => {
-          this.darBienvenida(u);
-        },
-        (error: Error) => {
-          console.error(error.message);
+  if (this.loginForm.valid) {
+    const usuario = this.loginForm.value;
+    this.usuarioService.login(usuario).subscribe(
+      (resp: any) => {
+        if (resp.success && resp.usuario) {
+  this.darBienvenida(resp.usuario);
+        } else {
+          alert(resp.message || "Credenciales incorrectas");
         }
-      );
-    } else {
-      this.loginForm.markAllAsTouched();
-    }
-  }
-
-  darBienvenida(usuario: any) {
-    if (usuario) {
-      localStorage.setItem("usuario", JSON.stringify(usuario));
-      if (usuario.idRole === 2) {
-        this.router.navigate(['/menu']);
-        alert("Bienvenido " + usuario.nombre + " " + usuario.apellido);
+      },
+      (error: Error) => {
+        alert("Error de conexión o servidor");
+        console.error(error.message);
       }
-    } else {
-      alert("Invalid credentials");
-    }
+    );
+  } else {
+    this.loginForm.markAllAsTouched();
   }
+}
+darBienvenida(usuario: any) {
+
+  if (usuario) {
+    localStorage.setItem("usuario", JSON.stringify(usuario));
+
+    if (usuario.rol === 1) {
+      this.router.navigate(['/menu']);
+      alert("Bienvenido " + usuario.nombre + " " + usuario.apellido);
+    } else {
+    }
+  } else {
+    alert("Invalid credentials");
+  }
+}
+
+
 }
