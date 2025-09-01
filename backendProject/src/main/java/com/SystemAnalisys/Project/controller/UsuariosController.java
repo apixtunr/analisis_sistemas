@@ -33,7 +33,7 @@ public class UsuariosController {
     public Usuario createUsuarios(@RequestBody Usuario user) {
         Optional<Usuario> existingUser = usuariosService.findById(user.getIdUsuario());
         if (existingUser.isPresent()) {
-            throw new RuntimeException("El ID de usuario ya existe");
+            throw new RuntimeException("El usuario ya existe");
         }
         return usuariosService.save(user);
     }

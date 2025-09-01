@@ -1,0 +1,220 @@
+<div class="container my-5">
+  <h2 class="mb-4 text-center">Gestión de Usuarios</h2>
+
+  <!-- Formulario para agregar/editar usuario -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label">Usuario</label>
+            <input
+              type="text"
+              formControlName="idUsuario"
+              class="form-control"
+              placeholder="Ingrese Usuario"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Nombre</label>
+            <input
+              type="text"
+              formControlName="nombre"
+              class="form-control"
+              placeholder="Ingrese nombre"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Apellido</label>
+            <input
+              type="text"
+              formControlName="apellido"
+              class="form-control"
+              placeholder="Ingrese apellido"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Fecha Nacimiento</label>
+            <input
+              type="date"
+              formControlName="fechaNacimiento"
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-3">
+            <label class="form-label">Contraseña</label>
+            <input
+              type="password"
+              formControlName="password"
+              class="form-control"
+              placeholder="Ingrese contraseña"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Género</label>
+            <input
+              type="number"
+              formControlName="idGenero"
+              class="form-control"
+              placeholder="ID Género"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Correo Electrónico</label>
+            <input
+              type="email"
+              formControlName="correoElectronico"
+              class="form-control"
+              placeholder="Ingrese correo"
+            />
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-3">
+            <label class="form-label">Fotografía</label>
+            <input
+              type="text"
+              formControlName="fotografia"
+              class="form-control"
+              placeholder="URL o Base64"
+            />
+          </div>
+          <div class="col-md-3 mt-2">
+            <label class="form-label d-block">Vista previa</label>
+            <img
+              *ngIf="usuarioForm.get('fotografia')?.value"
+              [src]="
+                'data:image/png;base64,' + usuarioForm.get('fotografia')?.value
+              "
+              alt="Foto de perfil"
+              class="img-thumbnail"
+              style="width: 100px; height: 100px; object-fit: cover"
+            />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Teléfono</label>
+            <input
+              type="text"
+              formControlName="telefonoMovil"
+              class="form-control"
+              placeholder="Ingrese teléfono"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Sucursal</label>
+            <input
+              type="number"
+              formControlName="idSucursal"
+              class="form-control"
+              placeholder="ID Sucursal"
+            />
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-3">
+            <label class="form-label">Pregunta</label>
+            <input
+              type="text"
+              formControlName="pregunta"
+              class="form-control"
+              placeholder="Ingrese pregunta"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Respuesta</label>
+            <input
+              type="text"
+              formControlName="respuesta"
+              class="form-control"
+              placeholder="Ingrese respuesta"
+            />
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="mt-4 d-flex gap-2">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="usuarioForm.invalid"
+          >
+            Agregar
+          </button>
+          <button
+            type="button"
+            class="btn btn-success"
+            [disabled]="usuarioForm.invalid"
+            (click)="onUpdate()"
+          >
+            Actualizar
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="onReset()">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla de usuarios -->
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Usuario</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Fecha Nacimiento</th>
+          <th>Género</th>
+          <th>Correo</th>
+          <th>Fotografía</th>
+          <th>Teléfono</th>
+          <th>Sucursal</th>
+          <th>Pregunta</th>
+          <th>Respuesta</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let usr of usuarios">
+          <td>{{ usr.idUsuario }}</td>
+          <td>{{ usr.nombre }}</td>
+          <td>{{ usr.apellido }}</td>
+          <td>{{ usr.fechaNacimiento | date : "dd/MM/yyyy" }}</td>
+          <td>{{ usr.idGenero }}</td>
+          <td>{{ usr.correoElectronico }}</td>
+          <td>
+            <img
+              *ngIf="usr.fotografia"
+              [src]="'data:image/png;base64,' + usr.fotografia"
+              alt="Foto de perfil"
+              class="img-thumbnail"
+              style="width: 50px; height: 50px; object-fit: cover"
+            />
+          </td>
+          <td>{{ usr.telefonoMovil }}</td>
+          <td>{{ usr.idSucursal }}</td>
+          <td>{{ usr.pregunta }}</td>
+          <td>{{ usr.respuesta }}</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-info" (click)="onEdit(usr)">
+              Editar
+            </button>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="onDelete(usr.idUsuario)"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

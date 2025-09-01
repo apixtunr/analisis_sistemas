@@ -13,6 +13,7 @@ import { CrudmoduloComponent } from './component/crudmodulo/crudmodulo.component
 import { CrudopcionesComponent } from './component/crudopciones/crudopciones.component';
 import { CrudmenuComponent } from './component/crudmenu/crudmenu.component';
 import { MenuComponent } from './component/menu/menu.component';
+import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { MenuComponent } from './component/menu/menu.component';
     CrudmoduloComponent,
     CrudmenuComponent,
     CrudopcionesComponent,
-    MenuComponent
+    MenuComponent,
+    CrudusuariosComponent
 
 
   ],
