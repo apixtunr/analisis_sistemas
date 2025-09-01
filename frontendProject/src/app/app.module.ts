@@ -13,6 +13,7 @@ import { CrudmoduloComponent } from './component/crudmodulo/crudmodulo.component
 import { CrudopcionesComponent } from './component/crudopciones/crudopciones.component';
 import { CrudmenuComponent } from './component/crudmenu/crudmenu.component';
 import { MenuComponent } from './component/menu/menu.component';
+import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.component';
 import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/asignacionrolopcion.component';
 
 @NgModule({
@@ -26,9 +27,8 @@ import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/as
     CrudmenuComponent,
     CrudopcionesComponent,
     MenuComponent,
+    CrudusuariosComponent,
     AsignacionrolopcionComponent
-
-
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -37,7 +37,7 @@ import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/as
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    
+
   ],
   providers: [provideHttpClient(withInterceptorsFromDi())]
 })

@@ -8,6 +8,7 @@ import { CrudopcionesComponent } from './component/crudopciones/crudopciones.com
 import { MenuComponent } from './component/menu/menu.component';
 import { CrudmoduloComponent } from './component/crudmodulo/crudmodulo.component';
 import { CrudroleComponent } from './component/crudrole/crudrole.component';
+import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.component';
 import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/asignacionrolopcion.component';
 
 const routes: Routes = [
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'listusuarios', component: ListusuariosComponent },
   { path: 'loginusuarios', component: LoginusuariosComponent },
   { path: 'menu', component: MenuComponent },
+  { path: 'crudusuarios', component: CrudusuariosComponent },
   { path: 'asignacionrolopcion', component: AsignacionrolopcionComponent },
   { path: '', redirectTo: 'menu', pathMatch: 'full' },
   { path: '**', redirectTo: 'menu', pathMatch: 'full' }
