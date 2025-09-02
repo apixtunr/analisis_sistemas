@@ -138,29 +138,40 @@ export class CrudmoduloComponent implements OnInit {
     };
   }
 
-  // Eliminar módulo
-  onDelete(idModulo: number | null): void {
-    this.error = '';
-    if (idModulo == null) {
-      this.error = 'ID de módulo inválido';
-      return;
-    }
-
-    if (!confirm('¿Eliminar este módulo?')) return;
-
-    this.loading = true;
-    this.moduloService.deleteModulo(idModulo).subscribe({
-      next: () => {
-        alert('Módulo eliminado correctamente.');
-        this.loadModulos();
-        this.loading = false;
-      },
-      error: () => {
-        this.error = 'Error al eliminar módulo';
-        this.loading = false;
-      },
-    });
+ // Eliminar módulo
+onDelete(idModulo: number | null): void {
+  this.error = '';
+  if (idModulo == null) {
+    this.error = 'ID de módulo inválido';
+    return;
   }
+
+  if (!confirm('¿Eliminar este módulo?')) return;
+
+  this.loading = true;
+  this.moduloService.deleteModulo(idModulo).subscribe({
+    next: () => {
+      alert('✅ Módulo eliminado correctamente.');
+      this.loadModulos();
+      this.loading = false;
+    },
+    error: (err) => {
+      const errorMessage: string = err.error?.message || err.error || err.message || '';
+
+      if (
+        errorMessage.includes('violates foreign key constraint') ||
+        errorMessage.includes('menu_idmodulo_fkey')
+      ) {
+        alert('No se puede eliminar el módulo porque tiene un menú asignado.');
+      } else {
+        alert('Error al eliminar módulo.');
+      }
+
+      this.loading = false;
+    },
+  });
+}
+
 
   // Resetear formulario
   onReset(): void {

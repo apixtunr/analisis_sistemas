@@ -13,6 +13,8 @@ import { CrudmoduloComponent } from './component/crudmodulo/crudmodulo.component
 import { CrudopcionesComponent } from './component/crudopciones/crudopciones.component';
 import { CrudmenuComponent } from './component/crudmenu/crudmenu.component';
 import { MenuComponent } from './component/menu/menu.component';
+import { CrudGeneroComponent } from './component/crudgenero/crud-genero.component';
+import { CrudstatususuarioComponent } from './component/crudstatususuario/crudstatususuario.component';
 import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.component';
 import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/asignacionrolopcion.component';
 
@@ -27,6 +29,8 @@ import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/as
     CrudmenuComponent,
     CrudopcionesComponent,
     MenuComponent,
+    CrudGeneroComponent,
+    CrudstatususuarioComponent,
     CrudusuariosComponent,
     AsignacionrolopcionComponent
   ],
