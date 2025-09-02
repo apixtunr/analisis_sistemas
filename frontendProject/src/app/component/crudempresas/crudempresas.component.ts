@@ -25,29 +25,32 @@ export class CrudempresasComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-  this.empresaService.getEmpresas().subscribe({
-    next: (data) => {
-      this.empresas = data;
-      this.loading = false;
-      const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-      const idRole = usuario.rol;
-      console.log('Usuario:', usuario);
-      console.log('idRole:', idRole);
-      if (idRole !== undefined && idRole !== null) {
-        this.permisoService.getPermisosEmpresa(1, idRole).subscribe(permiso => {
-          this.permisosEmpresa = permiso || {};
-        });
-      } else {
-        this.permisosEmpresa = {};
-        // Opcional: muestra un mensaje de error o redirige al login
-      }
-    },
-    error: () => {
-      this.error = 'Error al cargar empresas';
-      this.loading = false;
-    }
-  });
-}
+    this.empresaService.getEmpresas().subscribe({
+      next: (data) => {
+        this.empresas = data;
+        this.loading = false;
+        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+        const idRole = usuario.rol; // <- así como lo envía el backend
+
+        console.log('Usuario:', usuario);
+        console.log('idRole:', idRole);
+        if (idRole !== undefined && idRole !== null) {
+          this.permisoService
+            .getPermisosEmpresa(1, idRole)
+            .subscribe((permiso) => {
+              this.permisosEmpresa = permiso || {};
+            });
+        } else {
+          this.permisosEmpresa = {};
+          // Opcional: muestra un mensaje de error o redirige al login
+        }
+      },
+      error: () => {
+        this.error = 'Error al cargar empresas';
+        this.loading = false;
+      },
+    });
+  }
 
   // Crear nueva empresa
   onSubmit() {
@@ -95,27 +98,29 @@ export class CrudempresasComponent implements OnInit {
 
   // Actualizar empresa existente
   onUpdate() {
-  const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
-  const usuarioModificacion = usuarioLocal.id || '';
+    const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const usuarioModificacion = usuarioLocal.id || '';
 
-  const payload = {
-    ...this.empresa,
-    fechaModificacion: this.formatDateTime(new Date().toISOString().split('T')[0]),
-    usuarioModificacion,
-  };
+    const payload = {
+      ...this.empresa,
+      fechaModificacion: this.formatDateTime(
+        new Date().toISOString().split('T')[0]
+      ),
+      usuarioModificacion,
+    };
 
-  this.empresaService.updateEmpresa(payload).subscribe({
-    next: () => {
-      alert('Empresa actualizada.');
-      this.ngOnInit();
-      this.onReset();
-      this.isEditMode = false;
-    },
-    error: () => {
-      this.error = 'Error al actualizar empresa.';
-    },
-  });
-}
+    this.empresaService.updateEmpresa(payload).subscribe({
+      next: () => {
+        alert('Empresa actualizada.');
+        this.ngOnInit();
+        this.onReset();
+        this.isEditMode = false;
+      },
+      error: () => {
+        this.error = 'Error al actualizar empresa.';
+      },
+    });
+  }
 
   //Método para eliminar empresa
   onDelete(nit: string) {

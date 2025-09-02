@@ -50,15 +50,15 @@ public class UsuariosController {
         return ResponseEntity.badRequest().body("El usuario ya existe");
     }
 
-    // 2️⃣ Traer la sucursal del usuario
+    // Traer la sucursal del usuario
     Sucursal sucursal = sucursalRepository.findById(user.getIdSucursal())
             .orElseThrow(() -> new RuntimeException("Sucursal no encontrada"));
 
-    // 3️⃣ Traer la empresa asociada a la sucursal
+    // Traer la empresa asociada a la sucursal
     Empresa empresa = empresaRepository.findById(sucursal.getIdEmpresa())
             .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
 
-    // 4️⃣ Validar la contraseña según los requisitos de la empresa
+    // Validar la contraseña según los requisitos de la empresa
     if (!validarContrasena(user.getPassword(), empresa)) {
         return ResponseEntity.badRequest().body(
             "La contraseña no cumple con los requisitos de la empresa: "

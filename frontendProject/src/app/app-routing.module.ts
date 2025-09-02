@@ -30,7 +30,7 @@ const routes: Routes = [
   { path: 'asignacionrolopcion', component: AsignacionrolopcionComponent },
   { path: 'crudsucursales', component: CrudsucursalesComponent },
   { path: 'menu', component: MenuComponent },
-  { path: '', redirectTo: 'menu', pathMatch: 'full' },
+  { path: '', redirectTo: 'loginusuarios', pathMatch: 'full' },
   { path: '**', redirectTo: 'menu', pathMatch: 'full' },
 ];
 
