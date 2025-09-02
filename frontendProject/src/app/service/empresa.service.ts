@@ -21,8 +21,8 @@ export class EmpresaService {
     return this.http.put<void>(`${this.apiUrl}/api/update_empresa/${empresa.nit}`, empresa);
   }
 
-  createEmpresa(empresa: Empresa): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/api/create_empresa`, empresa);
-  }
+  createEmpresa(empresa: Omit<Empresa, 'idEmpresa'>): Observable<Empresa> {
+  return this.http.post<Empresa>(`${this.apiUrl}/api/create_empresa`, empresa);
+}
 
 }

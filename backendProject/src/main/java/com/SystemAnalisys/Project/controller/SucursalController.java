@@ -43,8 +43,6 @@ public class SucursalController {
             sucursal.setNombre(updatedSucursal.getNombre());
             sucursal.setDireccion(updatedSucursal.getDireccion());
             sucursal.setIdEmpresa(updatedSucursal.getIdEmpresa());
-            sucursal.setFechaCreacion(updatedSucursal.getFechaCreacion());
-            sucursal.setUsuarioCreacion(updatedSucursal.getUsuarioCreacion());
             sucursal.setFechaModificacion(new Date());
             sucursal.setUsuarioModificacion(updatedSucursal.getUsuarioModificacion());
 

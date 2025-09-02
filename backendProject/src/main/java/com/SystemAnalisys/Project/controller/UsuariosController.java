@@ -21,11 +21,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.SystemAnalisys.Project.dto.UsuarioDTO;
 import com.SystemAnalisys.Project.entity.Usuario;
 import com.SystemAnalisys.Project.service.UsuarioService;
+import com.SystemAnalisys.Project.entity.Sucursal;
+import com.SystemAnalisys.Project.entity.Empresa;
+import com.SystemAnalisys.Project.repository.SucursalRepository;
+import com.SystemAnalisys.Project.repository.EmpresaRepository;
 
 @RestController
 public class UsuariosController {
     @Autowired
     private UsuarioService usuariosService;
+    private SucursalRepository sucursalRepository;
+    private EmpresaRepository empresaRepository;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -37,18 +43,42 @@ public class UsuariosController {
 
     // Crea un nuevo usuario con contraseña hasheada
     @PostMapping("api/create_usuario")
-    public Usuario createUsuarios(@RequestBody Usuario user) {
-        Optional<Usuario> existingUser = usuariosService.findById(user.getIdUsuario());
-        if (existingUser.isPresent()) {
-            throw new RuntimeException("El usuario ya existe");
-        }
-
-        // Hashear la contraseña antes de guardar
-        String hash = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hash);
-
-        return usuariosService.save(user);
+    public ResponseEntity<?> createUsuarios(@RequestBody Usuario user) {
+    // 1️⃣ Verificar si el usuario ya existe
+    Optional<Usuario> existingUser = usuariosService.findById(user.getIdUsuario());
+    if (existingUser.isPresent()) {
+        return ResponseEntity.badRequest().body("El usuario ya existe");
     }
+
+    // Traer la sucursal del usuario
+    Sucursal sucursal = sucursalRepository.findById(user.getIdSucursal())
+            .orElseThrow(() -> new RuntimeException("Sucursal no encontrada"));
+
+    // Traer la empresa asociada a la sucursal
+    Empresa empresa = empresaRepository.findById(sucursal.getIdEmpresa())
+            .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
+
+    // Validar la contraseña según los requisitos de la empresa
+    if (!validarContrasena(user.getPassword(), empresa)) {
+        return ResponseEntity.badRequest().body(
+            "La contraseña no cumple con los requisitos de la empresa: "
+            + "mínimo " + empresa.getPasswordCantidadMayusculas() + " mayúsculas, "
+            + empresa.getPasswordCantidadMinusculas() + " minúsculas, "
+            + empresa.getPasswordCantidadNumeros() + " números, "
+            + empresa.getPasswordCantidadCaracteresEspeciales() + " caracteres especiales, "
+            + "longitud mínima " + empresa.getPasswordLargo()
+        );
+    }
+
+    // 5️⃣ Hashear la contraseña antes de guardar
+    String hash = passwordEncoder.encode(user.getPassword());
+    user.setPassword(hash);
+
+    // 6️⃣ Guardar el usuario y devolverlo
+    Usuario nuevoUsuario = usuariosService.save(user);
+    return ResponseEntity.ok(nuevoUsuario);
+}
+
 
     // Actualiza un usuario existente (manteniendo hash de contraseña)
     @PutMapping("api/update_usuario/{id}")
@@ -106,8 +136,7 @@ public class UsuariosController {
         LoginResult result = usuariosService.login(
                 loginData.getCorreoElectronico(),
                 loginData.getPassword(),
-                request
-        );
+                request);
 
         Map<String, Object> response = new HashMap<>();
         response.put("success", result.isSuccess());
@@ -143,4 +172,19 @@ public class UsuariosController {
     public List<UsuarioDTO> getUsuariosPorRol(@PathVariable Integer idRole) {
         return usuariosService.getUsuariosPorRol(idRole);
     }
+
+    // Método privado dentro del controller
+    private boolean validarContrasena(String contrasena, Empresa empresa) {
+        long mayusculas = contrasena.chars().filter(Character::isUpperCase).count();
+        long minusculas = contrasena.chars().filter(Character::isLowerCase).count();
+        long numeros = contrasena.chars().filter(Character::isDigit).count();
+        long especiales = contrasena.chars().filter(c -> !Character.isLetterOrDigit(c)).count();
+
+        return mayusculas >= empresa.getPasswordCantidadMayusculas()
+                && minusculas >= empresa.getPasswordCantidadMinusculas()
+                && numeros >= empresa.getPasswordCantidadNumeros()
+                && especiales >= empresa.getPasswordCantidadCaracteresEspeciales()
+                && contrasena.length() >= empresa.getPasswordLargo();
+    }
+
 }

@@ -102,6 +102,9 @@ export class CrudusuariosComponent implements OnInit {
 }
   //Método para eliminar usuario
   onDelete(idUsuario: string) {
+    const confirmado = confirm('¿Estás seguro de eliminar este usuario?');
+    if (!confirmado) return;
+
     this.usuarioService.deleteUsuario(idUsuario).subscribe({
       next: () => {
         alert('Usuario eliminado correctamente.');

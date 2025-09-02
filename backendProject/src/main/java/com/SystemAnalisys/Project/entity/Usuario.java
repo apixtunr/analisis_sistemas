@@ -4,7 +4,10 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -15,14 +18,15 @@ import lombok.Data;
 @Table(name = "usuario", schema = "proyectoanalisis")
 public class Usuario {
 
-    public Usuario() {}
+    public Usuario() {
+    }
 
     public Usuario(String idUsuario, String nombre, String apellido, Date fechaNacimiento, Integer idStatusUsuario,
-                    String password, Integer idGenero, Date ultimaFechaIngreso, Integer intentosDeAcceso,
-                    String sesionActual, Date ultimaFechaCambioPassword, String correoElectronico,
-                    Integer requiereCambiarPassword, byte[] fotografia, String telefonoMovil, Integer idSucursal,
-                    String pregunta, String respuesta, Integer idRole, Date fechaCreacion, String usuarioCreacion,
-                    Date fechaModificacion, String usuarioModificacion) {
+            String password, Integer idGenero, Date ultimaFechaIngreso, Integer intentosDeAcceso,
+            String sesionActual, Date ultimaFechaCambioPassword, String correoElectronico,
+            Integer requiereCambiarPassword, byte[] fotografia, String telefonoMovil, Integer idSucursal,
+            String pregunta, String respuesta, Integer idRole, Date fechaCreacion, String usuarioCreacion,
+            Date fechaModificacion, String usuarioModificacion) {
         this.idUsuario = idUsuario;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -108,6 +112,10 @@ public class Usuario {
 
     @Column(name = "idrole")
     private Integer idRole;
+
+    @ManyToOne(fetch = FetchType.EAGER) // o LAZY si querés cargar solo cuando lo uses
+    @JoinColumn(name = "idrole", insertable = false, updatable = false)
+    private Role role;
 
     @Column(name = "fechacreacion")
     @Temporal(TemporalType.TIMESTAMP)

@@ -1,5 +1,5 @@
 export interface Empresa {
-  idEmpresa: number;
+  idEmpresa?: number;
   nombre: string;
   direccion: string;
   nit: string;
@@ -11,10 +11,10 @@ export interface Empresa {
   passwordIntentosAntesDeBloquear: number;
   passwordCantidadNumeros: number;
   passwordCantidadPreguntasValidar: number;
-  fechaCreacion: string;
-  usuarioCreacion: string;
-  fechaModificacion: string;
-  usuarioModificacion: string;
+  fechaCreacion: string | null;
+  usuarioCreacion: string | null;
+  fechaModificacion: string | null;
+  usuarioModificacion: string | null;
 }
 
 

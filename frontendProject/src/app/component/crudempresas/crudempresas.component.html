@@ -1,22 +1,13 @@
 <div class="container my-4">
   <h2 class="mb-4 text-center">Gestión de Empresas</h2>
-
+  <div class="d-flex justify-content-start">
+  <button class="btn btn-secondary mb-3" routerLink="/menu">Volver al menú</button>
+  </div>
   <!-- Formulario para agregar/editar empresa -->
   <div class="card mb-5 shadow-sm">
     <div class="card-body">
       <form #empresaForm="ngForm" (ngSubmit)="onSubmit()">
         <div class="row g-3">
-          <div class="col-md-3">
-            <label for="idEmpresa" class="form-label">ID Empresa</label>
-            <input
-              type="number"
-              id="idEmpresa"
-              name="idEmpresa"
-              class="form-control"
-              [(ngModel)]="empresa.idEmpresa"
-              required
-            />
-          </div>
           <div class="col-md-3">
             <label for="nombre" class="form-label">Nombre</label>
             <input
@@ -55,7 +46,7 @@
           </div>
           <div class="col-md-3">
             <label for="passwordCantidadMayusculas" class="form-label"
-              >Mayúsculas</label
+              >Cantidad Mayúsculas</label
             >
             <input
               type="number"
@@ -68,7 +59,7 @@
           </div>
           <div class="col-md-3">
             <label for="passwordCantidadMinusculas" class="form-label"
-              >Minúsculas</label
+              >CantidadMinúsculas</label
             >
             <input
               type="number"
@@ -81,7 +72,7 @@
           </div>
           <div class="col-md-3">
             <label for="passwordCantidadCaracteresEspeciales" class="form-label"
-              >Especiales</label
+              >Caracteres Especiales</label
             >
             <input
               type="number"
@@ -150,79 +141,29 @@
         </div>
 
         <div class="row g-3 mt-2">
-          <div class="col-md-3">
-            <label for="passwordCantidadPreguntasValidar" class="form-label"
-              >Preguntas a Validar</label
-            >
-            <input
-              type="number"
-              id="passwordCantidadPreguntasValidar"
-              name="passwordCantidadPreguntasValidar"
-              class="form-control"
-              [(ngModel)]="empresa.passwordCantidadPreguntasValidar"
-              required
-            />
-          </div>
-          <div class="col-md-3">
-            <label for="fechaCreacion" class="form-label">Fecha Creación</label>
-            <input
-              type="date"
-              id="fechaCreacion"
-              name="fechaCreacion"
-              class="form-control"
-              [(ngModel)]="empresa.fechaCreacion"
-              required
-            />
-          </div>
-          <div class="col-md-3">
-            <label for="usuarioCreacion" class="form-label"
-              >Usuario Creación</label
-            >
-            <input
-              type="text"
-              id="usuarioCreacion"
-              name="usuarioCreacion"
-              class="form-control"
-              [(ngModel)]="empresa.usuarioCreacion"
-              required
-            />
-          </div>
-          <div class="col-md-3">
-            <label for="fechaModificacion" class="form-label"
-              >Fecha Modificación</label
-            >
-            <input
-              type="date"
-              id="fechaModificacion"
-              name="fechaModificacion"
-              class="form-control"
-              [(ngModel)]="empresa.fechaModificacion"
-            />
-          </div>
-        </div>
-
-        <div class="row g-3 mt-2">
-          <div class="col-md-3">
-            <label for="usuarioModificacion" class="form-label"
-              >Usuario Modificación</label
-            >
-            <input
-              type="text"
-              id="usuarioModificacion"
-              name="usuarioModificacion"
-              class="form-control"
-              [(ngModel)]="empresa.usuarioModificacion"
-            />
-          </div>
           <div class="col-md-12 mt-3 d-flex gap-2">
+            <!-- Botón Actualizar: solo aparece en modo edición -->
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="!empresaForm.form.valid"
+              *ngIf="isEditMode"
+              (click)="onUpdate()"
+            >
+              Actualizar
+            </button>
+
+            <!-- Botón Guardar: solo aparece en modo creación y si tiene permisos -->
             <button
               type="submit"
               class="btn btn-primary"
-              [disabled]="!empresaForm.form.valid || !permisosEmpresa.alta"
-              *ngIf="permisosEmpresa.alta"
+              [disabled]="!empresaForm.form.valid"
+              *ngIf="!isEditMode && permisosEmpresa.alta"
             >
               Guardar
             </button>
+
+            <!-- Botón Limpiar -->
             <button type="button" class="btn btn-secondary" (click)="onReset()">
               Limpiar
             </button>
@@ -276,10 +217,18 @@
           <td>{{ emp.usuarioModificacion }}</td>
           <td class="sticky-buttons">
             <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-info" (click)="onEdit(emp)" *ngIf="permisosEmpresa.cambio">
+              <button
+                class="btn btn-sm btn-info"
+                (click)="onEdit(emp)"
+                *ngIf="permisosEmpresa.cambio"
+              >
                 Editar
               </button>
-              <button class="btn btn-sm btn-danger" (click)="onDelete(emp.nit)" *ngIf="permisosEmpresa.baja">
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="onDelete(emp.nit)"
+                *ngIf="permisosEmpresa.baja"
+              >
                 Eliminar
               </button>
             </div>

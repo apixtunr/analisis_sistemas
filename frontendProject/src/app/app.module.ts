@@ -17,6 +17,7 @@ import { CrudGeneroComponent } from './component/crudgenero/crud-genero.componen
 import { CrudstatususuarioComponent } from './component/crudstatususuario/crudstatususuario.component';
 import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.component';
 import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/asignacionrolopcion.component';
+import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursales.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/as
     CrudGeneroComponent,
     CrudstatususuarioComponent,
     CrudusuariosComponent,
-    AsignacionrolopcionComponent
+    AsignacionrolopcionComponent,
+    CrudsucursalesComponent
   ],
   bootstrap: [AppComponent],
   imports: [
