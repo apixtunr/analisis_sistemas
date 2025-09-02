@@ -12,6 +12,7 @@ import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.com
 import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/asignacionrolopcion.component';
 import { CrudGeneroComponent } from './component/crudgenero/crud-genero.component';
 import { CrudstatususuarioComponent } from './component/crudstatususuario/crudstatususuario.component';
+import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursales.component';
 
 const routes: Routes = [
 
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'crudstatususuario', component: CrudstatususuarioComponent },
   { path: 'crudusuarios', component: CrudusuariosComponent },
   { path: 'asignacionrolopcion', component: AsignacionrolopcionComponent },
+  { path: 'crudsucursales', component: CrudsucursalesComponent },
   { path: 'menu', component: MenuComponent },
   { path: '', redirectTo: 'loginusuarios', pathMatch: 'full' },
   { path: '**', redirectTo: 'loginusuarios', pathMatch: 'full' },

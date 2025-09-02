@@ -1,81 +1,110 @@
 import { Component, OnInit } from '@angular/core';
 import { Empresa } from '../../entity/empresa';
 import { EmpresaService } from '../../service/empresa.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-crudempresas',
-    templateUrl: './crudempresas.component.html',
-    styleUrls: ['./crudempresas.component.css'],
-    standalone: false
+  selector: 'app-crudempresas',
+  templateUrl: './crudempresas.component.html',
+  styleUrls: ['./crudempresas.component.css'],
+  standalone: false,
 })
-
 export class CrudempresasComponent implements OnInit {
   loading = true;
   error = '';
-  empresas: Empresa[] = [];   // lista
-
-  empresa: Empresa = {        // objeto para crear/editar
-    idEmpresa: 0,
-    nombre: '',
-    direccion: '',
-    nit: '',
-    fechaCreacion: '',
-    fechaModificacion: '',
-    usuarioCreacion: '',
-    usuarioModificacion: '',
-    passwordCantidadCaducidadDias: 0,
-    passwordCantidadCaracteresEspeciales: 0,
-    passwordCantidadMayusculas: 0,
-    passwordCantidadMinusculas: 0,
-    passwordCantidadNumeros: 0,
-    passwordCantidadPreguntasValidar: 0,
-    passwordIntentosAntesDeBloquear: 0,
-    passwordLargo: 0
-  };
+  empresas: Empresa[] = []; // lista de empresas
+  empresa: Empresa = this.crearEmpresaVacia();
+  isEditMode = false;
 
   constructor(private empresaService: EmpresaService) {}
 
   ngOnInit(): void {
-    this.empresaService.getEmpresas().subscribe({
-      next: (data) => {
-        this.empresas = data; // aquí cargás la lista
-        this.loading = false;
-      },
-      error: () => {
-        this.error = 'Error al cargar empresas';
-        this.loading = false;
-      }
-    });
+    this.empresaService
+      .getEmpresas()
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: (data) => {
+          this.empresas = data; // aquí cargás la lista de empresas
+        },
+        error: () => {
+          this.error = 'Error al cargar empresas';
+        },
+      });
   }
 
   // Crear nueva empresa
   onSubmit() {
-    // crear el Json con fechas formateadas para el backend
-  const payload = {
-    ...this.empresa,
-    fechaCreacion: this.formatDateTime(this.empresa.fechaCreacion),
-    fechaModificacion: this.formatDateTime(this.empresa.fechaModificacion)
-  };
-
-  // enviar al backend
-  this.empresaService.createEmpresa(payload).subscribe({
-    next: () => {
-      alert('Empresa guardada.');
-      this.ngOnInit(); // refresca la lista
-    },
-    error: (err) => {
-      this.error = 'Error al guardar empresa.';
+    // verificar si la empresa ya existe (NIT único)
+    const existe = this.empresas.some(
+      (e) => e.nit === this.empresa.nit && !this.isEditMode
+    );
+    if (existe) {
+      alert('La empresa ya está creada.');
+      return;
     }
-  });
+
+    const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const usuarioCreacion = usuarioLocal.id || '';
+
+    const payload = {
+      ...this.empresa,
+      idEmpresa: undefined,
+      fechaCreacion: this.empresa.fechaCreacion
+        ? this.formatDateTime(this.empresa.fechaCreacion)
+        : this.formatDateTime(new Date().toISOString().split('T')[0]),
+      fechaModificacion: null,
+      usuarioCreacion,
+      usuarioModificacion: null,
+      passwordCantidadPreguntasValidar: 1,
+    };
+
+    this.empresaService.createEmpresa(payload).subscribe({
+      next: () => {
+        alert('Empresa guardada.');
+        this.ngOnInit();
+        this.onReset(); // limpiar formulario
+      },
+      error: () => {
+        this.error = 'Error al guardar empresa.';
+      },
+    });
   }
 
   // Editar empresa (trae los datos al formulario)
   onEdit(emp: Empresa) {
     this.empresa = { ...emp }; // copia al form
+    this.isEditMode = true; // ahora estamos editando
   }
+
+  // Actualizar empresa existente
+  onUpdate() {
+  const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+  const usuarioModificacion = usuarioLocal.id || '';
+
+  const payload = {
+    ...this.empresa,
+    fechaModificacion: this.formatDateTime(new Date().toISOString().split('T')[0]),
+    usuarioModificacion,
+  };
+
+  this.empresaService.updateEmpresa(payload).subscribe({
+    next: () => {
+      alert('Empresa actualizada.');
+      this.ngOnInit();
+      this.onReset();
+      this.isEditMode = false;
+    },
+    error: () => {
+      this.error = 'Error al actualizar empresa.';
+    },
+  });
+}
 
   //Método para eliminar empresa
   onDelete(nit: string) {
+    const confirmado = confirm('¿Estás seguro de eliminar esta empresa?');
+    if (!confirmado) return;
+
     this.empresaService.deleteEmpresa(nit).subscribe({
       next: () => {
         alert('Empresa eliminada.');
@@ -83,14 +112,21 @@ export class CrudempresasComponent implements OnInit {
       },
       error: () => {
         this.error = 'Error al eliminar empresa.';
-      }
+      },
     });
   }
 
   // Resetear formulario
   onReset() {
-    this.empresa = {
-      idEmpresa: 0,
+    this.empresa = this.crearEmpresaVacia();
+  }
+  // Formatear fecha para enviar al backend
+  formatDateTime(date: string): string {
+    return date && !date.includes('T') ? date + 'T00:00:00' : date || '';
+  }
+
+  private crearEmpresaVacia(): Empresa {
+    return {
       nombre: '',
       direccion: '',
       nit: '',
@@ -105,18 +141,7 @@ export class CrudempresasComponent implements OnInit {
       passwordCantidadNumeros: 0,
       passwordCantidadPreguntasValidar: 0,
       passwordIntentosAntesDeBloquear: 0,
-      passwordLargo: 0
+      passwordLargo: 0,
     };
   }
-
-  // Formatear fecha para enviar al backend
-formatDateTime(date: string): string {
-  if (!date) return '';
-  // Para LocalDateTime de Spring
-  if (!date.includes('T')) {
-    return date + 'T00:00:00';
-  }
-  return date;
 }
-
- }

@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -39,6 +41,7 @@ public class Empresa {
     }
 
 @Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
 @Column(name = "idempresa")
 private Integer idEmpresa;
 
@@ -81,10 +84,10 @@ private LocalDateTime fechaCreacion;
 @Column(name = "usuariocreacion", length = 100, nullable = false)
 private String usuarioCreacion;
 
-@Column(name = "fechamodificacion", nullable = false)
+@Column(name = "fechamodificacion", nullable = true)
 private LocalDateTime fechaModificacion;
 
-@Column(name = "usuariomodificacion", length = 100)
+@Column(name = "usuariomodificacion", length = 100, nullable = true)
 private String usuarioModificacion;
 
 }
