@@ -14,21 +14,71 @@ export class CrudGeneroComponent implements OnInit {
   loading = true;
   error = '';
   generos: Genero[] = []; // lista
+  currentUser: string = ''; // Usuario actual del localStorage
 
-  genero: Genero = {
-    // objeto para crear/editar
+  genero: any = {
+    // objeto para crear/editar (usando any para flexibilidad con fechas)
     idgenero: 0,
     nombre: '',
-    fechaCreacion: new Date(),
+    fechaCreacion: '',
     usuarioCreacion: '',
-    fechaModificacion: undefined, // Puede ser undefined para que sea opcional
-    usuarioModificacion: undefined // Puede ser undefined para que sea opcional
+    fechaModificacion: '',
+    usuarioModificacion: ''
   };
 
   constructor(private generoService: GeneroService) {}
 
   ngOnInit(): void {
+    this.getCurrentUser();
+    this.initializeGenero();
     this.loadGeneros();
+  }
+
+  /**
+   * Obtiene el usuario actual del localStorage
+   */
+  getCurrentUser(): void {
+    try {
+      // Intentar obtener el objeto JSON del localStorage
+      const userDataString = localStorage.getItem('usuario') || 
+                            localStorage.getItem('user') || 
+                            localStorage.getItem('currentUser') ||
+                            localStorage.getItem('userData');
+
+      if (userDataString) {
+        // Parsear el JSON
+        const userData = JSON.parse(userDataString);
+        
+        // Extraer el email/correo del objeto
+        // Ajusta estas propiedades según la estructura de tu JSON
+        this.currentUser = userData.email || 
+                          userData.correo || 
+                          userData.mail || 
+                          userData.usuario ||
+                          userData.username ||
+                          'Usuario Anónimo';
+      } else {
+        this.currentUser = 'Usuario Anónimo';
+      }
+    } catch (error) {
+      console.error('Error al parsear datos del usuario desde localStorage:', error);
+      this.currentUser = 'Usuario Anónimo';
+    }
+  }
+
+  /**
+   * Inicializa el objeto genero con valores por defecto
+   */
+  initializeGenero(): void {
+    const today = this.getCurrentDateForInput();
+    this.genero = {
+      idgenero: 0, // Se mantiene en 0, el backend lo asignará automáticamente
+      nombre: '',
+      fechaCreacion: today, // String en formato YYYY-MM-DD para el input
+      usuarioCreacion: this.currentUser,
+      fechaModificacion: '',
+      usuarioModificacion: ''
+    };
   }
 
   loadGeneros(): void {
@@ -46,55 +96,87 @@ export class CrudGeneroComponent implements OnInit {
   }
 
   onSubmit(): void {
-    // Asegurarse de que las fechas sean objetos Date para el servicio, o convertirlas a string si el backend espera string
-    const generoToSave = { ...this.genero };
-
-    // Si tu backend espera un formato de fecha específico (ej: ISO string), conviértelo aquí
-    // Por ejemplo: generoToSave.fechaCreacion = this.genero.fechaCreacion?.toISOString();
+    // Validación básica
+    if (!this.genero.nombre || this.genero.nombre.trim() === '') {
+      this.error = 'El nombre del género es requerido.';
+      return;
+    }
 
     if (this.genero.idgenero === 0) {
       // Crear nuevo género
-      this.generoService.createGenero(generoToSave).subscribe({
-        next: () => {
+      const newGenero: any = {
+        nombre: this.genero.nombre.trim(), // Limpiar espacios
+        fechaCreacion: this.genero.fechaCreacion ? new Date(this.genero.fechaCreacion) : new Date(),
+        usuarioCreacion: this.genero.usuarioCreacion || this.currentUser
+        // NO incluir fechaModificacion ni usuarioModificacion para creación
+        // NO incluir idgenero para creación (el backend lo asignará)
+      };
+
+      console.log('Enviando nuevo género:', newGenero); // Para debug
+
+      this.generoService.createGenero(newGenero).subscribe({
+        next: (response) => {
+          console.log('Respuesta del servidor:', response);
           alert('Género creado exitosamente.');
           this.onReset();
           this.loadGeneros();
         },
         error: (err) => {
-          this.error = 'Error al crear el género: ' + err.message;
-          console.error('Error al crear el género:', err);
+          console.error('Error completo:', err);
+          this.error = 'Error al crear el género. Revisa la consola para más detalles.';
+          
+          // Mostrar más información del error
+          if (err.error && err.error.message) {
+            this.error += ' ' + err.error.message;
+          } else if (err.message) {
+            this.error += ' ' + err.message;
+          }
         }
       });
     } else {
       // Actualizar género existente
-      this.generoService.updateGenero(this.genero.idgenero, generoToSave).subscribe({
-        next: () => {
+      const generoToUpdate: any = {
+        idgenero: this.genero.idgenero,
+        nombre: this.genero.nombre.trim(),
+        fechaCreacion: this.genero.fechaCreacion ? new Date(this.genero.fechaCreacion) : new Date(),
+        usuarioCreacion: this.genero.usuarioCreacion,
+        fechaModificacion: new Date(),
+        usuarioModificacion: this.currentUser
+      };
+
+      console.log('Enviando género para actualizar:', generoToUpdate); // Para debug
+
+      this.generoService.updateGenero(this.genero.idgenero, generoToUpdate).subscribe({
+        next: (response) => {
+          console.log('Respuesta del servidor:', response);
           alert('Género actualizado exitosamente.');
           this.onReset();
           this.loadGeneros();
         },
         error: (err) => {
-          this.error = 'Error al actualizar el género: ' + err.message;
-          console.error('Error al actualizar el género:', err);
+          console.error('Error completo:', err);
+          this.error = 'Error al actualizar el género. Revisa la consola para más detalles.';
+          
+          if (err.error && err.error.message) {
+            this.error += ' ' + err.error.message;
+          } else if (err.message) {
+            this.error += ' ' + err.message;
+          }
         }
       });
     }
   }
 
   onEdit(gen: Genero): void {
-    // Copia profunda para evitar mutaciones directas y para manejar las fechas correctamente
+    // Preparar el objeto para edición
     this.genero = {
-      ...gen,
-      fechaCreacion: gen.fechaCreacion ? new Date(gen.fechaCreacion) : new Date(),
-      fechaModificacion: gen.fechaModificacion ? new Date(gen.fechaModificacion) : undefined
+      idgenero: gen.idgenero,
+      nombre: gen.nombre,
+      fechaCreacion: this.formatDateForInput(gen.fechaCreacion),
+      usuarioCreacion: gen.usuarioCreacion || this.currentUser,
+      fechaModificacion: gen.fechaModificacion ? this.formatDateForInput(gen.fechaModificacion) : '',
+      usuarioModificacion: gen.usuarioModificacion || ''
     };
-
-    // Ajusta los valores de las fechas para el input[type="date"]
-    // Los inputs de tipo 'date' esperan un string en formato 'YYYY-MM-DD'
-    this.genero.fechaCreacion = this.formatDateForInput(this.genero.fechaCreacion);
-    if (this.genero.fechaModificacion) {
-      this.genero.fechaModificacion = this.formatDateForInput(this.genero.fechaModificacion);
-    }
   }
 
   onDelete(idgenero: number): void {
@@ -113,24 +195,36 @@ export class CrudGeneroComponent implements OnInit {
   }
 
   onReset(): void {
-    this.genero = {
-      idgenero: 0,
-      nombre: '',
-      fechaCreacion: new Date(),
-      usuarioCreacion: '',
-      fechaModificacion: undefined,
-      usuarioModificacion: undefined
-    };
+    this.initializeGenero();
     this.error = ''; // Limpiar errores al resetear
   }
 
-  // Helper para formatear fechas para input[type="date"]
-  formatDateForInput(date: Date | undefined): any { // Cambiado a any para flexibilidad temporal
+  /**
+   * Helper para formatear fechas para input[type="date"]
+   * Los inputs de tipo 'date' esperan un string en formato 'YYYY-MM-DD'
+   */
+  formatDateForInput(date: Date | string | undefined): string {
     if (!date) return '';
-    const d = new Date(date);
+    
+    let d: Date;
+    if (typeof date === 'string') {
+      d = new Date(date);
+    } else {
+      d = date;
+    }
+    
+    if (isNaN(d.getTime())) return '';
+    
     const year = d.getFullYear();
     const month = ('0' + (d.getMonth() + 1)).slice(-2);
     const day = ('0' + d.getDate()).slice(-2);
     return `${year}-${month}-${day}`;
+  }
+
+  /**
+   * Helper para obtener la fecha actual en formato YYYY-MM-DD
+   */
+  getCurrentDateForInput(): string {
+    return this.formatDateForInput(new Date());
   }
 }

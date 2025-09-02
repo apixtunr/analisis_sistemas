@@ -1,6 +1,12 @@
 <div class="container my-4">
   <h2 class="mb-4 text-center">Gestión de Géneros</h2>
 
+  <!-- Mostrar errores si los hay -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''" aria-label="Close"></button>
+  </div>
+
   <!-- Formulario para agregar/editar género -->
   <div class="card mb-5 shadow-sm">
     <div class="card-body">
@@ -14,7 +20,8 @@
               name="idgenero"
               class="form-control"
               [(ngModel)]="genero.idgenero"
-              required
+              readonly
+              style="background-color: #f8f9fa; cursor: not-allowed;"
             />
           </div>
           <div class="col-md-8">
@@ -39,7 +46,8 @@
               name="fechaCreacion"
               class="form-control"
               [(ngModel)]="genero.fechaCreacion"
-              required
+              readonly
+              style="background-color: #f8f9fa; cursor: not-allowed;"
             />
           </div>
           <div class="col-md-6">
@@ -52,7 +60,8 @@
               name="usuarioCreacion"
               class="form-control"
               [(ngModel)]="genero.usuarioCreacion"
-              required
+              readonly
+              style="background-color: #f8f9fa; cursor: not-allowed;"
             />
           </div>
         </div>
@@ -68,6 +77,8 @@
               name="fechaModificacion"
               class="form-control"
               [(ngModel)]="genero.fechaModificacion"
+              readonly
+              style="background-color: #f8f9fa; cursor: not-allowed;"
             />
           </div>
           <div class="col-md-6">
@@ -80,6 +91,8 @@
               name="usuarioModificacion"
               class="form-control"
               [(ngModel)]="genero.usuarioModificacion"
+              readonly
+              style="background-color: #f8f9fa; cursor: not-allowed;"
             />
           </div>
         </div>
@@ -88,9 +101,9 @@
           <button
             type="submit"
             class="btn btn-primary"
-            [disabled]="!generoForm.form.valid"
+            [disabled]="!genero.nombre || genero.nombre.trim() === ''"
           >
-            Guardar
+            {{ genero.idgenero === 0 ? 'Crear' : 'Actualizar' }}
           </button>
           <button type="button" class="btn btn-secondary" (click)="onReset()">
             Limpiar
@@ -118,9 +131,9 @@
         <tr *ngFor="let gen of generos">
           <td>{{ gen.idgenero }}</td>
           <td>{{ gen.nombre }}</td>
-          <td>{{ gen.fechaCreacion | date }}</td>
+          <td>{{ gen.fechaCreacion | date:'dd/MM/yyyy' }}</td>
           <td>{{ gen.usuarioCreacion }}</td>
-          <td>{{ gen.fechaModificacion | date }}</td>
+          <td>{{ gen.fechaModificacion | date:'dd/MM/yyyy' }}</td>
           <td>{{ gen.usuarioModificacion }}</td>
           <td class="sticky-buttons">
             <div class="d-flex justify-content-center gap-2">

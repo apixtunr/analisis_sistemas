@@ -92,8 +92,8 @@ public class UsuariosController {
 
     // Elimina un usuario existente
     @DeleteMapping("api/delete_usuario/{id}")
-    public void deleteUsuario(@PathVariable("id") String userId) {
-        Optional<Usuario> userOptional = usuariosService.findById(userId);
+    public void deleteUsuario(@PathVariable("id") String idUsuario) {
+        Optional<Usuario> userOptional = usuariosService.findById(idUsuario);
         userOptional.ifPresent(usuariosService::delete);
     }
 
