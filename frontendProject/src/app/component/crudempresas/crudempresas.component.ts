@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Empresa } from '../../entity/empresa';
 import { EmpresaService } from '../../service/empresa.service';
 import { finalize } from 'rxjs/operators';
+import { PermisoService } from '../../service/permisoservice';
 
 @Component({
   selector: 'app-crudempresas',
@@ -16,21 +17,37 @@ export class CrudempresasComponent implements OnInit {
   empresa: Empresa = this.crearEmpresaVacia();
   isEditMode = false;
 
-  constructor(private empresaService: EmpresaService) {}
+  permisosEmpresa: any = {};
+
+  constructor(
+    private empresaService: EmpresaService,
+    private permisoService: PermisoService
+  ) {}
 
   ngOnInit(): void {
-    this.empresaService
-      .getEmpresas()
-      .pipe(finalize(() => (this.loading = false)))
-      .subscribe({
-        next: (data) => {
-          this.empresas = data; // aquí cargás la lista de empresas
-        },
-        error: () => {
-          this.error = 'Error al cargar empresas';
-        },
-      });
-  }
+  this.empresaService.getEmpresas().subscribe({
+    next: (data) => {
+      this.empresas = data;
+      this.loading = false;
+      const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const idRole = usuario.rol;
+      console.log('Usuario:', usuario);
+      console.log('idRole:', idRole);
+      if (idRole !== undefined && idRole !== null) {
+        this.permisoService.getPermisosEmpresa(1, idRole).subscribe(permiso => {
+          this.permisosEmpresa = permiso || {};
+        });
+      } else {
+        this.permisosEmpresa = {};
+        // Opcional: muestra un mensaje de error o redirige al login
+      }
+    },
+    error: () => {
+      this.error = 'Error al cargar empresas';
+      this.loading = false;
+    }
+  });
+}
 
   // Crear nueva empresa
   onSubmit() {

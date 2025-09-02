@@ -41,6 +41,7 @@ public class OpcionController {
             opcion.setUsuarioCreacion(updatedOpcion.getUsuarioCreacion());
             opcion.setFechaModificacion(updatedOpcion.getFechaModificacion());
             opcion.setUsuarioModificacion(updatedOpcion.getUsuarioModificacion());
+            opcion.setPagina(updatedOpcion.getPagina());
             return opcionService.save(opcion);
         } else {
             return null;

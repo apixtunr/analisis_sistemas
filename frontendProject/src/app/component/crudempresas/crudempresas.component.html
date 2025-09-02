@@ -140,29 +140,32 @@
 
         <div class="row g-3 mt-2">
           <div class="col-md-12 mt-3 d-flex gap-2">
-            <button
-              type="button"
-              class="btn btn-primary"
-              [disabled]="!empresaForm.form.valid"
-              *ngIf="isEditMode"
-              (click)="onUpdate()"
-            >
-              Actualizar
-            </button>
+  <!-- Botón Actualizar: solo aparece en modo edición -->
+  <button
+    type="button"
+    class="btn btn-primary"
+    [disabled]="!empresaForm.form.valid"
+    *ngIf="isEditMode"
+    (click)="onUpdate()"
+  >
+    Actualizar
+  </button>
 
-            <button
-              type="submit"
-              class="btn btn-primary"
-              [disabled]="!empresaForm.form.valid"
-              *ngIf="!isEditMode"
-            >
-              Guardar
-            </button>
+  <!-- Botón Guardar: solo aparece en modo creación y si tiene permisos -->
+  <button
+    type="submit"
+    class="btn btn-primary"
+    [disabled]="!empresaForm.form.valid"
+    *ngIf="!isEditMode && permisosEmpresa.alta"
+  >
+    Guardar
+  </button>
 
-            <button type="button" class="btn btn-secondary" (click)="onReset()">
-              Limpiar
-            </button>
-          </div>
+  <!-- Botón Limpiar -->
+  <button type="button" class="btn btn-secondary" (click)="onReset()">
+    Limpiar
+  </button>
+</div>
         </div>
       </form>
     </div>
@@ -212,10 +215,10 @@
           <td>{{ emp.usuarioModificacion }}</td>
           <td class="sticky-buttons">
             <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-info" (click)="onEdit(emp)">
+              <button class="btn btn-sm btn-info" (click)="onEdit(emp)" *ngIf="permisosEmpresa.cambio">
                 Editar
               </button>
-              <button class="btn btn-sm btn-danger" (click)="onDelete(emp.nit)">
+              <button class="btn btn-sm btn-danger" (click)="onDelete(emp.nit)" *ngIf="permisosEmpresa.baja">
                 Eliminar
               </button>
             </div>

@@ -23,16 +23,15 @@ const routes: Routes = [
   { path: 'crudrole', component: CrudroleComponent },
   { path: 'listusuarios', component: ListusuariosComponent },
   { path: 'loginusuarios', component: LoginusuariosComponent },
+  { path: 'menu', component: MenuComponent },
   { path: 'crud-genero', component: CrudGeneroComponent },
   { path: 'crudstatususuario', component: CrudstatususuarioComponent },
   { path: 'crudusuarios', component: CrudusuariosComponent },
   { path: 'asignacionrolopcion', component: AsignacionrolopcionComponent },
   { path: 'crudsucursales', component: CrudsucursalesComponent },
   { path: 'menu', component: MenuComponent },
-  { path: '', redirectTo: 'loginusuarios', pathMatch: 'full' },
-  { path: '**', redirectTo: 'loginusuarios', pathMatch: 'full' },
   { path: '', redirectTo: 'menu', pathMatch: 'full' },
-  { path: '**', redirectTo: 'menu', pathMatch: 'full' }
+  { path: '**', redirectTo: 'menu', pathMatch: 'full' },
 ];
 
 @NgModule({

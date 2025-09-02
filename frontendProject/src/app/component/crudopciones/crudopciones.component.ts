@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { OpcionService } from '../../service/opcion.service';
+import { CrudmenuService } from '../../service/crudmenu.service';
 import { Opcion } from '../../entity/opcion';
+import { Menu } from '../../entity/menu';
 
 @Component({
   selector: 'app-crudopciones',
@@ -11,6 +14,7 @@ import { Opcion } from '../../entity/opcion';
 })
 export class CrudopcionesComponent implements OnInit {
   opciones: Opcion[] = [];
+  menus: Menu[] = [];
   opcionForm!: FormGroup;
   editando: boolean = false;
   idEditando: number | null = null;
@@ -18,23 +22,31 @@ export class CrudopcionesComponent implements OnInit {
 
   constructor(
     private opcionService: OpcionService,
-    private fb: FormBuilder
+    private crudmenuService: CrudmenuService,
+    private fb: FormBuilder,
+    private router: Router
   ) {}
+  regresarAlMenu() {
+    this.router.navigate(['/menu']); // Cambia '/menu' por la ruta real de tu menú principal si es diferente
+  }
 
   ngOnInit(): void {
     this.opcionForm = this.fb.group({
       idMenu: ['', Validators.required],
       nombre: ['', Validators.required],
-      ordenmenu: ['', Validators.required],
       pagina: ['', Validators.required],
       descripcion: [''],
       url: [''],
-      fechacreacion: [''],
-      usuariocreacion: [''],
-      fechamodificacion: [''],
-      usuariomodificacion: ['']
+      fechaCreacion: [''],
+      usuarioCreacion: [''],
+      fechaModificacion: [''],
+      usuarioModificacion: ['']
     });
     this.cargarOpciones();
+    this.crudmenuService.getMenus().subscribe({
+      next: (data) => this.menus = data,
+      error: () => this.error = 'Error al cargar menús'
+    });
   }
 
   cargarOpciones() {
@@ -49,12 +61,21 @@ export class CrudopcionesComponent implements OnInit {
       this.opcionForm.markAllAsTouched();
       return;
     }
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const nombreUsuario = usuario?.nombre || 'system';
+
+    // Asignar orden automáticamente (puedes cambiar la lógica si lo deseas)
+    const idMenuSeleccionado = this.opcionForm.value.idMenu;
+    const opcionesDeMenu = this.opciones.filter(o => o.idMenu == idMenuSeleccionado);
+    const ordenmenu = opcionesDeMenu.length + 1; // Esto puede generar duplicados si hay eliminaciones
+
     const opcion: Opcion = {
       ...this.opcionForm.value,
-      fechacreacion: new Date().toISOString(),
-      usuariocreacion: 'ADMIN',
-      fechamodificacion: '',
-      usuariomodificacion: ''
+      ordenmenu,
+      fechaCreacion: new Date().toISOString(),
+      usuarioCreacion: nombreUsuario,
+      fechaModificacion: '',
+      usuarioModificacion: ''
     };
     this.opcionService.createOpcion(opcion).subscribe({
       next: () => {
@@ -74,10 +95,12 @@ export class CrudopcionesComponent implements OnInit {
 
   onUpdate() {
     if (this.opcionForm.invalid || this.idEditando == null) return;
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const nombreUsuario = usuario?.nombre || 'system';
     const opcion: Opcion = {
       ...this.opcionForm.value,
-      fechamodificacion: new Date().toISOString(),
-      usuariomodificacion: 'ADMIN'
+      fechaModificacion: new Date().toISOString(),
+      usuarioModificacion: nombreUsuario
     };
     this.opcionService.updateOpcion(this.idEditando, opcion).subscribe({
       next: () => {
@@ -91,12 +114,24 @@ export class CrudopcionesComponent implements OnInit {
 
   onDelete(id: number) {
     if (!confirm('¿Seguro que desea eliminar esta opción?')) return;
+
     this.opcionService.deleteOpcion(id).subscribe({
       next: () => {
         this.cargarOpciones();
         alert('Opción eliminada correctamente');
       },
-      error: () => this.error = 'Error al eliminar opción'
+      error: (err) => {
+        const errorMessage: string = err.error?.message || err.error || err.message || '';
+
+        if (
+          errorMessage.includes('violates foreign key constraint') ||
+          errorMessage.includes('role_opcion_idopcion_fkey')
+        ) {
+          alert('No se puede eliminar la opción porque tiene permisos asociados. Elimine primero los permisos.');
+        } else {
+          alert('Error al eliminar opción.');
+        }
+      }
     });
   }
 
@@ -104,5 +139,10 @@ export class CrudopcionesComponent implements OnInit {
     this.opcionForm.reset();
     this.editando = false;
     this.idEditando = null;
+  }
+
+  getNombreMenu(idMenu: number): string {
+    const menu = this.menus.find(m => m.idmenu === idMenu);
+    return menu ? menu.nombre : idMenu.toString();
   }
 }
