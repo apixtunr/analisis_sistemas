@@ -218,7 +218,8 @@
             <button
               type="submit"
               class="btn btn-primary"
-              [disabled]="!empresaForm.form.valid"
+              [disabled]="!empresaForm.form.valid || !permisosEmpresa.alta"
+              *ngIf="permisosEmpresa.alta"
             >
               Guardar
             </button>
@@ -275,10 +276,10 @@
           <td>{{ emp.usuarioModificacion }}</td>
           <td class="sticky-buttons">
             <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-info" (click)="onEdit(emp)">
+              <button class="btn btn-sm btn-info" (click)="onEdit(emp)" *ngIf="permisosEmpresa.cambio">
                 Editar
               </button>
-              <button class="btn btn-sm btn-danger" (click)="onDelete(emp.nit)">
+              <button class="btn btn-sm btn-danger" (click)="onDelete(emp.nit)" *ngIf="permisosEmpresa.baja">
                 Eliminar
               </button>
             </div>

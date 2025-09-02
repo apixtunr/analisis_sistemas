@@ -28,10 +28,8 @@ const routes: Routes = [
   { path: 'crudusuarios', component: CrudusuariosComponent },
   { path: 'asignacionrolopcion', component: AsignacionrolopcionComponent },
   { path: 'menu', component: MenuComponent },
-  { path: '', redirectTo: 'loginusuarios', pathMatch: 'full' },
-  { path: '**', redirectTo: 'loginusuarios', pathMatch: 'full' },
   { path: '', redirectTo: 'menu', pathMatch: 'full' },
-  { path: '**', redirectTo: 'menu', pathMatch: 'full' }
+  { path: '**', redirectTo: 'menu', pathMatch: 'full' },
 ];
 
 @NgModule({
