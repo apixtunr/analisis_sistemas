@@ -4,10 +4,10 @@ export interface Opcion {
   nombre: string;
   ordenmenu: number;
   pagina: string;
-  fechacreacion: string;
-  usuariocreacion: string;
-  fechamodificacion: string;
-  usuariomodificacion: string;
+  fechaCreacion: string;
+  usuarioCreacion: string;
+  fechaModificacion: string;
+  usuarioModificacion: string;
   descripcion: string;
   url: string;
 }

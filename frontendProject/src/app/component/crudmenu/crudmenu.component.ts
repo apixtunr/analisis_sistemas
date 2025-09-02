@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CrudmenuService } from '../../service/crudmenu.service';
 import { ModuloService } from '../../service/modulo.service';
@@ -22,14 +23,18 @@ export class CrudmenuComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private crudmenuService: CrudmenuService,
-    private moduloService: ModuloService
+    private moduloService: ModuloService,
+    private router: Router
   ) {}
+
+  regresarAlMenu() {
+    this.router.navigate(['/menu']); // Cambia '/menu' por la ruta real de tu menú principal si es diferente
+  }
 
   ngOnInit(): void {
     this.menuForm = this.fb.group({
       idmodulo: ['', Validators.required],
       nombre: ['', Validators.required],
-      ordenmenu: ['', Validators.required],
       fechacreacion: [''],
       usuariocreacion: [''],
       fechamodificacion: [''],
@@ -64,6 +69,7 @@ export class CrudmenuComponent implements OnInit {
 
     const menu: Menu = {
       ...this.menuForm.value,
+      ordenmenu: this.getNextOrden(), // Asigna el orden automáticamente
       fechacreacion: new Date(), // <-- Esto envía un objeto Date, no string
       usuariocreacion: nombreUsuario,
       fechamodificacion: null,
@@ -83,6 +89,8 @@ export class CrudmenuComponent implements OnInit {
     this.editando = true;
     this.idEditando = (menu as any).idmenu;
     this.menuForm.patchValue(menu);
+    // Guarda el orden actual para usarlo en la actualización
+    (this.menuForm as any)._ordenmenuEdit = menu.ordenmenu;
   }
 
   onUpdate() {
@@ -91,8 +99,12 @@ export class CrudmenuComponent implements OnInit {
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
     const nombreUsuario = usuario?.nombre || 'system';
 
+    // Recupera el ordenmenu guardado al editar
+    const ordenmenu = (this.menuForm as any)._ordenmenuEdit;
+
     const menu: Menu = {
       ...this.menuForm.value,
+      ordenmenu: ordenmenu,
       fechamodificacion: new Date().toISOString(),
       usuariomodificacion: nombreUsuario
     };
@@ -125,5 +137,22 @@ export class CrudmenuComponent implements OnInit {
   getNombreModulo(idmodulo: number): string {
     const modulo = this.modulos.find(m => m.idModulo == idmodulo);
     return modulo ? modulo.nombre : '';
+  }
+
+  private getNextOrden(): number {
+    const ordenes = this.menus
+      .map(m => m.ordenmenu)
+      .filter(n => n != null)
+      .sort((a, b) => a - b);
+
+    let next = 1;
+    for (let ord of ordenes) {
+      if (ord === next) {
+        next++;
+      } else {
+        break;
+      }
+    }
+    return next;
   }
 }

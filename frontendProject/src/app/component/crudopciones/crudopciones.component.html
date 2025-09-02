@@ -1,4 +1,9 @@
 <div class="container my-5">
+	<div class="mb-3">
+		<button class="btn btn-secondary" (click)="regresarAlMenu()">
+			← Regresar al menú
+		</button>
+	</div>
 	<h2 class="mb-4 text-center">Gestión de Opciones</h2>
 
 	<!-- Formulario para agregar/editar opción -->
@@ -7,17 +12,17 @@
 			<form [formGroup]="opcionForm" (ngSubmit)="editando ? onUpdate() : onSubmit()">
 				<div class="row g-3">
 					<div class="col-md-3">
-						<label class="form-label">ID Menú</label>
-						<input type="number" class="form-control" formControlName="idMenu" placeholder="ID Menú" />
+						<label class="form-label">Menú</label>
+						<select class="form-select" formControlName="idMenu" required>
+							<option value="">Seleccione menú</option>
+							<option *ngFor="let menu of menus" [value]="menu.idmenu">{{ menu.nombre }}</option>
+						</select>
 					</div>
 					<div class="col-md-3">
 						<label class="form-label">Nombre</label>
 						<input type="text" class="form-control" formControlName="nombre" placeholder="Nombre de la opción" />
 					</div>
-					<div class="col-md-2">
-						<label class="form-label">Orden</label>
-						<input type="number" class="form-control" formControlName="ordenmenu" placeholder="Orden" />
-					</div>
+
 					<div class="col-md-4">
 						<label class="form-label">Página</label>
 						<input type="text" class="form-control" formControlName="pagina" placeholder="Página" />
@@ -49,9 +54,9 @@
 			<thead class="table-dark">
 				<tr>
 				<!--	<th>ID</th>-->
-					<th>ID Menú</th>
+					<th>Menú</th>
 					<th>Nombre</th>
-					<th>Orden</th>
+				<!--	<th>Orden</th>-->
 					<th>Página</th>
 					<th>Descripción</th>
 					<th>URL</th>
@@ -65,16 +70,16 @@
 			<tbody>
 				<tr *ngFor="let opcion of opciones">
 			<!--	<td>{{ opcion.idOpcion }}</td> -->
-					<td>{{ opcion.idMenu }}</td>
+					<td>{{ getNombreMenu(opcion.idMenu) }}</td>
 					<td>{{ opcion.nombre }}</td>
-					<td>{{ opcion.ordenmenu }}</td>
+				<!--	<td>{{ opcion.ordenmenu }}</td>-->
 					<td>{{ opcion.pagina }}</td>
 					<td>{{ opcion.descripcion }}</td>
 					<td>{{ opcion.url }}</td>
-					<td>{{ opcion.fechacreacion | date:'dd/MM/yyyy' }}</td>
-					<td>{{ opcion.usuariocreacion }}</td>
-					<td>{{ opcion.fechamodificacion | date:'dd/MM/yyyy' }}</td>
-					<td>{{ opcion.usuariomodificacion }}</td>
+					<td>{{ opcion.fechaCreacion | date:'dd/MM/yyyy' }}</td>
+					<td>{{ opcion.usuarioCreacion }}</td>
+					<td>{{ opcion.fechaModificacion | date:'dd/MM/yyyy' }}</td>
+					<td>{{ opcion.usuarioModificacion }}</td>
 					<td class="text-center">
 						<button class="btn btn-sm btn-info me-1" (click)="onEdit(opcion)">Editar</button>
 						<button class="btn btn-sm btn-danger" (click)="onDelete(opcion.idOpcion)">Eliminar</button>

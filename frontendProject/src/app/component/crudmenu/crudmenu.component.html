@@ -1,4 +1,9 @@
 <div class="container my-5">
+	<div class="mb-3">
+		<button class="btn btn-secondary" (click)="regresarAlMenu()">
+			← Regresar al menú
+		</button>
+	</div>
 	<h2 class="mb-4 text-center">Gestión de Menús</h2>
 
 	<!-- Formulario para agregar/editar menú -->
@@ -16,10 +21,6 @@
 					<div class="col-md-4">
 						<label class="form-label">Nombre</label>
 						<input type="text" class="form-control" formControlName="nombre" placeholder="Nombre del menú" />
-					</div>
-					<div class="col-md-4">
-						<label class="form-label">Orden</label>
-						<input type="number" class="form-control" formControlName="ordenmenu" placeholder="Orden" />
 					</div>
 				</div>
 				<div class="mt-4 d-flex gap-2">
