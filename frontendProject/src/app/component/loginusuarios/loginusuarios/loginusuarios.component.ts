@@ -53,6 +53,9 @@ export class LoginusuariosComponent {
     }
   }
 
-  
+  logout() {
+  localStorage.removeItem("usuario");
+  this.router.navigate(['/login']);
+}
 
 }

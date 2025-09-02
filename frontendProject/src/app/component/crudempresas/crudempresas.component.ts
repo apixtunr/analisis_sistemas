@@ -56,7 +56,6 @@ export class CrudempresasComponent implements OnInit {
         });
       } else {
         this.permisosEmpresa = {};
-        // Opcional: muestra un mensaje de error o redirige al login
       }
     },
     error: () => {
