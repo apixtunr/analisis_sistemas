@@ -87,17 +87,26 @@ export class CrudroleComponent implements OnInit {
   }
 
   onDelete(idRole: number) {
-    if (!confirm('¿Seguro que deseas eliminar este rol?')) return;
-    this.roleService.deleteRole(idRole).subscribe({
-      next: () => {
-        alert('Rol eliminado correctamente.');
-        this.ngOnInit();
-      },
-      error: () => {
-        this.error = 'Error al eliminar rol';
-      },
-    });
-  }
+  if (!confirm('¿Seguro que deseas eliminar este rol?')) return;
+
+  this.roleService.deleteRole(idRole).subscribe({
+    next: () => {
+      alert('Rol eliminado correctamente.');
+      this.ngOnInit();
+    },
+    error: (err) => {
+      const errorMessage: string = err.error?.message || err.error || err.message || '';
+
+      if (errorMessage.includes('violates foreign key constraint') || errorMessage.includes('role_opcion_idrole_fkey')) {
+        alert(' No se puede eliminar el rol porque tiene opciones asignadas.');
+      } else {
+        alert(' Error al eliminar rol.');
+      }
+    },
+  });
+}
+
+
 
   onReset() {
     this.role = {
