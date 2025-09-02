@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Empresa } from '../../entity/empresa';
 import { EmpresaService } from '../../service/empresa.service';
-import { finalize } from 'rxjs/operators';
 import { PermisoService } from '../../service/permisoservice';
 
 @Component({
@@ -27,7 +26,7 @@ export class CrudempresasComponent implements OnInit {
   ngOnInit(): void {
     this.empresaService.getEmpresas().subscribe({
       next: (data) => {
-        this.empresas = data;
+        this.empresas = data.sort((a: any, b: any) => a.idEmpresa - b.idEmpresa);
         this.loading = false;
         const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
         const idRole = usuario.rol; // <- así como lo envía el backend
@@ -141,6 +140,7 @@ export class CrudempresasComponent implements OnInit {
   // Resetear formulario
   onReset() {
     this.empresa = this.crearEmpresaVacia();
+    this.isEditMode = false; // volvemos al modo agregar
   }
   // Formatear fecha para enviar al backend
   formatDateTime(date: string): string {

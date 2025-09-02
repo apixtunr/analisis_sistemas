@@ -20,6 +20,7 @@ export class CrudsucursalesComponent implements OnInit {
 
   loading = true;
   error = '';
+  isEditMode = false; // por defecto estamos agregando
 
   sucursalForm!: FormGroup;
   sucursales: any[] = []; // lista de sucursales
@@ -28,14 +29,15 @@ export class CrudsucursalesComponent implements OnInit {
   //Método para inicializar el componente
   ngOnInit(): void {
     this.sucursalForm = this.fb.group({
+      idSucursal: [0, Validators.required],
       nombre: ['', Validators.required],
       direccion: ['', Validators.required],
-      idEmpresa: [0, Validators.required]
+      idEmpresa: [0, Validators.required],
     });
 
     this.sucursalService.getSucursales().subscribe({
       next: (data) => {
-        this.sucursales = data; // aquí cargás la lista
+        this.sucursales = data.sort((a: any, b: any) => a.idSucursal - b.idSucursal); // aquí cargás la lista
         this.loading = false;
       },
       error: () => {
@@ -45,8 +47,8 @@ export class CrudsucursalesComponent implements OnInit {
     });
 
     this.empresaService.getEmpresas().subscribe({
-      next: (data) => this.empresas = data,
-      error: (err) => console.error('Error cargando empresas', err)
+      next: (data) => (this.empresas = data),
+      error: (err) => console.error('Error cargando empresas', err),
     });
   }
 
@@ -59,19 +61,23 @@ export class CrudsucursalesComponent implements OnInit {
 
     const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
     const usuarioCreacion = usuarioLocal.id || ''; // Esto jala el idUsuario
+    const formValue = this.sucursalForm.value;
+    const idEmpresaNum = Number(formValue.idEmpresa);
 
     const sucursal: Sucursal = {
       ...this.sucursalForm.value,
 
       //Valores por default
+      idEmpresa: idEmpresaNum,
       fechaCreacion: new Date(),
       usuarioCreacion: usuarioCreacion,
       fechaModificacion: null,
-      usuarioModificacion: null
+      usuarioModificacion: null,
     };
 
     this.sucursalService.createSucursal(sucursal).subscribe({
       next: () => {
+        console.log('Sucursal creada:', sucursal);
         alert('Sucursal creada correctamente.');
         this.ngOnInit(); // recargar la lista
       },
@@ -83,7 +89,13 @@ export class CrudsucursalesComponent implements OnInit {
 
   //Editar sucursal (trae los datos al formulario)
   onEdit(sucursal: Sucursal) {
-    this.sucursalForm.patchValue(sucursal); // copia al form
+    this.sucursalForm.patchValue({
+      idSucursal: sucursal.idSucursal,
+      nombre: sucursal.nombre,
+      direccion: sucursal.direccion,
+      idEmpresa: sucursal.idEmpresa,
+    });
+    this.isEditMode = true; // para cambiar el botón
   }
 
   //Método para eliminar sucursal
@@ -114,18 +126,23 @@ export class CrudsucursalesComponent implements OnInit {
       fechaModificacion: new Date(),
       usuarioModificacion: '',
     });
+    this.isEditMode = false; // volvemos al modo agregar
   }
 
   onUpdate() {
     if (this.sucursalForm.invalid) return;
+    const formValue = this.sucursalForm.value;
+    const idEmpresaNum = Number(formValue.idEmpresa);
+
+    const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const usuarioModificacion = usuarioLocal.id || ''; // Esto jala el idUsuario
 
     const sucursal: Sucursal = {
       ...this.sucursalForm.value,
       //Valores por default
-      fechaCreacion: new Date(),
-      usuarioCreacion: 'ADMIN',
+      idEmpresa: idEmpresaNum,
       fechaModificacion: new Date(),
-      usuarioModificacion: 'ADMIN',
+      usuarioModificacion: usuarioModificacion,
     };
 
     if (!sucursal.idSucursal) {
