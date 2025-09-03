@@ -4,4 +4,5 @@ export interface StatusUsuario {
   fechaCreacion: Date;
   usuarioCreacion?: string;
   fechaModificacion?: Date;
+  usuarioModificacion?: string;
 }

@@ -17,12 +17,9 @@ export class CrudstatususuarioComponent implements OnInit {
   currentUser: string = ''; // Usuario actual del localStorage
 
   statusUsuario: any = {
-    // objeto para crear/editar (usando any para flexibilidad con fechas)
+    // objeto para crear/editar - solo campos necesarios para el formulario
     idstatususuario: 0,
-    nombre: '',
-    fechaCreacion: '',
-    usuarioCreacion: '',
-    fechaModificacion: ''
+    nombre: ''
   };
 
   constructor(private statusUsuarioService: StatusUsuarioService) {}
@@ -38,29 +35,22 @@ export class CrudstatususuarioComponent implements OnInit {
    */
   getCurrentUser(): void {
     try {
-      // Intentar obtener el objeto JSON del localStorage
-      const userDataString = localStorage.getItem('usuario') || 
-                            localStorage.getItem('user') || 
-                            localStorage.getItem('currentUser') ||
-                            localStorage.getItem('userData');
-
-      if (userDataString) {
-        // Parsear el JSON
-        const userData = JSON.parse(userDataString);
-        
-        // Extraer el email/correo del objeto
-        this.currentUser = userData.email || 
-                          userData.correo || 
-                          userData.mail || 
-                          userData.usuario ||
-                          userData.username ||
-                          'Usuario Anónimo';
-      } else {
-        this.currentUser = 'Usuario Anónimo';
+      // Obtener el objeto JSON del localStorage (igual que en el ejemplo de empresas)
+      const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+      
+      // Usar el ID del usuario (igual que en el ejemplo de empresas)
+      this.currentUser = usuarioLocal.id || '';
+      
+      console.log('Usuario completo del localStorage:', usuarioLocal);
+      console.log('ID de usuario extraído:', this.currentUser);
+      
+      if (!this.currentUser) {
+        console.warn('No se encontró ID de usuario en localStorage');
+        this.currentUser = '';
       }
     } catch (error) {
       console.error('Error al parsear datos del usuario desde localStorage:', error);
-      this.currentUser = 'Usuario Anónimo';
+      this.currentUser = '';
     }
   }
 
@@ -68,13 +58,10 @@ export class CrudstatususuarioComponent implements OnInit {
    * Inicializa el objeto statusUsuario con valores por defecto
    */
   initializeStatusUsuario(): void {
-    const today = this.getCurrentDateForInput();
     this.statusUsuario = {
       idstatususuario: 0, // Se mantiene en 0, el backend lo asignará automáticamente
-      nombre: '',
-      fechaCreacion: today, // String en formato YYYY-MM-DD para el input
-      usuarioCreacion: this.currentUser,
-      fechaModificacion: ''
+      nombre: ''
+      // Solo mantenemos el nombre para el formulario simplificado
     };
   }
 
@@ -101,15 +88,19 @@ export class CrudstatususuarioComponent implements OnInit {
 
     if (this.statusUsuario.idstatususuario === 0) {
       // Crear nuevo status usuario
+      // Obtener usuario del localStorage igual que en el ejemplo
+      const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const usuarioCreacion = usuarioLocal.id || '';
+
       const newStatusUsuario: any = {
-        nombre: this.statusUsuario.nombre.trim(), // Limpiar espacios
-        fechaCreacion: this.statusUsuario.fechaCreacion ? new Date(this.statusUsuario.fechaCreacion) : new Date(),
-        usuarioCreacion: this.statusUsuario.usuarioCreacion || this.currentUser
-        // NO incluir fechaModificacion para creación
-        // NO incluir idstatususuario para creación (el backend lo asignará)
+        nombre: this.statusUsuario.nombre.trim(),
+        fechaCreacion: new Date(), // Fecha actual del día de HOY
+        usuarioCreacion: usuarioCreacion
       };
 
-      console.log('Enviando nuevo status usuario:', newStatusUsuario); // Para debug
+      console.log('Enviando nuevo status usuario:', newStatusUsuario);
+      console.log('Usuario que está creando (ID):', usuarioCreacion);
+      console.log('Fecha de creación (HOY):', new Date());
 
       this.statusUsuarioService.createStatusUsuario(newStatusUsuario).subscribe({
         next: (response) => {
@@ -122,7 +113,6 @@ export class CrudstatususuarioComponent implements OnInit {
           console.error('Error completo:', err);
           this.error = 'Error al crear el status de usuario. Revisa la consola para más detalles.';
           
-          // Mostrar más información del error
           if (err.error && err.error.message) {
             this.error += ' ' + err.error.message;
           } else if (err.message) {
@@ -132,15 +122,25 @@ export class CrudstatususuarioComponent implements OnInit {
       });
     } else {
       // Actualizar status usuario existente
+      // Obtener usuario del localStorage igual que en el ejemplo
+      const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const usuarioModificacion = usuarioLocal.id || '';
+
+      // Buscar el status usuario original para obtener fechaCreacion y usuarioCreacion
+      const statusUsuarioOriginal = this.statusUsuarios.find(s => s.idstatususuario === this.statusUsuario.idstatususuario);
+
       const statusUsuarioToUpdate: any = {
         idstatususuario: this.statusUsuario.idstatususuario,
         nombre: this.statusUsuario.nombre.trim(),
-        fechaCreacion: this.statusUsuario.fechaCreacion ? new Date(this.statusUsuario.fechaCreacion) : new Date(),
-        usuarioCreacion: this.statusUsuario.usuarioCreacion,
-        fechaModificacion: new Date()
+        fechaCreacion: statusUsuarioOriginal?.fechaCreacion || new Date(), // Mantener fecha original
+        usuarioCreacion: statusUsuarioOriginal?.usuarioCreacion || '', // Mantener usuario original
+        fechaModificacion: new Date(),
+        usuarioModificacion: usuarioModificacion
       };
 
-      console.log('Enviando status usuario para actualizar:', statusUsuarioToUpdate); // Para debug
+      console.log('Enviando status usuario para actualizar:', statusUsuarioToUpdate);
+      console.log('Usuario que está modificando (ID):', usuarioModificacion);
+      console.log('Status usuario original encontrado:', statusUsuarioOriginal);
 
       this.statusUsuarioService.updateStatusUsuario(this.statusUsuario.idstatususuario, statusUsuarioToUpdate).subscribe({
         next: (response) => {
@@ -164,14 +164,13 @@ export class CrudstatususuarioComponent implements OnInit {
   }
 
   onEdit(statusUsr: StatusUsuario): void {
-    // Preparar el objeto para edición
+    // Preparar el objeto para edición - solo campos necesarios
     this.statusUsuario = {
       idstatususuario: statusUsr.idstatususuario,
-      nombre: statusUsr.nombre,
-      fechaCreacion: this.formatDateForInput(statusUsr.fechaCreacion),
-      usuarioCreacion: statusUsr.usuarioCreacion || this.currentUser,
-      fechaModificacion: statusUsr.fechaModificacion ? this.formatDateForInput(statusUsr.fechaModificacion) : ''
+      nombre: statusUsr.nombre
     };
+    
+    console.log('Editando status usuario:', statusUsr);
   }
 
   onDelete(idstatususuario: number): void {
@@ -192,34 +191,5 @@ export class CrudstatususuarioComponent implements OnInit {
   onReset(): void {
     this.initializeStatusUsuario();
     this.error = ''; // Limpiar errores al resetear
-  }
-
-  /**
-   * Helper para formatear fechas para input[type="date"]
-   * Los inputs de tipo 'date' esperan un string en formato 'YYYY-MM-DD'
-   */
-  formatDateForInput(date: Date | string | undefined): string {
-    if (!date) return '';
-    
-    let d: Date;
-    if (typeof date === 'string') {
-      d = new Date(date);
-    } else {
-      d = date;
-    }
-    
-    if (isNaN(d.getTime())) return '';
-    
-    const year = d.getFullYear();
-    const month = ('0' + (d.getMonth() + 1)).slice(-2);
-    const day = ('0' + d.getDate()).slice(-2);
-    return `${year}-${month}-${day}`;
-  }
-
-  /**
-   * Helper para obtener la fecha actual en formato YYYY-MM-DD
-   */
-  getCurrentDateForInput(): string {
-    return this.formatDateForInput(new Date());
   }
 }
