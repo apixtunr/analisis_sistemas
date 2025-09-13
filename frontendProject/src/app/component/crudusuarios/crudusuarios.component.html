@@ -1,10 +1,14 @@
 <div class="container my-5">
   <h2 class="mb-4 text-center">Gestión de Usuarios</h2>
+  <button class="btn btn-secondary mb-3" routerLink="/menu">
+    Volver al menú
+  </button>
 
   <!-- Formulario para agregar/editar usuario -->
   <div class="card mb-5 shadow-sm">
     <div class="card-body">
-      <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
+      <form [formGroup]="usuarioForm"
+        (ngSubmit)="isEditMode ? onUpdate() : onSubmit()">
         <div class="row g-3">
           <div class="col-md-3">
             <label class="form-label">Usuario</label>
@@ -56,7 +60,6 @@
           <div class="col-md-3">
             <label class="form-label">Género</label>
             <select formControlName="idGenero" class="form-control">
-              <option value="0">Seleccione un género</option>
               <option *ngFor="let genero of generos" [value]="genero.idgenero">
                 {{ genero.nombre }}
               </option>
@@ -108,8 +111,10 @@
           <div class="col-md-3">
             <label class="form-label">Sucursal</label>
             <select formControlName="idSucursal" class="form-control">
-              <option value="0">Seleccione una sucursal</option>
-              <option *ngFor="let sucursal of sucursales" [value]="sucursal.idSucursal">
+              <option
+                *ngFor="let sucursal of sucursales"
+                [value]="sucursal.idSucursal"
+              >
                 {{ sucursal.nombre }}
               </option>
             </select>
@@ -140,25 +145,14 @@
         <!-- Botones -->
         <div class="mt-4 d-flex gap-2">
           <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="usuarioForm.invalid"
-          >
-            Agregar
-          </button>
-          <button
-            type="button"
-            class="btn btn-success"
-            [disabled]="usuarioForm.invalid"
-            (click)="onUpdate()"
-          >
-            Actualizar
-          </button>
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="usuarioForm.invalid"
+            >
+              {{ isEditMode ? "Actualizar Usuario" : "Agregar Usuario" }}
+            </button>
           <button type="button" class="btn btn-secondary" (click)="onReset()">
             Limpiar
-          </button>
-          <button type="button" class="btn btn-success" routerLink="/menu">
-            Ir al Menú
           </button>
         </div>
       </form>
@@ -205,16 +199,18 @@
           <td>{{ getSucursalNombre(usr.idSucursal) }}</td>
           <td>{{ usr.pregunta }}</td>
           <td>{{ usr.respuesta }}</td>
-          <td class="text-center">
-            <button class="btn btn-sm btn-info" (click)="onEdit(usr)">
-              Editar
-            </button>
-            <button
-              class="btn btn-sm btn-danger"
-              (click)="onDelete(usr.idUsuario)"
-            >
-              Eliminar
-            </button>
+          <td class="sticky-buttons">
+            <div class="d-flex justify-content-center gap-2">
+              <button class="btn btn-sm btn-info" (click)="onEdit(usr)">
+                Editar
+              </button>
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="onDelete(usr.idUsuario)"
+              >
+                Eliminar
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>

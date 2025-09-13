@@ -22,6 +22,7 @@ export class CrudusuariosComponent implements OnInit {
   loading = true;
   error = '';
   imagenPreview: string | null = null;
+  isEditMode = false; //Bandera para el modo edición
 
   usuarioForm!: FormGroup;
   usuarios: any[] = []; // lista de usuarios
@@ -61,61 +62,48 @@ export class CrudusuariosComponent implements OnInit {
     this.generoService.getGeneros().subscribe({
       next: (data) => {
         this.generos = data;
-        console.log('Géneros cargados:', this.generos);
       },
       error: (err) => {
         console.error('Error al cargar géneros:', err);
-      }
+      },
     });
 
     // Cargar sucursales
     this.sucursalService.getSucursales().subscribe({
       next: (data) => {
         this.sucursales = data;
-        console.log('Sucursales cargadas:', this.sucursales);
       },
       error: (err) => {
         console.error('Error al cargar sucursales:', err);
-      }
+      },
     });
   }
 
   // Método para obtener el nombre del género por ID
   getGeneroNombre(idGenero: number): string {
-    const genero = this.generos.find(g => g.idgenero === idGenero);
+    const genero = this.generos.find((g) => g.idgenero === idGenero);
     return genero ? genero.nombre : 'No especificado';
   }
 
   // Método para obtener el nombre de la sucursal por ID
   getSucursalNombre(idSucursal: number): string {
-    const sucursal = this.sucursales.find(s => s.idSucursal === idSucursal);
+    const sucursal = this.sucursales.find((s) => s.idSucursal === idSucursal);
     return sucursal ? sucursal.nombre : 'No especificado';
   }
 
   //Método para crear usuario
   onSubmit() {
-    console.log('=== INICIANDO onSubmit ===');
-    console.log('Formulario válido:', this.usuarioForm.valid);
-    console.log('Valores del formulario:', this.usuarioForm.value);
-    console.log('Errores del formulario:', this.usuarioForm.errors);
-
     if (this.usuarioForm.invalid) {
-      console.log('Formulario inválido, marcando campos como touched');
       this.usuarioForm.markAllAsTouched();
-      
-      // Ver qué campos específicos están inválidos
-      Object.keys(this.usuarioForm.controls).forEach(key => {
-        const control = this.usuarioForm.get(key);
-        if (control && control.invalid) {
-          console.log(`Campo inválido: ${key}`, control.errors);
-        }
-      });
+      console.log('No se pudo crear el usuario: formulario inválido');
       return;
     }
 
+    const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const usuarioCreacion = usuarioLocal.id || ''; // Esto jala el idUsuario
+
     const usuario: Usuario = {
       ...this.usuarioForm.value,
-
       // valores default
       idStatusUsuario: 1,
       idRole: 2,
@@ -125,28 +113,31 @@ export class CrudusuariosComponent implements OnInit {
       sesionActual: '',
       ultimaFechaCambioPassword: new Date().toISOString(),
       requiereCambiarPassword: 1,
-      usuarioCreacion: 'ADMIN',
+      usuarioCreacion: usuarioCreacion,
       fechaModificacion: '',
-      usuarioModificacion: ''
+      usuarioModificacion: '',
     };
 
-    console.log('Usuario a crear:', usuario);
-    console.log('=== ENVIANDO AL BACKEND ===');
-
     this.usuarioService.createUsuario(usuario).subscribe({
-      next: (response) => {
-        console.log('✅ Usuario creado exitosamente:', response);
+      next: () => {
+        console.log('Usuario creado correctamente');
         alert('Usuario creado correctamente.');
         this.ngOnInit(); // recargar lista
         this.onReset();
       },
       error: (error) => {
-        console.error('❌ Error al crear usuario:', error);
-        console.error('Detalles del error:', error.error);
-        console.error('Status del error:', error.status);
-        console.error('Mensaje del error:', error.message);
-        this.error = 'El usuario ya está en uso';
-      }
+        const requisitos = error?.error;
+        if (
+          typeof requisitos === 'string' &&
+          requisitos.includes('La contraseña no cumple con los requisitos')
+        ) {
+          alert(requisitos);
+          this.error = requisitos;
+        } else {
+          this.error = 'El usuario ya está en uso';
+          alert(this.error);
+        }
+      },
     });
   }
 
@@ -155,6 +146,7 @@ export class CrudusuariosComponent implements OnInit {
     // Carga todos los campos normales en el formulario
     const { fotografia, ...usuarioData } = usuario;
     this.usuarioForm.patchValue(usuarioData);
+      this.isEditMode = true; // Activar modo edición
 
     // Si quieres mostrar la foto en el formulario
     if (fotografia) {
@@ -177,8 +169,18 @@ export class CrudusuariosComponent implements OnInit {
         alert('Usuario eliminado correctamente.');
         this.ngOnInit(); // recargar la lista
       },
-      error: () => {
-        this.error = 'Error al eliminar usuario';
+      error: (error) => {
+        let mensajeError = 'Error al eliminar usuario';
+        const errorMsg = error?.error?.message || '';
+        if (
+          errorMsg.toLowerCase().includes('violates foreign key constraint') ||
+          errorMsg.toLowerCase().includes('is still referenced')
+        ) {
+          mensajeError =
+            'No se puede eliminar el usuario porque está relacionado con la bitácora.';
+        }
+        this.error = mensajeError;
+        alert(this.error);
       },
     });
   }
@@ -201,7 +203,7 @@ export class CrudusuariosComponent implements OnInit {
       requiereCambiarPassword: 1,
       usuarioCreacion: 'ADMIN',
       fechaModificacion: '',
-      usuarioModificacion: 'ADMIN' // temporal
+      usuarioModificacion: 'ADMIN', // temporal
     };
 
     if (!usuario.idUsuario) {
@@ -219,7 +221,7 @@ export class CrudusuariosComponent implements OnInit {
       },
       error: () => {
         this.error = 'Error al actualizar usuario';
-      }
+      },
     });
   }
 
@@ -237,7 +239,8 @@ export class CrudusuariosComponent implements OnInit {
       telefonoMovil: '',
       idSucursal: 0,
       pregunta: '',
-      respuesta: ''
+      respuesta: '',
     });
+    this.isEditMode = false; // volvemos al modo agregar
   }
 }

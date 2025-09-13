@@ -13,6 +13,7 @@ import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/as
 import { CrudGeneroComponent } from './component/crudgenero/crud-genero.component';
 import { CrudstatususuarioComponent } from './component/crudstatususuario/crudstatususuario.component';
 import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursales.component';
+import { CambiopasswordComponent } from './component/cambiopassword/cambiopassword.component';
 
 const routes: Routes = [
 
@@ -29,6 +30,7 @@ const routes: Routes = [
   { path: 'crudusuarios', component: CrudusuariosComponent },
   { path: 'asignacionrolopcion', component: AsignacionrolopcionComponent },
   { path: 'crudsucursales', component: CrudsucursalesComponent },
+  { path: 'cambiopassword', component: CambiopasswordComponent },
   { path: 'menu', component: MenuComponent },
   { path: '', redirectTo: 'loginusuarios', pathMatch: 'full' },
   { path: '**', redirectTo: 'menu', pathMatch: 'full' },

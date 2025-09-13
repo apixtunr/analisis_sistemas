@@ -9,7 +9,6 @@ import com.SystemAnalisys.Project.entity.Usuario;
 import com.SystemAnalisys.Project.repository.UsuarioRepository;
 import com.SystemAnalisys.Project.controller.LoginResult;
 
-
 @Service
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
@@ -29,6 +28,10 @@ public class UsuarioService {
         return usuarioRepository.findById(par_id);
     }
 
+    public Optional<Usuario> findByIdUsuario(String par_id) {
+        return usuarioRepository.findByIdUsuario(par_id);
+    }
+
     public Usuario save(Usuario par_usuario) {
         return usuarioRepository.save(par_usuario);
     }
@@ -38,48 +41,44 @@ public class UsuarioService {
     }
 
     public LoginResult login(String correo, String password, jakarta.servlet.http.HttpServletRequest request) {
-    Optional<Usuario> userOptional = usuarioRepository.findActiveUserByCorreoElectronico(correo);
+        Optional<Usuario> userOptional = usuarioRepository.findActiveUserByCorreoElectronico(correo);
 
-    if (!userOptional.isPresent()) {
-        // Registrar intento fallido: usuario no existe
+        if (!userOptional.isPresent()) {
+            // Registrar intento fallido: usuario no existe
+            bitacoraAccesoService.registrarAcceso(
+                    correo,
+                    "Usuario ingresado no existe", // Nombre exacto en la tabla tipo_acceso
+                    "LOGIN",
+                    request,
+                    null);
+            return new LoginResult(false, "Usuario no encontrado", null, "USER_NOT_FOUND");
+        }
+
+        Usuario usuario = userOptional.get();
+
+        if (!passwordService.verifyPassword(password, usuario.getPassword())) {
+            // Registrar intento fallido: contraseña incorrecta / bloqueado
+            bitacoraAccesoService.registrarAcceso(
+                    usuario.getIdUsuario(),
+                    "Bloqueado - Password incorrecto/Numero de intentos exedidos", // Nombre exacto
+                    "LOGIN",
+                    request,
+                    null);
+            return new LoginResult(false, "Contraseña incorrecta", null, "INVALID_PASSWORD");
+        }
+
+        // Registrar login exitoso
         bitacoraAccesoService.registrarAcceso(
-            correo,
-            "Usuario ingresado no existe", // Nombre exacto en la tabla tipo_acceso
-            "LOGIN",
-            request,
-            null
-        );
-        return new LoginResult(false, "Usuario no encontrado", null, "USER_NOT_FOUND");
+                usuario.getIdUsuario(),
+                "Acceso Concedido", // Nombre exacto
+                "LOGIN",
+                request,
+                null);
+
+        return new LoginResult(true, "Login exitoso", usuario, "LOGIN_OK");
+
     }
 
-    Usuario usuario = userOptional.get();
-
-    if (!passwordService.verifyPassword(password, usuario.getPassword())) {
-        // Registrar intento fallido: contraseña incorrecta / bloqueado
-        bitacoraAccesoService.registrarAcceso(
-            usuario.getIdUsuario(),
-            "Bloqueado - Password incorrecto/Numero de intentos exedidos", // Nombre exacto
-            "LOGIN",
-            request,
-            null
-        );
-        return new LoginResult(false, "Contraseña incorrecta", null, "INVALID_PASSWORD");
-    }
-
-    // Registrar login exitoso
-    bitacoraAccesoService.registrarAcceso(
-        usuario.getIdUsuario(),
-        "Acceso Concedido", // Nombre exacto
-        "LOGIN",
-        request,
-        null
-    );
-
-    return new LoginResult(true, "Login exitoso", usuario, "LOGIN_OK");
-
-
-}
-    
     public void actualizarRolUsuario(String idUsuario, Integer idRole) {
         usuarioRepository.actualizarRolUsuario(idUsuario, idRole);
     }
@@ -88,21 +87,21 @@ public class UsuarioService {
         List<Usuario> usuarios = usuarioRepository.findAll();
         List<UsuarioDTO> lista = new java.util.ArrayList<>();
         for (Usuario u : usuarios) {
-            lista.add(new UsuarioDTO(u.getIdUsuario(), u.getNombre(), u.getApellido()));
+            lista.add(new UsuarioDTO(u.getIdUsuario(), u.getNombre(), u.getApellido(), u.getIdSucursal()));
         }
         return lista;
     }
 
-    /*Devuelve una lista de Usuarios que pertenecen a un rol específico*/
-public List<UsuarioDTO> getUsuariosPorRol(Integer idRole) {
-    List<Usuario> usuarios = usuarioRepository.findAll();
-    List<UsuarioDTO> lista = new java.util.ArrayList<>();
-    for (Usuario u : usuarios) {
-        if (u.getIdRole() != null && u.getIdRole().equals(idRole)) {
-            lista.add(new UsuarioDTO(u.getIdUsuario(), u.getNombre(), u.getApellido()));
+    /* Devuelve una lista de Usuarios que pertenecen a un rol específico */
+    public List<UsuarioDTO> getUsuariosPorRol(Integer idRole) {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        List<UsuarioDTO> lista = new java.util.ArrayList<>();
+        for (Usuario u : usuarios) {
+            if (u.getIdRole() != null && u.getIdRole().equals(idRole)) {
+                lista.add(new UsuarioDTO(u.getIdUsuario(), u.getNombre(), u.getApellido(), u.getIdSucursal()));
+            }
         }
+        return lista;
     }
-    return lista;
+
 }
-}
- 

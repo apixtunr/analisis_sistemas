@@ -17,12 +17,14 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String> {
     Optional<Usuario> findByCorreoElectronicoAndPassword(String correoElectronico, String password);
     @SuppressWarnings("null")
     Optional<Usuario> findById(String idUsuario);
+    Optional<Usuario> findByIdUsuario(String idUsuario);
+
 
     @Modifying
     @Query("UPDATE Usuario u SET u.idRole = :idRole WHERE u.idUsuario = :idUsuario")
     void actualizarRolUsuario(@Param("idUsuario") String idUsuario, @Param("idRole") Integer idRole);
 
-    @Query("SELECT new com.SystemAnalisys.Project.dto.UsuarioDTO(u.idUsuario, u.nombre, u.apellido) FROM Usuario u")
+    @Query("SELECT new com.SystemAnalisys.Project.dto.UsuarioDTO(u.idUsuario, u.nombre, u.apellido, u.idSucursal) FROM Usuario u")
     List<UsuarioDTO> getUsuarios();
 
     //Busca un usuario activo por su correo electrónico.    
