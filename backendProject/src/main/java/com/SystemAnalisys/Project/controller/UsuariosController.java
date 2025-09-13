@@ -189,13 +189,4 @@ public class UsuariosController {
                 && contrasena.length() >= empresa.getPasswordLargo();
     }
 
-    @PostMapping("/api/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate(); // elimina sesión
-        }
-        return ResponseEntity.ok("Sesión cerrada correctamente");
-    }
-
 }
