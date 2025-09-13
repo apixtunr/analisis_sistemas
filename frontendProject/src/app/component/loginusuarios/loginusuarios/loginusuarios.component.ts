@@ -18,7 +18,7 @@ export class LoginusuariosComponent {
     private fb: FormBuilder
   ) {
     this.loginForm = this.fb.group({
-      correoElectronico: ['', [Validators.required, Validators.email]],
+      idUsuario: ['', Validators.required],
       password: ['', Validators.required]
     });
   }
@@ -53,6 +53,6 @@ export class LoginusuariosComponent {
     }
   }
 
-  
+
 
 }

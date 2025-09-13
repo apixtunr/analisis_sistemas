@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 import com.SystemAnalisys.Project.dto.UsuarioDTO;
 import com.SystemAnalisys.Project.entity.Usuario;
 import com.SystemAnalisys.Project.repository.UsuarioRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import com.SystemAnalisys.Project.controller.LoginResult;
 
 
@@ -37,48 +41,55 @@ public class UsuarioService {
         usuarioRepository.delete(par_usuario);
     }
 
-    public LoginResult login(String correo, String password, jakarta.servlet.http.HttpServletRequest request) {
-    Optional<Usuario> userOptional = usuarioRepository.findActiveUserByCorreoElectronico(correo);
+    public LoginResult login(String idUsuario, String password, HttpServletRequest request) {
+        Optional<Usuario> userOptional = usuarioRepository.findById(idUsuario);
 
-    if (!userOptional.isPresent()) {
-        // Registrar intento fallido: usuario no existe
-        bitacoraAccesoService.registrarAcceso(
-            correo,
-            "Usuario ingresado no existe", // Nombre exacto en la tabla tipo_acceso
-            "LOGIN",
-            request,
-            null
-        );
-        return new LoginResult(false, "Usuario no encontrado", null, "USER_NOT_FOUND");
-    }
+        if (!userOptional.isPresent()) {
+            bitacoraAccesoService.registrarAcceso(
+                idUsuario,
+                "Usuario ingresado no existe",
+                "LOGIN",
+                request,
+                null
+            );
+            return new LoginResult(false, "Usuario no encontrado", null, "USER_NOT_FOUND");
+        }
 
-    Usuario usuario = userOptional.get();
+        Usuario usuario = userOptional.get();
 
-    if (!passwordService.verifyPassword(password, usuario.getPassword())) {
-        // Registrar intento fallido: contraseña incorrecta / bloqueado
+        if (!passwordService.verifyPassword(password, usuario.getPassword())) {
+            bitacoraAccesoService.registrarAcceso(
+                usuario.getIdUsuario(),
+                "Bloqueado - Password incorrecto/Numero de intentos excedidos",
+                "LOGIN",
+                request,
+                null
+            );
+            return new LoginResult(false, "Contraseña incorrecta", null, "INVALID_PASSWORD");
+        }
+
+        // Login exitoso
         bitacoraAccesoService.registrarAcceso(
             usuario.getIdUsuario(),
-            "Bloqueado - Password incorrecto/Numero de intentos exedidos", // Nombre exacto
+            "Acceso Concedido",
             "LOGIN",
             request,
             null
         );
-        return new LoginResult(false, "Contraseña incorrecta", null, "INVALID_PASSWORD");
+
+        // Crear sesión
+        HttpSession session = request.getSession(true);
+        session.setAttribute("usuario", usuario);
+
+        return new LoginResult(true, "Login exitoso", usuario, "LOGIN_OK");
     }
 
-    // Registrar login exitoso
-    bitacoraAccesoService.registrarAcceso(
-        usuario.getIdUsuario(),
-        "Acceso Concedido", // Nombre exacto
-        "LOGIN",
-        request,
-        null
-    );
-
-    return new LoginResult(true, "Login exitoso", usuario, "LOGIN_OK");
-
-
-}
+    public void logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+    }
     
     public void actualizarRolUsuario(String idUsuario, Integer idRole) {
         usuarioRepository.actualizarRolUsuario(idUsuario, idRole);
