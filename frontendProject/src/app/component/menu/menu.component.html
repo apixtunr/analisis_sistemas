@@ -23,9 +23,9 @@
         </ng-container>
       </div>
     </ng-container>
-    <a class="nav-link" href="#">
+    <a class="nav-link" (click)="logout()" style="cursor:pointer;">
       <span class="icon"><i class="bi bi-box-arrow-left"></i></span>
-      <span class="description" (click)="logout()">Salir</span>
+      <span class="description">Salir</span>
     </a>
   </nav>
 </div>

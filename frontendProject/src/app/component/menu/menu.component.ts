@@ -23,7 +23,7 @@ export class MenuComponent {
   }
 
   logout(): void {
-    localStorage.removeItem("usuario");
-    window.location.href = '/loginusuarios';
-  }
+  localStorage.removeItem("usuario");
+  this.router.navigate(['/loginusuarios']);
+}
 }
