@@ -23,11 +23,8 @@ export class CrudGeneroComponent implements OnInit {
   genero: any = {
     // objeto para crear/editar (usando any para flexibilidad con fechas)
     idgenero: 0,
-    nombre: '',
-    fechaCreacion: '',
-    usuarioCreacion: '',
-    fechaModificacion: '',
-    usuarioModificacion: ''
+    nombre: ''
+    // Solo mantenemos los campos necesarios para el formulario
   };
   
   constructor(private generoService: GeneroService, private permisoService: PermisoService) {}
@@ -66,9 +63,14 @@ export class CrudGeneroComponent implements OnInit {
                           userData.mail || 
                           userData.usuario ||
                           userData.username ||
+                          userData.user ||
+                          userData.nombre ||
                           'Usuario Anónimo';
+        
+        console.log('Usuario actual extraído del localStorage:', this.currentUser);
       } else {
         this.currentUser = 'Usuario Anónimo';
+        console.warn('No se encontró información de usuario en localStorage');
       }
     } catch (error) {
       console.error('Error al parsear datos del usuario desde localStorage:', error);
@@ -80,14 +82,10 @@ export class CrudGeneroComponent implements OnInit {
    * Inicializa el objeto genero con valores por defecto
    */
   initializeGenero(): void {
-    const today = this.getCurrentDateForInput();
     this.genero = {
       idgenero: 0, // Se mantiene en 0, el backend lo asignará automáticamente
-      nombre: '',
-      fechaCreacion: today, // String en formato YYYY-MM-DD para el input
-      usuarioCreacion: this.currentUser,
-      fechaModificacion: '',
-      usuarioModificacion: ''
+      nombre: ''
+      // Solo mantenemos el nombre para el formulario simplificado
     };
   }
 
@@ -114,15 +112,19 @@ export class CrudGeneroComponent implements OnInit {
 
     if (this.genero.idgenero === 0) {
       // Crear nuevo género
+      // Obtener usuario del localStorage igual que en el ejemplo
+      const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const usuarioCreacion = usuarioLocal.id || '';
+
       const newGenero: any = {
-        nombre: this.genero.nombre.trim(), // Limpiar espacios
-        fechaCreacion: this.genero.fechaCreacion ? new Date(this.genero.fechaCreacion) : new Date(),
-        usuarioCreacion: this.genero.usuarioCreacion || this.currentUser
-        // NO incluir fechaModificacion ni usuarioModificacion para creación
-        // NO incluir idgenero para creación (el backend lo asignará)
+        nombre: this.genero.nombre.trim(),
+        fechaCreacion: new Date(), // Fecha actual del día de HOY
+        usuarioCreacion: usuarioCreacion
       };
 
-      console.log('Enviando nuevo género:', newGenero); // Para debug
+      console.log('Enviando nuevo género:', newGenero);
+      console.log('Usuario que está creando (ID):', usuarioCreacion);
+      console.log('Fecha de creación (HOY):', new Date());
 
       this.generoService.createGenero(newGenero).subscribe({
         next: (response) => {
@@ -135,7 +137,6 @@ export class CrudGeneroComponent implements OnInit {
           console.error('Error completo:', err);
           this.error = 'Error al crear el género. Revisa la consola para más detalles.';
           
-          // Mostrar más información del error
           if (err.error && err.error.message) {
             this.error += ' ' + err.error.message;
           } else if (err.message) {
@@ -145,16 +146,25 @@ export class CrudGeneroComponent implements OnInit {
       });
     } else {
       // Actualizar género existente
+      // Obtener usuario del localStorage igual que en el ejemplo
+      const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const usuarioModificacion = usuarioLocal.id || '';
+
+      // Buscar el género original para obtener fechaCreacion y usuarioCreacion
+      const generoOriginal = this.generos.find(g => g.idgenero === this.genero.idgenero);
+
       const generoToUpdate: any = {
         idgenero: this.genero.idgenero,
         nombre: this.genero.nombre.trim(),
-        fechaCreacion: this.genero.fechaCreacion ? new Date(this.genero.fechaCreacion) : new Date(),
-        usuarioCreacion: this.genero.usuarioCreacion,
+        fechaCreacion: generoOriginal?.fechaCreacion || new Date(), // Mantener fecha original
+        usuarioCreacion: generoOriginal?.usuarioCreacion || '', // Mantener usuario original
         fechaModificacion: new Date(),
-        usuarioModificacion: this.currentUser
+        usuarioModificacion: usuarioModificacion
       };
 
-      console.log('Enviando género para actualizar:', generoToUpdate); // Para debug
+      console.log('Enviando género para actualizar:', generoToUpdate);
+      console.log('Usuario que está modificando (ID):', usuarioModificacion);
+      console.log('Género original encontrado:', generoOriginal);
 
       this.generoService.updateGenero(this.genero.idgenero, generoToUpdate).subscribe({
         next: (response) => {
@@ -178,16 +188,13 @@ export class CrudGeneroComponent implements OnInit {
   }
 
   onEdit(gen: Genero): void {
-    // Preparar el objeto para edición
+    // Preparar el objeto para edición - solo campos necesarios
     this.genero = {
       idgenero: gen.idgenero,
-      nombre: gen.nombre,
-      fechaCreacion: this.formatDateForInput(gen.fechaCreacion),
-      usuarioCreacion: gen.usuarioCreacion || this.currentUser,
-      fechaModificacion: gen.fechaModificacion ? this.formatDateForInput(gen.fechaModificacion) : '',
-      usuarioModificacion: gen.usuarioModificacion || ''
+      nombre: gen.nombre
     };
-  this.isEditMode = true;
+    
+    console.log('Editando género:', gen);
   }
 
   onDelete(idgenero: number): void {
@@ -207,36 +214,7 @@ export class CrudGeneroComponent implements OnInit {
 
   onReset(): void {
     this.initializeGenero();
-    this.error = ''; // Limpiar errores al resetear
+    this.error = '';
   this.isEditMode = false;
-  }
-
-  /**
-   * Helper para formatear fechas para input[type="date"]
-   * Los inputs de tipo 'date' esperan un string en formato 'YYYY-MM-DD'
-   */
-  formatDateForInput(date: Date | string | undefined): string {
-    if (!date) return '';
-    
-    let d: Date;
-    if (typeof date === 'string') {
-      d = new Date(date);
-    } else {
-      d = date;
-    }
-    
-    if (isNaN(d.getTime())) return '';
-    
-    const year = d.getFullYear();
-    const month = ('0' + (d.getMonth() + 1)).slice(-2);
-    const day = ('0' + d.getDate()).slice(-2);
-    return `${year}-${month}-${day}`;
-  }
-
-  /**
-   * Helper para obtener la fecha actual en formato YYYY-MM-DD
-   */
-  getCurrentDateForInput(): string {
-    return this.formatDateForInput(new Date());
   }
 }

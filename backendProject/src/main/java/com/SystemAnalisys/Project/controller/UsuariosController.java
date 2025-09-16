@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -44,41 +46,39 @@ public class UsuariosController {
     // Crea un nuevo usuario con contraseña hasheada
     @PostMapping("api/create_usuario")
     public ResponseEntity<?> createUsuarios(@RequestBody Usuario user) {
-    // 1️⃣ Verificar si el usuario ya existe
-    Optional<Usuario> existingUser = usuariosService.findById(user.getIdUsuario());
-    if (existingUser.isPresent()) {
-        return ResponseEntity.badRequest().body("El usuario ya existe");
+        // 1️⃣ Verificar si el usuario ya existe
+        Optional<Usuario> existingUser = usuariosService.findById(user.getIdUsuario());
+        if (existingUser.isPresent()) {
+            return ResponseEntity.badRequest().body("El usuario ya existe");
+        }
+
+        // Traer la sucursal del usuario
+        Sucursal sucursal = sucursalRepository.findById(user.getIdSucursal())
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada"));
+
+        // Traer la empresa asociada a la sucursal
+        Empresa empresa = empresaRepository.findById(sucursal.getIdEmpresa())
+                .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
+
+        // Validar la contraseña según los requisitos de la empresa
+        if (!validarContrasena(user.getPassword(), empresa)) {
+            return ResponseEntity.badRequest().body(
+                    "La contraseña no cumple con los requisitos de la empresa: "
+                            + "mínimo " + empresa.getPasswordCantidadMayusculas() + " mayúsculas, "
+                            + empresa.getPasswordCantidadMinusculas() + " minúsculas, "
+                            + empresa.getPasswordCantidadNumeros() + " números, "
+                            + empresa.getPasswordCantidadCaracteresEspeciales() + " caracteres especiales, "
+                            + "longitud mínima " + empresa.getPasswordLargo());
+        }
+
+        // 5️⃣ Hashear la contraseña antes de guardar
+        String hash = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hash);
+
+        // 6️⃣ Guardar el usuario y devolverlo
+        Usuario nuevoUsuario = usuariosService.save(user);
+        return ResponseEntity.ok(nuevoUsuario);
     }
-
-    // Traer la sucursal del usuario
-    Sucursal sucursal = sucursalRepository.findById(user.getIdSucursal())
-            .orElseThrow(() -> new RuntimeException("Sucursal no encontrada"));
-
-    // Traer la empresa asociada a la sucursal
-    Empresa empresa = empresaRepository.findById(sucursal.getIdEmpresa())
-            .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
-
-    // Validar la contraseña según los requisitos de la empresa
-    if (!validarContrasena(user.getPassword(), empresa)) {
-        return ResponseEntity.badRequest().body(
-            "La contraseña no cumple con los requisitos de la empresa: "
-            + "mínimo " + empresa.getPasswordCantidadMayusculas() + " mayúsculas, "
-            + empresa.getPasswordCantidadMinusculas() + " minúsculas, "
-            + empresa.getPasswordCantidadNumeros() + " números, "
-            + empresa.getPasswordCantidadCaracteresEspeciales() + " caracteres especiales, "
-            + "longitud mínima " + empresa.getPasswordLargo()
-        );
-    }
-
-    // 5️⃣ Hashear la contraseña antes de guardar
-    String hash = passwordEncoder.encode(user.getPassword());
-    user.setPassword(hash);
-
-    // 6️⃣ Guardar el usuario y devolverlo
-    Usuario nuevoUsuario = usuariosService.save(user);
-    return ResponseEntity.ok(nuevoUsuario);
-}
-
 
     // Actualiza un usuario existente (manteniendo hash de contraseña)
     @PutMapping("api/update_usuario/{id}")
@@ -134,7 +134,7 @@ public class UsuariosController {
             HttpServletRequest request) {
 
         LoginResult result = usuariosService.login(
-                loginData.getCorreoElectronico(),
+                loginData.getIdUsuario(),
                 loginData.getPassword(),
                 request);
 
@@ -143,11 +143,13 @@ public class UsuariosController {
         response.put("message", result.getMessage());
 
         if (result.isSuccess() && result.getUsuario() != null) {
+            // Guardar en sesión
+            request.getSession(true).setAttribute("usuario", result.getUsuario());
+
             Map<String, Object> userData = new HashMap<>();
             userData.put("id", result.getUsuario().getIdUsuario());
             userData.put("nombre", result.getUsuario().getNombre());
             userData.put("apellido", result.getUsuario().getApellido());
-            userData.put("correo", result.getUsuario().getCorreoElectronico());
             userData.put("rol", result.getUsuario().getIdRole());
             response.put("usuario", userData);
         }
