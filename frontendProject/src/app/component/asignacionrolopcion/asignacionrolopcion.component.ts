@@ -36,6 +36,10 @@ export class AsignacionrolopcionComponent implements OnInit {
     });
   }
 
+  get rolesFiltrados() {
+  return this.roles.filter(r => r.idRole !== 2);
+}
+
   ngOnInit(): void {
     this.usuarioService.getUsuarios().subscribe(data => {
       this.usuarios = data;
@@ -52,16 +56,18 @@ export class AsignacionrolopcionComponent implements OnInit {
   initPermisosForm() {
     const permisosArray = this.formularioAsignacion.get('permisos') as FormArray;
     permisosArray.clear();
-    this.opciones.forEach(opcion => {
-      permisosArray.push(this.fb.group({
-        idOpcion: [opcion.idOpcion],
-        alta: [false],
-        baja: [false],
-        cambio: [false],
-        imprimir: [false],
-        exportar: [false]
-      }));
-    });
+    this.opciones
+      .filter(opcion => opcion.idOpcion !== 10)
+      .forEach(opcion => {
+        permisosArray.push(this.fb.group({
+          idOpcion: [opcion.idOpcion],
+          alta: [false],
+          baja: [false],
+          cambio: [false],
+          imprimir: [false],
+          exportar: [false]
+        }));
+      });
   }
 
   cargarPermisosPorRol(idRole: number | null) {
@@ -69,22 +75,24 @@ export class AsignacionrolopcionComponent implements OnInit {
   this.rolOpcionService.getPermisosPorRol(idRole).subscribe(data => {
     const permisosArray = this.formularioAsignacion.get('permisos') as FormArray;
     permisosArray.clear();
-    // Siempre mostrar todas las opciones
-    this.opciones.forEach(opcion => {
-      // Buscar si el rol tiene permisos para esta opción
-      const permiso = data.find(p => {
-        // Si la respuesta del backend tiene id compuesto, ajusta aquí
-        return p.id?.idOpcion === opcion.idOpcion;
+    // Siempre mostrar todas las opciones excepto la 10
+    this.opciones
+      .filter(opcion => opcion.idOpcion !== 10)
+      .forEach(opcion => {
+        // Buscar si el rol tiene permisos para esta opción
+        const permiso = data.find(p => {
+          // Si la respuesta del backend tiene id compuesto, ajusta aquí
+          return p.id?.idOpcion === opcion.idOpcion;
+        });
+        permisosArray.push(this.fb.group({
+          idOpcion: [opcion.idOpcion],
+          alta: [permiso ? permiso.alta : false],
+          baja: [permiso ? permiso.baja : false],
+          cambio: [permiso ? permiso.cambio : false],
+          imprimir: [permiso ? permiso.imprimir : false],
+          exportar: [permiso ? permiso.exportar : false]
+        }));
       });
-      permisosArray.push(this.fb.group({
-        idOpcion: [opcion.idOpcion],
-        alta: [permiso ? permiso.alta : false],
-        baja: [permiso ? permiso.baja : false],
-        cambio: [permiso ? permiso.cambio : false],
-        imprimir: [permiso ? permiso.imprimir : false],
-        exportar: [permiso ? permiso.exportar : false]
-      }));
-    });
   });
 }
 

@@ -142,22 +142,22 @@
 
         <div class="row g-3 mt-2">
           <div class="col-md-12 mt-3 d-flex gap-2">
-            <!-- Botón Actualizar: solo aparece en modo edición -->
+            <!-- Botón Actualizar: solo aparece en modo edición y si tiene permiso de cambio -->
             <button
               type="button"
               class="btn btn-primary"
-              [disabled]="!empresaForm.form.valid"
-              *ngIf="isEditMode"
+              [disabled]="!empresaForm.form.valid || !permisosEmpresa.cambio"
+              *ngIf="isEditMode && permisosEmpresa.cambio"
               (click)="onUpdate()"
             >
               Actualizar
             </button>
 
-            <!-- Botón Guardar: solo aparece en modo creación y si tiene permisos -->
+            <!-- Botón Guardar: solo aparece en modo creación y si tiene permiso de alta -->
             <button
               type="submit"
               class="btn btn-primary"
-              [disabled]="!empresaForm.form.valid"
+              [disabled]="!empresaForm.form.valid || !permisosEmpresa.alta"
               *ngIf="!isEditMode && permisosEmpresa.alta"
             >
               Guardar
@@ -221,6 +221,7 @@
                 class="btn btn-sm btn-info"
                 (click)="onEdit(emp)"
                 *ngIf="permisosEmpresa.cambio"
+                [disabled]="!permisosEmpresa.cambio"
               >
                 Editar
               </button>
@@ -228,6 +229,7 @@
                 class="btn btn-sm btn-danger"
                 (click)="onDelete(emp.nit)"
                 *ngIf="permisosEmpresa.baja"
+                [disabled]="!permisosEmpresa.baja"
               >
                 Eliminar
               </button>

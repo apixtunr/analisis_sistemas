@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StatusUsuario } from '../../entity/statusUsuario';
 import { StatusUsuarioService } from '../../service/statusUsuario.service';
+import { PermisoService } from '../../service/permisoservice';
+import { RolOpcion } from '../../entity/rolopcion';
 
 @Component({
   selector: 'app-crudstatususuario',
@@ -11,13 +13,14 @@ import { StatusUsuarioService } from '../../service/statusUsuario.service';
   styleUrl: './crudstatususuario.component.css'
 })
 export class CrudstatususuarioComponent implements OnInit {
+  permisosStatusUsuario: RolOpcion | undefined;
+  isEditMode: boolean = false;
   loading = true;
   error = '';
   statusUsuarios: StatusUsuario[] = []; // lista
-  currentUser: string = ''; // Usuario actual del localStorage
-
+  currentUser: string = ''; 
   statusUsuario: any = {
-    // objeto para crear/editar (usando any para flexibilidad con fechas)
+    
     idstatususuario: 0,
     nombre: '',
     fechaCreacion: '',
@@ -25,9 +28,15 @@ export class CrudstatususuarioComponent implements OnInit {
     fechaModificacion: ''
   };
 
-  constructor(private statusUsuarioService: StatusUsuarioService) {}
+  constructor(private statusUsuarioService: StatusUsuarioService, private permisoService: PermisoService) {}
 
   ngOnInit(): void {
+    // Obtener permisos para statususuario (idOpcion=4)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(4, idRole).subscribe(permiso => {
+      this.permisosStatusUsuario = permiso;
+    });
     this.getCurrentUser();
     this.initializeStatusUsuario();
     this.loadStatusUsuarios();
@@ -172,6 +181,7 @@ export class CrudstatususuarioComponent implements OnInit {
       usuarioCreacion: statusUsr.usuarioCreacion || this.currentUser,
       fechaModificacion: statusUsr.fechaModificacion ? this.formatDateForInput(statusUsr.fechaModificacion) : ''
     };
+  this.isEditMode = true;
   }
 
   onDelete(idstatususuario: number): void {
@@ -192,6 +202,7 @@ export class CrudstatususuarioComponent implements OnInit {
   onReset(): void {
     this.initializeStatusUsuario();
     this.error = ''; // Limpiar errores al resetear
+  this.isEditMode = false;
   }
 
   /**

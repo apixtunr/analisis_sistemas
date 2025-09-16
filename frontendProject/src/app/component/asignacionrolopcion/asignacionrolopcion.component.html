@@ -5,7 +5,7 @@
       <label for="rolSelect">Rol:</label>
       <select id="rolSelect" formControlName="rol" (change)="cargarPermisosPorRol(formularioAsignacion.get('rol')?.value?.idRole)">
         <option [ngValue]="null">Seleccione rol</option>
-        <option *ngFor="let rol of roles" [ngValue]="rol">{{ rol.nombre }}</option>
+        <option *ngFor="let rol of rolesFiltrados" [ngValue]="rol">{{ rol.nombre }}</option>
       </select>
     </div>
     <div class="table-responsive" *ngIf="formularioAsignacion.get('rol')?.value">

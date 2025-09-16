@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Modulo } from '../../entity/modulo';
 import { Menu } from '../../entity/menu';
 import { ModuloService } from '../../service/modulo.service';
+import { PermisoService } from '../../service/permisoservice';
+import { RolOpcion } from '../../entity/rolopcion';
 
 @Component({
   selector: 'app-crudmodulo',
@@ -10,6 +12,8 @@ import { ModuloService } from '../../service/modulo.service';
   styleUrls: ['./crudmodulo.component.css'],
 })
 export class CrudmoduloComponent implements OnInit {
+  permisosModulo: RolOpcion | undefined;
+  isEditMode: boolean = false;
   loading = true;
   error = '';
 
@@ -26,9 +30,15 @@ export class CrudmoduloComponent implements OnInit {
     usuariomodificacion: '',
   };
 
-  constructor(private moduloService: ModuloService) {}
+  constructor(private moduloService: ModuloService, private permisoService: PermisoService) {}
 
   ngOnInit(): void {
+    // Obtener permisos para módulo (idOpcion=6)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(6, idRole).subscribe(permiso => {
+      this.permisosModulo = permiso;
+    });
     this.loadModulos();
   }
 
@@ -136,6 +146,7 @@ export class CrudmoduloComponent implements OnInit {
         ? new Date(mod.fechamodificacion)
         : null,
     };
+  this.isEditMode = true;
   }
 
  // Eliminar módulo
@@ -185,5 +196,6 @@ onDelete(idModulo: number | null): void {
       usuariomodificacion: '',
     };
     this.error = '';
+  this.isEditMode = false;
   }
 }

@@ -35,7 +35,7 @@ export class CrudempresasComponent implements OnInit {
         console.log('idRole:', idRole);
         if (idRole !== undefined && idRole !== null) {
           this.permisoService
-            .getPermisosEmpresa(1, idRole)
+            .getPermisos(1, idRole)
             .subscribe((permiso) => {
               this.permisosEmpresa = permiso || {};
             });

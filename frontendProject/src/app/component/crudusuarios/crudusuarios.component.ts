@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { UsuarioService } from '../../service/usuario.service';
 import { Usuario } from '../../entity/usuario';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { PermisoService } from '../../service/permisoservice';
+import { RolOpcion } from '../../entity/rolopcion';
 
 @Component({
   selector: 'app-crudusuarios',
@@ -10,9 +12,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrl: './crudusuarios.component.css',
 })
 export class CrudusuariosComponent implements OnInit {
+  permisosUsuario: RolOpcion | undefined;
   constructor(
     private usuarioService: UsuarioService,
     private fb: FormBuilder
+  , private permisoService: PermisoService
   ) {}
 
   loading = true;
@@ -48,6 +52,12 @@ export class CrudusuariosComponent implements OnInit {
         this.error = 'Error al cargar usuarios';
         this.loading = false;
       },
+    });
+    // Obtener permisos para usuarios (idOpcion=9)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(9, idRole).subscribe(permiso => {
+      this.permisosUsuario = permiso;
     });
   }
 

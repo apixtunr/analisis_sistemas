@@ -85,12 +85,23 @@
         </div>
 
         <div class="col-md-12 mt-3 d-flex gap-2">
+          <!-- Botón Crear (Alta) -->
           <button
             type="submit"
             class="btn btn-primary"
-            [disabled]="!statusUsuario.nombre || statusUsuario.nombre.trim() === ''"
+            [disabled]="!statusUsuario.nombre || statusUsuario.nombre.trim() === '' || !permisosStatusUsuario?.alta"
+            *ngIf="!isEditMode && permisosStatusUsuario?.alta"
           >
-            {{ statusUsuario.idstatususuario === 0 ? 'Crear' : 'Actualizar' }}
+            Crear
+          </button>
+          <!-- Botón Actualizar (Cambio) -->
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="!statusUsuario.nombre || statusUsuario.nombre.trim() === '' || !permisosStatusUsuario?.cambio"
+            *ngIf="isEditMode && permisosStatusUsuario?.cambio"
+          >
+            Actualizar
           </button>
           <button type="button" class="btn btn-secondary" (click)="onReset()">
             Limpiar
@@ -129,12 +140,21 @@
           <td>{{ statusUsr.fechaModificacion | date:'dd/MM/yyyy' }}</td>
           <td class="sticky-buttons">
             <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-info" (click)="onEdit(statusUsr)">
+              <!-- Botón Editar (Cambio) -->
+              <button
+                class="btn btn-sm btn-info"
+                (click)="onEdit(statusUsr)"
+                *ngIf="permisosStatusUsuario?.cambio"
+                [disabled]="!permisosStatusUsuario?.cambio"
+              >
                 Editar
               </button>
+              <!-- Botón Eliminar (Baja) -->
               <button
                 class="btn btn-sm btn-danger"
                 (click)="onDelete(statusUsr.idstatususuario)"
+                *ngIf="permisosStatusUsuario?.baja"
+                [disabled]="!permisosStatusUsuario?.baja"
               >
                 Eliminar
               </button>

@@ -39,9 +39,24 @@
 					</div>
 				</div>
 				<div class="mt-4 d-flex gap-2">
-					<button type="submit" class="btn btn-primary" [disabled]="opcionForm.invalid">
-						{{ editando ? 'Actualizar' : 'Agregar' }}
-					</button>
+								<!-- Botón Agregar (Alta) -->
+								<button
+									type="submit"
+									class="btn btn-primary"
+									[disabled]="opcionForm.invalid || !permisosOpcion?.alta"
+									*ngIf="!editando && permisosOpcion?.alta"
+								>
+									Agregar
+								</button>
+								<!-- Botón Actualizar (Cambio) -->
+								<button
+									type="submit"
+									class="btn btn-primary"
+									[disabled]="opcionForm.invalid || !permisosOpcion?.cambio"
+									*ngIf="editando && permisosOpcion?.cambio"
+								>
+									Actualizar
+								</button>
 					<button type="button" class="btn btn-secondary" (click)="onReset()">Limpiar</button>
 				</div>
 			</form>
@@ -81,8 +96,24 @@
 					<td>{{ opcion.fechaModificacion | date:'dd/MM/yyyy' }}</td>
 					<td>{{ opcion.usuarioModificacion }}</td>
 					<td class="text-center">
-						<button class="btn btn-sm btn-info me-1" (click)="onEdit(opcion)">Editar</button>
-						<button class="btn btn-sm btn-danger" (click)="onDelete(opcion.idOpcion)">Eliminar</button>
+									<!-- Botón Editar (Cambio) -->
+									<button
+										class="btn btn-sm btn-info me-1"
+										(click)="onEdit(opcion)"
+										*ngIf="permisosOpcion?.cambio"
+										[disabled]="!permisosOpcion?.cambio"
+									>
+										Editar
+									</button>
+									<!-- Botón Eliminar (Baja) -->
+									<button
+										class="btn btn-sm btn-danger"
+										(click)="onDelete(opcion.idOpcion)"
+										*ngIf="permisosOpcion?.baja"
+										[disabled]="!permisosOpcion?.baja"
+									>
+										Eliminar
+									</button>
 					</td>
 				</tr>
 			</tbody>

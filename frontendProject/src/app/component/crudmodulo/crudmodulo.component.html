@@ -14,8 +14,23 @@
 
         <div class="row g-3 mt-3">
           <div class="col-md-12 d-flex gap-2">
-            <button type="submit" class="btn btn-primary" [disabled]="!moduloForm.form.valid">
+            <!-- Botón Guardar (Alta) -->
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="!moduloForm.form.valid || !permisosModulo?.alta"
+              *ngIf="!isEditMode && permisosModulo?.alta"
+            >
               Guardar
+            </button>
+            <!-- Botón Actualizar (Cambio) -->
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="!moduloForm.form.valid || !permisosModulo?.cambio"
+              *ngIf="isEditMode && permisosModulo?.cambio"
+            >
+              Actualizar
             </button>
             <button type="button" class="btn btn-secondary" (click)="onReset()">Limpiar</button>
             <button type="button" class="btn btn-success" routerLink="/menu">Ir al Menú</button>
@@ -52,10 +67,22 @@
           <td>{{ m.usuariomodificacion }}</td>
           <td class="sticky-buttons">
             <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-info" (click)="onEdit(m)">
+              <!-- Botón Editar (Cambio) -->
+              <button
+                class="btn btn-sm btn-info"
+                (click)="onEdit(m)"
+                *ngIf="permisosModulo?.cambio"
+                [disabled]="!permisosModulo?.cambio"
+              >
                 Editar
               </button>
-              <button class="btn btn-sm btn-danger" (click)="onDelete(m.idModulo!)">
+              <!-- Botón Eliminar (Baja) -->
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="onDelete(m.idModulo!)"
+                *ngIf="permisosModulo?.baja"
+                [disabled]="!permisosModulo?.baja"
+              >
                 Eliminar
               </button>
             </div>

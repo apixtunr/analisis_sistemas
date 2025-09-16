@@ -24,6 +24,6 @@ export class MenuComponent {
 
   logout(): void {
     localStorage.removeItem("usuario");
-    this.router.navigate(['/login']);
+    window.location.href = '/loginusuarios';
   }
 }

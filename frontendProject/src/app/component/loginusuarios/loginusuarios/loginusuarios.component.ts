@@ -30,14 +30,9 @@ export class LoginusuariosComponent {
         (resp: any) => {
           if (resp.success && resp.usuario) {
             localStorage.setItem("usuario", JSON.stringify(resp.usuario));
-            // Redirección según rol
-            if (resp.usuario.rol === 18) {
+            
               this.router.navigate(['/menu']);
-            } else if (resp.usuario.rol === 2) {
-              this.router.navigate(['/admin']);
-            } else {
-              this.router.navigate(['/home']);
-            }
+            
             alert("Bienvenido " + resp.usuario.nombre + " " + resp.usuario.apellido);
           } else {
             alert(resp.message || "Credenciales incorrectas");
@@ -52,10 +47,4 @@ export class LoginusuariosComponent {
       this.loginForm.markAllAsTouched();
     }
   }
-
-  logout() {
-  localStorage.removeItem("usuario");
-  this.router.navigate(['/login']);
-}
-
 }

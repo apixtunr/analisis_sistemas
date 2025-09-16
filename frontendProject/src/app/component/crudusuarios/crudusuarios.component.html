@@ -139,18 +139,22 @@
 
         <!-- Botones -->
         <div class="mt-4 d-flex gap-2">
+          <!-- Botón Agregar (Alta) -->
           <button
             type="submit"
             class="btn btn-primary"
-            [disabled]="usuarioForm.invalid"
+            [disabled]="usuarioForm.invalid || !permisosUsuario?.alta"
+            *ngIf="permisosUsuario?.alta"
           >
             Agregar
           </button>
+          <!-- Botón Actualizar (Cambio) -->
           <button
             type="button"
             class="btn btn-success"
-            [disabled]="usuarioForm.invalid"
+            [disabled]="usuarioForm.invalid || !permisosUsuario?.cambio"
             (click)="onUpdate()"
+            *ngIf="permisosUsuario?.cambio"
           >
             Actualizar
           </button>
@@ -203,12 +207,21 @@
           <td>{{ usr.pregunta }}</td>
           <td>{{ usr.respuesta }}</td>
           <td class="text-center">
-            <button class="btn btn-sm btn-info" (click)="onEdit(usr)">
+            <!-- Botón Editar (Cambio) -->
+            <button
+              class="btn btn-sm btn-info"
+              (click)="onEdit(usr)"
+              *ngIf="permisosUsuario?.cambio"
+              [disabled]="!permisosUsuario?.cambio"
+            >
               Editar
             </button>
+            <!-- Botón Eliminar (Baja) -->
             <button
               class="btn btn-sm btn-danger"
               (click)="onDelete(usr.idUsuario)"
+              *ngIf="permisosUsuario?.baja"
+              [disabled]="!permisosUsuario?.baja"
             >
               Eliminar
             </button>

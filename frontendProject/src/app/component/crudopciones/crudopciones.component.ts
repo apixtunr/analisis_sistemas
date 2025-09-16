@@ -5,6 +5,8 @@ import { OpcionService } from '../../service/opcion.service';
 import { CrudmenuService } from '../../service/crudmenu.service';
 import { Opcion } from '../../entity/opcion';
 import { Menu } from '../../entity/menu';
+import { PermisoService } from '../../service/permisoservice';
+import { RolOpcion } from '../../entity/rolopcion';
 
 @Component({
   selector: 'app-crudopciones',
@@ -13,6 +15,7 @@ import { Menu } from '../../entity/menu';
   styleUrl: './crudopciones.component.css'
 })
 export class CrudopcionesComponent implements OnInit {
+  permisosOpcion: RolOpcion | undefined;
   opciones: Opcion[] = [];
   menus: Menu[] = [];
   opcionForm!: FormGroup;
@@ -25,6 +28,7 @@ export class CrudopcionesComponent implements OnInit {
     private crudmenuService: CrudmenuService,
     private fb: FormBuilder,
     private router: Router
+  , private permisoService: PermisoService
   ) {}
   regresarAlMenu() {
     this.router.navigate(['/menu']); // Cambia '/menu' por la ruta real de tu menú principal si es diferente
@@ -46,6 +50,12 @@ export class CrudopcionesComponent implements OnInit {
     this.crudmenuService.getMenus().subscribe({
       next: (data) => this.menus = data,
       error: () => this.error = 'Error al cargar menús'
+    });
+    // Obtener permisos para opciones (idOpcion=8)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(8, idRole).subscribe(permiso => {
+      this.permisosOpcion = permiso;
     });
   }
 
