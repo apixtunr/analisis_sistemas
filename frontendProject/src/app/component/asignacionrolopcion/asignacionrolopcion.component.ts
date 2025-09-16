@@ -132,12 +132,12 @@ export class AsignacionrolopcionComponent implements OnInit {
     this.cargando = true;
     const rol = this.formularioAsignacion.get('rol')?.value;
     const ahora = new Date().toISOString();
-    const permisos: RolOpcion[] = this.opciones.map((opcion, i) => {
-      const permiso = this.permisosArray.at(i).value;
+    const permisos: RolOpcion[] = this.permisosArray.controls.map((control) => {
+      const permiso = control.value;
       return {
         id: {
           idRole: rol.idRole,
-          idOpcion: opcion.idOpcion
+          idOpcion: permiso.idOpcion
         },
         alta: permiso.alta,
         baja: permiso.baja,
