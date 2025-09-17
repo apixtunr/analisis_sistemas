@@ -2,7 +2,7 @@
   <h2 class="mb-4 text-center">Gestión de Usuarios</h2>
 
   <!-- Formulario para agregar/editar usuario -->
-  <div class="card mb-5 shadow-sm">
+  <div class="card mb-5 shadow-sm" *ngIf="permisosUsuario">
     <div class="card-body">
       <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
         <div class="row g-3">
@@ -55,12 +55,12 @@
           </div>
           <div class="col-md-3">
             <label class="form-label">Género</label>
-            <input
-              type="number"
-              formControlName="idGenero"
-              class="form-control"
-              placeholder="ID Género"
-            />
+            <select formControlName="idGenero" class="form-control">
+              <option value="0">Seleccione un género</option>
+              <option *ngFor="let genero of generos" [value]="genero.idgenero">
+                {{ genero.nombre }}
+              </option>
+            </select>
           </div>
           <div class="col-md-3">
             <label class="form-label">Correo Electrónico</label>
@@ -107,12 +107,12 @@
           </div>
           <div class="col-md-3">
             <label class="form-label">Sucursal</label>
-            <input
-              type="number"
-              formControlName="idSucursal"
-              class="form-control"
-              placeholder="ID Sucursal"
-            />
+            <select formControlName="idSucursal" class="form-control">
+              <option value="0">Seleccione una sucursal</option>
+              <option *ngFor="let sucursal of sucursales" [value]="sucursal.idSucursal">
+                {{ sucursal.nombre }}
+              </option>
+            </select>
           </div>
         </div>
 
@@ -139,23 +139,30 @@
 
         <!-- Botones -->
         <div class="mt-4 d-flex gap-2">
+          <!-- Botón Agregar (Alta) -->
           <button
             type="submit"
-            class="btn btn-primary"
-            [disabled]="usuarioForm.invalid"
+            class="btn btn-primary mb-3"
+            [disabled]="usuarioForm.invalid || !permisosUsuario.alta"
+            *ngIf="!isEditMode && permisosUsuario.alta"
           >
             Agregar
           </button>
+          <!-- Botón Actualizar (Cambio) -->
           <button
             type="button"
-            class="btn btn-success"
-            [disabled]="usuarioForm.invalid"
+            class="btn btn-success mb-3"
+            [disabled]="usuarioForm.invalid || !permisosUsuario.cambio"
             (click)="onUpdate()"
+            *ngIf="isEditMode && permisosUsuario.cambio"
           >
             Actualizar
           </button>
-          <button type="button" class="btn btn-secondary" (click)="onReset()">
+          <button type="button" class="btn btn-secondary mb-3" (click)="onReset()">
             Limpiar
+          </button>
+          <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+            Ir al Menú <i class="bi bi-arrow-right"></i>
           </button>
         </div>
       </form>
@@ -187,7 +194,7 @@
           <td>{{ usr.nombre }}</td>
           <td>{{ usr.apellido }}</td>
           <td>{{ usr.fechaNacimiento | date : "dd/MM/yyyy" }}</td>
-          <td>{{ usr.idGenero }}</td>
+          <td>{{ getGeneroNombre(usr.idGenero) }}</td>
           <td>{{ usr.correoElectronico }}</td>
           <td>
             <img
@@ -199,16 +206,25 @@
             />
           </td>
           <td>{{ usr.telefonoMovil }}</td>
-          <td>{{ usr.idSucursal }}</td>
+          <td>{{ getSucursalNombre(usr.idSucursal) }}</td>
           <td>{{ usr.pregunta }}</td>
           <td>{{ usr.respuesta }}</td>
           <td class="text-center">
-            <button class="btn btn-sm btn-info" (click)="onEdit(usr)">
+            <!-- Botón Editar (Cambio) -->
+            <button
+              class="btn btn-sm btn-info"
+              (click)="onEdit(usr)"
+              *ngIf="permisosUsuario && permisosUsuario.cambio"
+              [disabled]="!permisosUsuario.cambio"
+            >
               Editar
             </button>
+            <!-- Botón Eliminar (Baja) -->
             <button
               class="btn btn-sm btn-danger"
               (click)="onDelete(usr.idUsuario)"
+              *ngIf="permisosUsuario && permisosUsuario.baja"
+              [disabled]="!permisosUsuario.baja"
             >
               Eliminar
             </button>

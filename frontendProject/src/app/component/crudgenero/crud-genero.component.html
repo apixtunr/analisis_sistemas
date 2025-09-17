@@ -12,101 +12,44 @@
     <div class="card-body">
       <form #generoForm="ngForm" (ngSubmit)="onSubmit()">
         <div class="row g-3">
-          <div class="col-md-4">
-            <label for="idgenero" class="form-label">ID Género</label>
-            <input
-              type="number"
-              id="idgenero"
-              name="idgenero"
-              class="form-control"
-              [(ngModel)]="genero.idgenero"
-              readonly
-              style="background-color: #f8f9fa; cursor: not-allowed;"
-            />
-          </div>
-          <div class="col-md-8">
-            <label for="nombre" class="form-label">Nombre</label>
+          <div class="col-md-12">
+            <label for="nombre" class="form-label">Nombre del Género</label>
             <input
               type="text"
               id="nombre"
               name="nombre"
               class="form-control"
               [(ngModel)]="genero.nombre"
+              placeholder="Ingrese el nombre del género"
               required
             />
           </div>
         </div>
 
-        <div class="row g-3 mt-2">
-          <div class="col-md-6">
-            <label for="fechaCreacion" class="form-label">Fecha Creación</label>
-            <input
-              type="date"
-              id="fechaCreacion"
-              name="fechaCreacion"
-              class="form-control"
-              [(ngModel)]="genero.fechaCreacion"
-              readonly
-              style="background-color: #f8f9fa; cursor: not-allowed;"
-            />
-          </div>
-          <div class="col-md-6">
-            <label for="usuarioCreacion" class="form-label"
-              >Usuario Creación</label
-            >
-            <input
-              type="text"
-              id="usuarioCreacion"
-              name="usuarioCreacion"
-              class="form-control"
-              [(ngModel)]="genero.usuarioCreacion"
-              readonly
-              style="background-color: #f8f9fa; cursor: not-allowed;"
-            />
-          </div>
-        </div>
-
-        <div class="row g-3 mt-2">
-          <div class="col-md-6">
-            <label for="fechaModificacion" class="form-label"
-              >Fecha Modificación</label
-            >
-            <input
-              type="date"
-              id="fechaModificacion"
-              name="fechaModificacion"
-              class="form-control"
-              [(ngModel)]="genero.fechaModificacion"
-              readonly
-              style="background-color: #f8f9fa; cursor: not-allowed;"
-            />
-          </div>
-          <div class="col-md-6">
-            <label for="usuarioModificacion" class="form-label"
-              >Usuario Modificación</label
-            >
-            <input
-              type="text"
-              id="usuarioModificacion"
-              name="usuarioModificacion"
-              class="form-control"
-              [(ngModel)]="genero.usuarioModificacion"
-              readonly
-              style="background-color: #f8f9fa; cursor: not-allowed;"
-            />
-          </div>
-        </div>
-
         <div class="col-md-12 mt-3 d-flex gap-2">
+          <!-- Botón Crear (Alta) -->
           <button
             type="submit"
-            class="btn btn-primary"
-            [disabled]="!genero.nombre || genero.nombre.trim() === ''"
+            class="btn btn-primary mb-3"
+            [disabled]="!genero.nombre || genero.nombre.trim() === '' || !permisosGenero?.alta"
+            *ngIf="!isEditMode && permisosGenero?.alta"
           >
-            {{ genero.idgenero === 0 ? 'Crear' : 'Actualizar' }}
+            Crear
           </button>
-          <button type="button" class="btn btn-secondary" (click)="onReset()">
+          <!-- Botón Actualizar (Cambio) -->
+          <button
+            type="submit"
+            class="btn btn-primary mb-3"
+            [disabled]="!genero.nombre || genero.nombre.trim() === '' || !permisosGenero?.cambio"
+            *ngIf="isEditMode && permisosGenero?.cambio"
+          >
+            Actualizar
+          </button>
+          <button type="button" class="btn btn-secondary mb-3" (click)="onReset()">
             Limpiar
+          </button>
+          <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+            Ir al Menú <i class="bi bi-arrow-right"></i>
           </button>
         </div>
       </form>
@@ -137,12 +80,21 @@
           <td>{{ gen.usuarioModificacion }}</td>
           <td class="sticky-buttons">
             <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-info" (click)="onEdit(gen)">
+              <!-- Botón Editar (Cambio) -->
+              <button
+                class="btn btn-sm btn-info"
+                (click)="onEdit(gen)"
+                *ngIf="permisosGenero?.cambio"
+                [disabled]="!permisosGenero?.cambio"
+              >
                 Editar
               </button>
+              <!-- Botón Eliminar (Baja) -->
               <button
                 class="btn btn-sm btn-danger"
                 (click)="onDelete(gen.idgenero)"
+                *ngIf="permisosGenero?.baja"
+                [disabled]="!permisosGenero?.baja"
               >
                 Eliminar
               </button>

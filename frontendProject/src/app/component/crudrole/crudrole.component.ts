@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Role } from '../../entity/role';
 import { RoleService } from '../../service/role.service';
+import { PermisoService } from '../../service/permisoservice';
+import { RolOpcion } from '../../entity/rolopcion';
 
 @Component({
   selector: 'app-crudrole',
@@ -9,7 +11,9 @@ import { RoleService } from '../../service/role.service';
   styleUrls: ['./crudrole.component.css'],
 })
 export class CrudroleComponent implements OnInit {
-  constructor(private roleService: RoleService) {}
+  permisosRole: RolOpcion | undefined;
+  isEditMode: boolean = false;
+  constructor(private roleService: RoleService, private permisoService: PermisoService) {}
 
   loading = true;
   error = '';
@@ -24,6 +28,12 @@ export class CrudroleComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    // Obtener permisos para roles (idOpcion=5)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(5, idRole).subscribe(permiso => {
+      this.permisosRole = permiso;
+    });
     this.roleService.getRoles().subscribe({
       next: (data) => {
         this.roles = data;
@@ -84,6 +94,7 @@ export class CrudroleComponent implements OnInit {
 
   onEdit(role: Role) {
     this.role = { ...role };
+  this.isEditMode = true;
   }
 
   onDelete(idRole: number) {
@@ -117,5 +128,6 @@ export class CrudroleComponent implements OnInit {
       fechamodificacion: null,
       usuariomodificacion: '',
     };
+  this.isEditMode = false;
   }
 }

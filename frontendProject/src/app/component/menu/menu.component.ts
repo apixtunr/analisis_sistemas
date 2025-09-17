@@ -41,4 +41,7 @@ export class MenuComponent {
   toggleMenu(idMenu: number) {
     this.menuAbierto = this.menuAbierto === idMenu ? null : idMenu;
   }
+  localStorage.removeItem("usuario");
+  this.router.navigate(['/loginusuarios']);
+}
 }

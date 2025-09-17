@@ -5,6 +5,8 @@ import { CrudmenuService } from '../../service/crudmenu.service';
 import { ModuloService } from '../../service/modulo.service';
 import { Menu } from '../../entity/menu';
 import { Modulo } from '../../entity/modulo';
+import { PermisoService } from '../../service/permisoservice';
+import { RolOpcion } from '../../entity/rolopcion';
 
 @Component({
   selector: 'app-crudmenu',
@@ -13,6 +15,7 @@ import { Modulo } from '../../entity/modulo';
   styleUrl: './crudmenu.component.css'
 })
 export class CrudmenuComponent implements OnInit {
+  permisosMenu: RolOpcion | undefined;
   menuForm!: FormGroup;
   menus: Menu[] = [];
   modulos: Modulo[] = [];
@@ -25,6 +28,7 @@ export class CrudmenuComponent implements OnInit {
     private crudmenuService: CrudmenuService,
     private moduloService: ModuloService,
     private router: Router
+  , private permisoService: PermisoService
   ) {}
 
   regresarAlMenu() {
@@ -42,6 +46,12 @@ export class CrudmenuComponent implements OnInit {
     });
     this.cargarMenus();
     this.cargarModulos();
+    // Obtener permisos para menú (idOpcion=7)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(7, idRole).subscribe(permiso => {
+      this.permisosMenu = permiso;
+    });
   }
 
   cargarMenus() {

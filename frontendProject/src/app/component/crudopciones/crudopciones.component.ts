@@ -7,6 +7,8 @@ import { Modulo } from '../../entity/modulo';
 import { ModuloService } from '../../service/modulo.service';
 import { Opcion } from '../../entity/opcion';
 import { Menu } from '../../entity/menu';
+import { PermisoService } from '../../service/permisoservice';
+import { RolOpcion } from '../../entity/rolopcion';
 
 @Component({
   selector: 'app-crudopciones',
@@ -15,6 +17,7 @@ import { Menu } from '../../entity/menu';
   styleUrl: './crudopciones.component.css'
 })
 export class CrudopcionesComponent implements OnInit {
+  permisosOpcion: RolOpcion | undefined;
   opciones: Opcion[] = [];
   menus: Menu[] = [];
   modulos: Modulo[] = [];
@@ -50,6 +53,12 @@ export class CrudopcionesComponent implements OnInit {
     this.crudmenuService.getMenus().subscribe({
       next: (data) => this.menus = data,
       error: () => this.error = 'Error al cargar menús'
+    });
+    // Obtener permisos para opciones (idOpcion=8)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(8, idRole).subscribe(permiso => {
+      this.permisosOpcion = permiso;
     });
     this.moduloService.getModulos().subscribe({
       next: (data) => this.modulos = data,

@@ -12,20 +12,8 @@
     <div class="card-body">
       <form #statusUsuarioForm="ngForm" (ngSubmit)="onSubmit()">
         <div class="row g-3">
-          <div class="col-md-4">
-            <label for="idstatususuario" class="form-label">ID Status Usuario</label>
-            <input
-              type="number"
-              id="idstatususuario"
-              name="idstatususuario"
-              class="form-control"
-              [(ngModel)]="statusUsuario.idstatususuario"
-              readonly
-              style="background-color: #f8f9fa; cursor: not-allowed;"
-            />
-          </div>
-          <div class="col-md-8">
-            <label for="nombre" class="form-label">Nombre</label>
+          <div class="col-md-12">
+            <label for="nombre" class="form-label">Nombre del Status Usuario</label>
             <input
               type="text"
               id="nombre"
@@ -38,62 +26,30 @@
           </div>
         </div>
 
-        <div class="row g-3 mt-2">
-          <div class="col-md-6">
-            <label for="fechaCreacion" class="form-label">Fecha Creación</label>
-            <input
-              type="date"
-              id="fechaCreacion"
-              name="fechaCreacion"
-              class="form-control"
-              [(ngModel)]="statusUsuario.fechaCreacion"
-              readonly
-              style="background-color: #f8f9fa; cursor: not-allowed;"
-            />
-          </div>
-          <div class="col-md-6">
-            <label for="usuarioCreacion" class="form-label"
-              >Usuario Creación</label
-            >
-            <input
-              type="text"
-              id="usuarioCreacion"
-              name="usuarioCreacion"
-              class="form-control"
-              [(ngModel)]="statusUsuario.usuarioCreacion"
-              readonly
-              style="background-color: #f8f9fa; cursor: not-allowed;"
-            />
-          </div>
-        </div>
-
-        <div class="row g-3 mt-2">
-          <div class="col-md-6">
-            <label for="fechaModificacion" class="form-label"
-              >Fecha Modificación</label
-            >
-            <input
-              type="date"
-              id="fechaModificacion"
-              name="fechaModificacion"
-              class="form-control"
-              [(ngModel)]="statusUsuario.fechaModificacion"
-              readonly
-              style="background-color: #f8f9fa; cursor: not-allowed;"
-            />
-          </div>
-        </div>
-
         <div class="col-md-12 mt-3 d-flex gap-2">
+          <!-- Botón Crear (Alta) -->
+          <button
+            type="submit"
+            class="btn btn-primary mb-3"
+            [disabled]="!statusUsuario.nombre || statusUsuario.nombre.trim() === '' || !permisosStatusUsuario?.alta"
+            *ngIf="!isEditMode && permisosStatusUsuario?.alta"
+          >
+            Crear
+          </button>
+          <!-- Botón Actualizar (Cambio) -->
           <button
             type="submit"
             class="btn btn-primary"
-            [disabled]="!statusUsuario.nombre || statusUsuario.nombre.trim() === ''"
+            [disabled]="!statusUsuario.nombre || statusUsuario.nombre.trim() === '' || !permisosStatusUsuario?.cambio"
+            *ngIf="isEditMode && permisosStatusUsuario?.cambio"
           >
-            {{ statusUsuario.idstatususuario === 0 ? 'Crear' : 'Actualizar' }}
+            Actualizar
           </button>
-          <button type="button" class="btn btn-secondary" (click)="onReset()">
+          <button type="button" class="btn btn-secondary mb-3" (click)="onReset()">
             Limpiar
+          </button>
+          <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+            Ir al Menú <i class="bi bi-arrow-right"></i>
           </button>
         </div>
       </form>
@@ -117,6 +73,7 @@
           <th>Fecha Creación</th>
           <th>Usuario Creación</th>
           <th>Fecha Modificación</th>
+          <th>Usuario Modificación</th>
           <th class="sticky-buttons">Acciones</th>
         </tr>
       </thead>
@@ -127,14 +84,24 @@
           <td>{{ statusUsr.fechaCreacion | date:'dd/MM/yyyy' }}</td>
           <td>{{ statusUsr.usuarioCreacion }}</td>
           <td>{{ statusUsr.fechaModificacion | date:'dd/MM/yyyy' }}</td>
+          <td>{{ statusUsr.usuarioModificacion }}</td>
           <td class="sticky-buttons">
             <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-info" (click)="onEdit(statusUsr)">
+              <!-- Botón Editar (Cambio) -->
+              <button
+                class="btn btn-sm btn-info"
+                (click)="onEdit(statusUsr)"
+                *ngIf="permisosStatusUsuario?.cambio"
+                [disabled]="!permisosStatusUsuario?.cambio"
+              >
                 Editar
               </button>
+              <!-- Botón Eliminar (Baja) -->
               <button
                 class="btn btn-sm btn-danger"
                 (click)="onDelete(statusUsr.idstatususuario)"
+                *ngIf="permisosStatusUsuario?.baja"
+                [disabled]="!permisosStatusUsuario?.baja"
               >
                 Eliminar
               </button>

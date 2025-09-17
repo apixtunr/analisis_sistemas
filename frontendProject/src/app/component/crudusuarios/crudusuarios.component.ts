@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { UsuarioService } from '../../service/usuario.service';
+import { GeneroService } from '../../service/genero.service';
+import { SucursalService } from '../../service/sucursal.service';
 import { Usuario } from '../../entity/usuario';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { PermisoService } from '../../service/permisoservice';
+import { RolOpcion } from '../../entity/rolopcion';
 
 @Component({
   selector: 'app-crudusuarios',
@@ -10,9 +14,14 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrl: './crudusuarios.component.css',
 })
 export class CrudusuariosComponent implements OnInit {
+  permisosUsuario: RolOpcion | undefined;
+  isEditMode = false;
   constructor(
     private usuarioService: UsuarioService,
+    private generoService: GeneroService,
+    private sucursalService: SucursalService,
     private fb: FormBuilder
+  , private permisoService: PermisoService
   ) {}
 
   loading = true;
@@ -21,6 +30,8 @@ export class CrudusuariosComponent implements OnInit {
 
   usuarioForm!: FormGroup;
   usuarios: any[] = []; // lista de usuarios
+  generos: any[] = []; // lista de géneros
+  sucursales: any[] = []; // lista de sucursales
 
   //Método para inicializar el componente
   ngOnInit(): void {
@@ -39,9 +50,17 @@ export class CrudusuariosComponent implements OnInit {
       respuesta: [''],
     });
 
+    // Obtener permisos para usuarios (idOpcion=8)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(9, idRole).subscribe(permiso => {
+      this.permisosUsuario = permiso;
+    });
+
+    // Cargar usuarios
     this.usuarioService.getUsuarios().subscribe({
       next: (data) => {
-        this.usuarios = data; // aquí cargás la lista
+        this.usuarios = data;
         this.loading = false;
       },
       error: () => {
@@ -49,12 +68,60 @@ export class CrudusuariosComponent implements OnInit {
         this.loading = false;
       },
     });
+
+    // Cargar géneros
+    this.generoService.getGeneros().subscribe({
+      next: (data) => {
+        this.generos = data;
+        console.log('Géneros cargados:', this.generos);
+      },
+      error: (err) => {
+        console.error('Error al cargar géneros:', err);
+      }
+    });
+
+    // Cargar sucursales
+    this.sucursalService.getSucursales().subscribe({
+      next: (data) => {
+        this.sucursales = data;
+        console.log('Sucursales cargadas:', this.sucursales);
+      },
+      error: (err) => {
+        console.error('Error al cargar sucursales:', err);
+      }
+    });
+  }
+
+  // Método para obtener el nombre del género por ID
+  getGeneroNombre(idGenero: number): string {
+    const genero = this.generos.find(g => g.idgenero === idGenero);
+    return genero ? genero.nombre : 'No especificado';
+  }
+
+  // Método para obtener el nombre de la sucursal por ID
+  getSucursalNombre(idSucursal: number): string {
+    const sucursal = this.sucursales.find(s => s.idSucursal === idSucursal);
+    return sucursal ? sucursal.nombre : 'No especificado';
   }
 
   //Método para crear usuario
   onSubmit() {
-     if (this.usuarioForm.invalid) {
+    console.log('=== INICIANDO onSubmit ===');
+    console.log('Formulario válido:', this.usuarioForm.valid);
+    console.log('Valores del formulario:', this.usuarioForm.value);
+    console.log('Errores del formulario:', this.usuarioForm.errors);
+
+    if (this.usuarioForm.invalid) {
+      console.log('Formulario inválido, marcando campos como touched');
       this.usuarioForm.markAllAsTouched();
+      
+      // Ver qué campos específicos están inválidos
+      Object.keys(this.usuarioForm.controls).forEach(key => {
+        const control = this.usuarioForm.get(key);
+        if (control && control.invalid) {
+          console.log(`Campo inválido: ${key}`, control.errors);
+        }
+      });
       return;
     }
 
@@ -75,13 +142,21 @@ export class CrudusuariosComponent implements OnInit {
       usuarioModificacion: ''
     };
 
+    console.log('Usuario a crear:', usuario);
+    console.log('=== ENVIANDO AL BACKEND ===');
+
     this.usuarioService.createUsuario(usuario).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('✅ Usuario creado exitosamente:', response);
         alert('Usuario creado correctamente.');
         this.ngOnInit(); // recargar lista
         this.onReset();
       },
-      error: () => {
+      error: (error) => {
+        console.error('❌ Error al crear usuario:', error);
+        console.error('Detalles del error:', error.error);
+        console.error('Status del error:', error.status);
+        console.error('Mensaje del error:', error.message);
         this.error = 'El usuario ya está en uso';
       }
     });
@@ -89,17 +164,21 @@ export class CrudusuariosComponent implements OnInit {
 
   //Editar usuario (trae los datos al formulario)
   onEdit(usuario: Usuario) {
-  // Carga todos los campos normales en el formulario
-  const { fotografia, ...usuarioData } = usuario;
-  this.usuarioForm.patchValue(usuarioData);
+    // Carga todos los campos normales en el formulario
+    const { fotografia, ...usuarioData } = usuario;
+    this.usuarioForm.patchValue(usuarioData);
 
-  // Si quieres mostrar la foto en el formulario
-  if (fotografia) {
-    this.usuarioForm.get('fotografia')?.setValue(fotografia);
-  } else {
-    this.imagenPreview = null;
+    // Si quieres mostrar la foto en el formulario
+    if (fotografia) {
+      this.usuarioForm.get('fotografia')?.setValue(fotografia);
+    } else {
+      this.imagenPreview = null;
+    }
+    this.isEditMode = true;
+    console.log('Editando usuario:', usuario);
+    console.log('Valores del formulario:', this.usuarioForm.value);
   }
-}
+
   //Método para eliminar usuario
   onDelete(idUsuario: string) {
     const confirmado = confirm('¿Estás seguro de eliminar este usuario?');
@@ -142,6 +221,8 @@ export class CrudusuariosComponent implements OnInit {
       return;
     }
 
+    console.log('Usuario a actualizar:', usuario);
+
     this.usuarioService.updateUsuario(usuario.idUsuario, usuario).subscribe({
       next: () => {
         alert('Usuario actualizado correctamente');
@@ -169,6 +250,7 @@ export class CrudusuariosComponent implements OnInit {
       idSucursal: 0,
       pregunta: '',
       respuesta: ''
-      });
-    };
+    });
+    this.isEditMode = false;
   }
+}

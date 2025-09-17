@@ -5,11 +5,10 @@
     </div>
     <form [formGroup]="loginForm" (ngSubmit)="login()" id="loginForm">
       <div class="mb-3">
-        <label class="form-label">Email: *</label>
-        <input type="text" class="form-control" formControlName="correoElectronico" placeholder="Email" />
-        <div *ngIf="loginForm.get('correoElectronico')?.invalid && loginForm.get('correoElectronico')?.touched" class="text-danger">
-          <small *ngIf="loginForm.get('correoElectronico')?.errors?.['required']">El email es obligatorio.</small>
-          <small *ngIf="loginForm.get('correoElectronico')?.errors?.['email']">Formato de email inválido.</small>
+        <label class="form-label">Usuario: *</label>
+        <input type="text" class="form-control" formControlName="idUsuario" placeholder="Usuario" />
+        <div *ngIf="loginForm.get('idUsuario')?.invalid && loginForm.get('idUsuario')?.touched" class="text-danger">
+          <small *ngIf="loginForm.get('idUsuario')?.errors?.['required']">El usuario es obligatorio.</small>
         </div>
       </div>
       <div class="mb-3">

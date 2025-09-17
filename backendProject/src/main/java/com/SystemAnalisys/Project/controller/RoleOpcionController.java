@@ -16,7 +16,7 @@ public class RoleOpcionController {
     private RoleOpcionService roleOpcionService;
 
     @GetMapping("/permisos/{idRole}")
-public List<RoleOpcion> getPermisosPorRol(@PathVariable Integer idRole) {
+    public List<RoleOpcion> getPermisosPorRol(@PathVariable Integer idRole) {
     return roleOpcionService.getPermisosPorRol(idRole);
 }
 
