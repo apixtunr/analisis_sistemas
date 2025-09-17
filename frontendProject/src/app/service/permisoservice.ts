@@ -10,9 +10,9 @@ export class PermisoService {
 
   private apiUrl = 'http://localhost:8080';
 
-  getPermisosEmpresa(idOpcionEmpresa: number, idRole: number): Observable<RolOpcion | undefined> {
+  getPermisos(idOpcion: number, idRole: number): Observable<RolOpcion | undefined> {
     return this.http.get<RolOpcion[]>(`${this.apiUrl}/roleopcion/permisos/${idRole}`).pipe(
-      map((permisos: RolOpcion[]) => permisos.find(p => p.id.idOpcion === idOpcionEmpresa))
+      map((permisos: RolOpcion[]) => permisos.find(p => p.id.idOpcion === idOpcion))
     );
   }
 }

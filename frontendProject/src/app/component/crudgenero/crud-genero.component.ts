@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common'; // Importa CommonModule
 import { FormsModule } from '@angular/forms'; // Importa FormsModule
 import { Genero } from '../../entity/genero';
 import { GeneroService } from '../../service/genero.service';
+import { PermisoService } from '../../service/permisoservice';
+import { RolOpcion } from '../../entity/rolopcion';
 
 @Component({
   selector: 'app-crud-genero',
@@ -11,6 +13,8 @@ import { GeneroService } from '../../service/genero.service';
   styleUrl: './crud-genero.component.css'
 })
 export class CrudGeneroComponent implements OnInit {
+  permisosGenero: RolOpcion | undefined;
+  isEditMode: boolean = false;
   loading = true;
   error = '';
   generos: Genero[] = []; // lista
@@ -22,10 +26,16 @@ export class CrudGeneroComponent implements OnInit {
     nombre: ''
     // Solo mantenemos los campos necesarios para el formulario
   };
-
-  constructor(private generoService: GeneroService) {}
+  
+  constructor(private generoService: GeneroService, private permisoService: PermisoService) {}
 
   ngOnInit(): void {
+    // Obtener permisos para géneros (idOpcion=3)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(3, idRole).subscribe(permiso => {
+      this.permisosGenero = permiso;
+    });
     this.getCurrentUser();
     this.initializeGenero();
     this.loadGeneros();
@@ -204,6 +214,7 @@ export class CrudGeneroComponent implements OnInit {
 
   onReset(): void {
     this.initializeGenero();
-    this.error = ''; // Limpiar errores al resetear
+    this.error = '';
+  this.isEditMode = false;
   }
 }

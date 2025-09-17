@@ -3,8 +3,12 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { OpcionService } from '../../service/opcion.service';
 import { CrudmenuService } from '../../service/crudmenu.service';
+import { Modulo } from '../../entity/modulo';
+import { ModuloService } from '../../service/modulo.service';
 import { Opcion } from '../../entity/opcion';
 import { Menu } from '../../entity/menu';
+import { PermisoService } from '../../service/permisoservice';
+import { RolOpcion } from '../../entity/rolopcion';
 
 @Component({
   selector: 'app-crudopciones',
@@ -13,8 +17,10 @@ import { Menu } from '../../entity/menu';
   styleUrl: './crudopciones.component.css'
 })
 export class CrudopcionesComponent implements OnInit {
+  permisosOpcion: RolOpcion | undefined;
   opciones: Opcion[] = [];
   menus: Menu[] = [];
+  modulos: Modulo[] = [];
   opcionForm!: FormGroup;
   editando: boolean = false;
   idEditando: number | null = null;
@@ -24,7 +30,9 @@ export class CrudopcionesComponent implements OnInit {
     private opcionService: OpcionService,
     private crudmenuService: CrudmenuService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private moduloService: ModuloService,
+    private permisoService: PermisoService
   ) {}
   regresarAlMenu() {
     this.router.navigate(['/menu']); // Cambia '/menu' por la ruta real de tu menú principal si es diferente
@@ -46,6 +54,16 @@ export class CrudopcionesComponent implements OnInit {
     this.crudmenuService.getMenus().subscribe({
       next: (data) => this.menus = data,
       error: () => this.error = 'Error al cargar menús'
+    });
+    // Obtener permisos para opciones (idOpcion=8)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(8, idRole).subscribe(permiso => {
+      this.permisosOpcion = permiso;
+    });
+    this.moduloService.getModulos().subscribe({
+      next: (data) => this.modulos = data,
+      error: () => this.error = 'Error al cargar módulos'
     });
   }
 
@@ -144,5 +162,10 @@ export class CrudopcionesComponent implements OnInit {
   getNombreMenu(idMenu: number): string {
     const menu = this.menus.find(m => m.idmenu === idMenu);
     return menu ? menu.nombre : idMenu.toString();
+  }
+
+  getNombreModulo(idmodulo: number): string {
+    const modulo = this.modulos.find(m => m.idModulo === idmodulo);
+    return modulo ? modulo.nombre : '';
   }
 }

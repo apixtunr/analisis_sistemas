@@ -14,11 +14,30 @@
 
         <div class="row g-3 mt-3">
           <div class="col-md-12 d-flex gap-2">
-            <button type="submit" class="btn btn-primary" [disabled]="!roleForm.form.valid">
+            <!-- Botón Guardar (Alta) -->
+            <button
+              type="submit"
+              class="btn btn-primary mb-3"
+              [disabled]="!roleForm.form.valid || !permisosRole?.alta"
+              *ngIf="!isEditMode && permisosRole?.alta"
+            >
               Guardar
             </button>
-            <button type="button" class="btn btn-secondary" (click)="onReset()">Limpiar</button>
-            <button type="button" class="btn btn-success" routerLink="/menu">Ir al Menú</button>
+            <!-- Botón Actualizar (Cambio) -->
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="!roleForm.form.valid || !permisosRole?.cambio"
+              *ngIf="isEditMode && permisosRole?.cambio"
+            >
+              Actualizar
+            </button>
+            <button type="button" class="btn btn-secondary mb-3" (click)="onReset()">
+              Limpiar
+            </button>
+            <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+              Ir al Menú <i class="bi bi-arrow-right"></i>
+            </button>
           </div>
         </div>
       </form>
@@ -49,10 +68,22 @@
           <td>{{ r.usuariomodificacion }}</td>
           <td class="sticky-buttons">
             <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-info" (click)="onEdit(r)">
+              <!-- Botón Editar (Cambio) -->
+              <button
+                class="btn btn-sm btn-info"
+                (click)="onEdit(r)"
+                *ngIf="permisosRole?.cambio"
+                [disabled]="!permisosRole?.cambio"
+              >
                 Editar
               </button>
-              <button class="btn btn-sm btn-danger" (click)="onDelete(r.idRole!)">
+              <!-- Botón Eliminar (Baja) -->
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="onDelete(r.idRole!)"
+                *ngIf="permisosRole?.baja"
+                [disabled]="!permisosRole?.baja"
+              >
                 Eliminar
               </button>
             </div>

@@ -1,5 +1,7 @@
 package com.SystemAnalisys.Project.controller;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -103,6 +105,7 @@ public class UsuariosController {
             user.setIdStatusUsuario(updatedUsuario.getIdStatusUsuario());
 
             // Rehashear si viene una nueva contraseña
+
             if (updatedUsuario.getPassword() != null && !updatedUsuario.getPassword().isEmpty()) {
                 String hash = passwordEncoder.encode(updatedUsuario.getPassword());
                 user.setPassword(hash);
@@ -110,7 +113,7 @@ public class UsuariosController {
 
             user.setIdGenero(updatedUsuario.getIdGenero());
             user.setUltimaFechaIngreso(updatedUsuario.getUltimaFechaIngreso());
-            user.setIntentosDeAcceso(updatedUsuario.getIntentosDeAcceso());
+            user.setIntentosDeAcceso(0); // Reiniciar intentos de acceso al actualizar
             user.setSesionActual(updatedUsuario.getSesionActual());
             user.setUltimaFechaCambioPassword(updatedUsuario.getUltimaFechaCambioPassword());
             user.setCorreoElectronico(updatedUsuario.getCorreoElectronico());
@@ -154,14 +157,46 @@ public class UsuariosController {
         response.put("message", result.getMessage());
 
         if (result.isSuccess() && result.getUsuario() != null) {
-            // Guardar en sesión
-            request.getSession(true).setAttribute("usuario", result.getUsuario());
+            Usuario user = result.getUsuario();
+
+            boolean expirada = false;
+            try {
+                Sucursal sucursal = sucursalRepository.findById(user.getIdSucursal()).orElse(null);
+                if (sucursal != null) {
+                    Empresa empresa = empresaRepository.findById(sucursal.getIdEmpresa()).orElse(null);
+                    if (empresa != null) {
+                        Integer diasCaducidad = empresa.getPasswordCantidadCaducidadDias();
+                        if (diasCaducidad != null && diasCaducidad > 0) {
+                            Date lastChange = user.getUltimaFechaCambioPassword();
+                            if (lastChange == null) {
+                                expirada = true; // nunca la cambió
+                            } else {
+                                long days = Duration.between(lastChange.toInstant(), Instant.now()).toDays();
+                                expirada = days >= diasCaducidad;
+                            }
+                            user.setRequiereCambiarPassword(expirada ? 1 : 0);
+                            usuariosService.save(user);
+                        }
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+
+            if (expirada) {
+                response.put("success", false);
+                response.put("message", "La contraseña ha expirado. Debe cambiarla antes de iniciar sesión.");
+                return ResponseEntity.ok(response);
+            }
+
+            // Solo si no está expirada guardamos en sesión
+            request.getSession(true).setAttribute("usuario", user);
 
             Map<String, Object> userData = new HashMap<>();
-            userData.put("id", result.getUsuario().getIdUsuario());
-            userData.put("nombre", result.getUsuario().getNombre());
-            userData.put("apellido", result.getUsuario().getApellido());
-            userData.put("rol", result.getUsuario().getIdRole());
+            userData.put("id", user.getIdUsuario());
+            userData.put("nombre", user.getNombre());
+            userData.put("apellido", user.getApellido());
+            userData.put("rol", user.getIdRole());
+            userData.put("requiereCambiarPassword", user.getRequiereCambiarPassword());
             response.put("usuario", userData);
         }
 
@@ -218,8 +253,7 @@ public class UsuariosController {
         return ResponseEntity.ok(Map.of("preguntaSeguridad", user.get().getPregunta()));
     }
 
-    // Método para cambiar la contraseña después de validar la respuesta de
-    // seguridad
+    // Método para cambiar la contraseña después de validar la respuesta
     @PostMapping("api/cambiarcontrasena")
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> payload) {
         String idUsuario = payload.get("idUsuario");

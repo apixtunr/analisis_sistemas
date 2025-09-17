@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { SucursalService } from '../../service/sucursal.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EmpresaService } from '../../service/empresa.service';
+import { PermisoService } from '../../service/permisoservice';
+import { RolOpcion } from '../../entity/rolopcion';
 
 @Component({
   selector: 'app-crudsucursales',
@@ -11,10 +13,12 @@ import { EmpresaService } from '../../service/empresa.service';
   styleUrl: './crudsucursales.component.css',
 })
 export class CrudsucursalesComponent implements OnInit {
+  permisosSucursal: RolOpcion | undefined;
   constructor(
     private sucursalService: SucursalService,
     private fb: FormBuilder,
     private empresaService: EmpresaService
+  , private permisoService: PermisoService
   ) {}
 
   loading = true;
@@ -27,6 +31,12 @@ export class CrudsucursalesComponent implements OnInit {
 
   //Método para inicializar el componente
   ngOnInit(): void {
+    // Obtener permisos para sucursales (idOpcion=2)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(2, idRole).subscribe(permiso => {
+      this.permisosSucursal = permiso;
+    });
     this.sucursalForm = this.fb.group({
       idSucursal: [0, Validators.required],
       nombre: ['', Validators.required],

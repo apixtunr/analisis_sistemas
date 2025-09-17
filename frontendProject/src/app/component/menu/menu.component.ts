@@ -11,6 +11,10 @@ import { Router } from '@angular/router';
 export class MenuComponent {
   estructuraMenu: any[] = [];
 
+  // Variables para controlar el estado de los menús
+  moduloAbierto: number | null = null;
+  menuAbierto: number | null = null;
+
   constructor(
     private estructuraMenuService: EstructuraMenuService,
     private router: Router
@@ -22,8 +26,17 @@ export class MenuComponent {
     });
   }
 
-  logout(): void {
-    localStorage.removeItem("usuario");
-    this.router.navigate(['/login']);
+  toggleModulo(idModulo: number) {
+    this.moduloAbierto = this.moduloAbierto === idModulo ? null : idModulo;
+    this.menuAbierto = null; // opcional: cierra menús al cerrar módulo
   }
+  // Alterna el estado del menú
+  toggleMenu(idMenu: number) {
+    this.menuAbierto = this.menuAbierto === idMenu ? null : idMenu;
+  }
+
+  logout(): void {
+  localStorage.removeItem("usuario");
+  this.router.navigate(['/loginusuarios']);
+}
 }

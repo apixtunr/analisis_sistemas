@@ -5,8 +5,12 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import com.SystemAnalisys.Project.dto.UsuarioDTO;
+import com.SystemAnalisys.Project.entity.Empresa;
+import com.SystemAnalisys.Project.entity.Sucursal;
 import com.SystemAnalisys.Project.entity.Usuario;
 import com.SystemAnalisys.Project.repository.UsuarioRepository;
+import com.SystemAnalisys.Project.repository.EmpresaRepository;
+import com.SystemAnalisys.Project.repository.SucursalRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -16,11 +20,15 @@ import com.SystemAnalisys.Project.controller.LoginResult;
 @Service
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
+    private final EmpresaRepository empresaRepository;
+    private final SucursalRepository sucursalRepository;
     private final BitacoraAccesoService bitacoraAccesoService;
     private final PasswordService passwordService = new PasswordService();
 
-    public UsuarioService(UsuarioRepository usuarioRepository, BitacoraAccesoService bitacoraAccesoService) {
+    public UsuarioService(UsuarioRepository usuarioRepository, BitacoraAccesoService bitacoraAccesoService, EmpresaRepository empresaRepository, SucursalRepository sucursalRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.empresaRepository = empresaRepository;
+        this.sucursalRepository = sucursalRepository;
         this.bitacoraAccesoService = bitacoraAccesoService;
     }
 
@@ -45,50 +53,80 @@ public class UsuarioService {
     }
 
     public LoginResult login(String idUsuario, String password, HttpServletRequest request) {
-        // 1. Buscar el usuario en la BD
-        Optional<Usuario> userOptional = usuarioRepository.findById(idUsuario);
+    // 1. Buscar el usuario en la BD
+    Optional<Usuario> userOptional = usuarioRepository.findById(idUsuario);
 
-        if (!userOptional.isPresent()) {
-            // 2. Registrar intento fallido: usuario no existe
-            bitacoraAccesoService.registrarAcceso(
-                    idUsuario, // Usuario ingresado
-                    "Usuario ingresado no existe", // Tipo de acceso (de BD)
-                    "LOGIN", // Acción
-                    request, // Request para IP y User-Agent
-                    null // Sesión (aún no se usa)
-            );
-
-            // Retornar resultado del login
-            return new LoginResult(false, "Usuario no encontrado", null, "USER_NOT_FOUND");
-        }
-
-        // 3. Usuario encontrado
-        Usuario usuario = userOptional.get();
-
-        // 4. Verificar contraseña
-        if (!passwordService.verifyPassword(password, usuario.getPassword())) {
-            // Registrar intento fallido: password incorrecta
-            bitacoraAccesoService.registrarAcceso(
-                    usuario.getIdUsuario(),
-                    "Bloqueado - Password incorrecto/Numero de intentos excedidos",
-                    "LOGIN",
-                    request,
-                    null);
-
-            return new LoginResult(false, "Contraseña incorrecta", null, "INVALID_PASSWORD");
-        }
-
-        // 5. Login exitoso
+    if (!userOptional.isPresent()) {
+        // Registrar intento fallido: usuario no existe
         bitacoraAccesoService.registrarAcceso(
-                usuario.getIdUsuario(),
-                "Acceso Concedido",
+                idUsuario,
+                "Usuario ingresado no existe",
                 "LOGIN",
                 request,
-                null);
-
-        // 6. Retornar resultado exitoso
-        return new LoginResult(true, "Login exitoso", usuario, "LOGIN_OK");
+                null
+        );
+        return new LoginResult(false, "Usuario no encontrado", null, "USER_NOT_FOUND");
     }
+
+    Usuario usuario = userOptional.get();
+
+    // Verificar si el usuario está inactivo
+    if (usuario.getIdStatusUsuario() != null && usuario.getIdStatusUsuario() == 3) {
+        return new LoginResult(false, "Usuario inactivo, contacte al administrador", null, "USER_INACTIVE");
+    }
+
+    // 2. Verificar contraseña
+    if (!passwordService.verifyPassword(password, usuario.getPassword())) {
+        // Incrementar intentos de acceso
+        int intentos = usuario.getIntentosDeAcceso() != null ? usuario.getIntentosDeAcceso() : 0;
+        usuario.setIntentosDeAcceso(intentos + 1);
+
+        // Obtener empresa desde la sucursal
+        Sucursal sucursal = sucursalRepository.findById(usuario.getIdSucursal())
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada"));
+        Empresa empresa = empresaRepository.findById(sucursal.getIdEmpresa())
+                .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
+
+        // Si supera el máximo de intentos, bloquear usuario
+        if (usuario.getIntentosDeAcceso() >= empresa.getPasswordIntentosAntesDeBloquear()) {
+            usuario.setIdStatusUsuario(3); // 3 = bloqueado
+        }
+
+        // Guardar cambios en la BD
+        usuarioRepository.save(usuario);
+
+        // Registrar intento fallido
+        bitacoraAccesoService.registrarAcceso(
+                usuario.getIdUsuario(),
+                "Contraseña incorrecta",
+                "LOGIN",
+                request,
+                null
+        );
+
+        String message = usuario.getIdStatusUsuario() == 3
+                ? "Usuario bloqueado por demasiados intentos fallidos"
+                : "Contraseña incorrecta";
+
+        return new LoginResult(false, message, null, "INVALID_PASSWORD");
+    }
+
+    // 3. Login exitoso → resetear intentos
+    usuario.setIntentosDeAcceso(0);
+    usuarioRepository.save(usuario);
+
+    // Registrar acceso exitoso
+    bitacoraAccesoService.registrarAcceso(
+            usuario.getIdUsuario(),
+            "Acceso Concedido",
+            "LOGIN",
+            request,
+            null
+    );
+
+    return new LoginResult(true, "Login exitoso", usuario, "LOGIN_OK");
+}
+
 
     public void logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);

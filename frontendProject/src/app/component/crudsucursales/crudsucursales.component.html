@@ -1,8 +1,8 @@
 <div class="container my-4">
   <h2 class="mb-4 text-center">Gestión de Sucursales</h2>
   <div class="d-flex justify-content-start">
-    <button class="btn btn-secondary mb-3" routerLink="/menu">
-      Volver al menú
+    <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+      Ir al Menú <i class="bi bi-arrow-right"></i>
     </button>
   </div>
   <!-- Formulario Reactivo -->
@@ -95,12 +95,23 @@
 
         <div class="row g-3 mt-3">
           <div class="col-md-12 d-flex gap-2">
+            <!-- Botón Guardar (Alta) -->
             <button
               type="submit"
               class="btn btn-primary"
-              [disabled]="sucursalForm.invalid"
+              [disabled]="sucursalForm.invalid || !permisosSucursal?.alta"
+              *ngIf="!isEditMode && permisosSucursal?.alta"
             >
-              {{ isEditMode ? "Actualizar Sucursal" : "Agregar Sucursal" }}
+              Agregar Sucursal
+            </button>
+            <!-- Botón Actualizar (Cambio) -->
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="sucursalForm.invalid || !permisosSucursal?.cambio"
+              *ngIf="isEditMode && permisosSucursal?.cambio"
+            >
+              Actualizar Sucursal
             </button>
             <button type="button" class="btn btn-secondary" (click)="onReset()">
               Limpiar
@@ -139,12 +150,21 @@
           <td>{{ suc.usuarioModificacion }}</td>
           <td class="sticky-buttons">
             <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-info" (click)="onEdit(suc)">
+              <!-- Botón Editar (Cambio) -->
+              <button
+                class="btn btn-sm btn-info"
+                (click)="onEdit(suc)"
+                *ngIf="permisosSucursal?.cambio"
+                [disabled]="!permisosSucursal?.cambio"
+              >
                 Editar
               </button>
+              <!-- Botón Eliminar (Baja) -->
               <button
                 class="btn btn-sm btn-danger"
                 (click)="onDelete(suc.idSucursal)"
+                *ngIf="permisosSucursal?.baja"
+                [disabled]="!permisosSucursal?.baja"
               >
                 Eliminar
               </button>

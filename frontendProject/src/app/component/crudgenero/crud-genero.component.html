@@ -27,18 +27,29 @@
         </div>
 
         <div class="col-md-12 mt-3 d-flex gap-2">
+          <!-- Botón Crear (Alta) -->
           <button
             type="submit"
-            class="btn btn-primary"
-            [disabled]="!genero.nombre || genero.nombre.trim() === ''"
+            class="btn btn-primary mb-3"
+            [disabled]="!genero.nombre || genero.nombre.trim() === '' || !permisosGenero?.alta"
+            *ngIf="!isEditMode && permisosGenero?.alta"
           >
-            {{ genero.idgenero === 0 ? 'Crear' : 'Actualizar' }}
+            Crear
           </button>
-          <button type="button" class="btn btn-secondary" (click)="onReset()">
+          <!-- Botón Actualizar (Cambio) -->
+          <button
+            type="submit"
+            class="btn btn-primary mb-3"
+            [disabled]="!genero.nombre || genero.nombre.trim() === '' || !permisosGenero?.cambio"
+            *ngIf="isEditMode && permisosGenero?.cambio"
+          >
+            Actualizar
+          </button>
+          <button type="button" class="btn btn-secondary mb-3" (click)="onReset()">
             Limpiar
           </button>
-          <button type="button" class="btn btn-success" routerLink="/menu">
-            Ir al Menú
+          <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+            Ir al Menú <i class="bi bi-arrow-right"></i>
           </button>
         </div>
       </form>
@@ -69,12 +80,21 @@
           <td>{{ gen.usuarioModificacion }}</td>
           <td class="sticky-buttons">
             <div class="d-flex justify-content-center gap-2">
-              <button class="btn btn-sm btn-info" (click)="onEdit(gen)">
+              <!-- Botón Editar (Cambio) -->
+              <button
+                class="btn btn-sm btn-info"
+                (click)="onEdit(gen)"
+                *ngIf="permisosGenero?.cambio"
+                [disabled]="!permisosGenero?.cambio"
+              >
                 Editar
               </button>
+              <!-- Botón Eliminar (Baja) -->
               <button
                 class="btn btn-sm btn-danger"
                 (click)="onDelete(gen.idgenero)"
+                *ngIf="permisosGenero?.baja"
+                [disabled]="!permisosGenero?.baja"
               >
                 Eliminar
               </button>

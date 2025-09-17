@@ -4,6 +4,8 @@ import { GeneroService } from '../../service/genero.service';
 import { SucursalService } from '../../service/sucursal.service';
 import { Usuario } from '../../entity/usuario';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { PermisoService } from '../../service/permisoservice';
+import { RolOpcion } from '../../entity/rolopcion';
 
 @Component({
   selector: 'app-crudusuarios',
@@ -12,17 +14,19 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrl: './crudusuarios.component.css',
 })
 export class CrudusuariosComponent implements OnInit {
+  permisosUsuario: RolOpcion | undefined;
+  isEditMode = false;
   constructor(
     private usuarioService: UsuarioService,
     private generoService: GeneroService,
     private sucursalService: SucursalService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private permisoService: PermisoService
   ) {}
 
   loading = true;
   error = '';
   imagenPreview: string | null = null;
-  isEditMode = false; //Bandera para el modo edición
 
   usuarioForm!: FormGroup;
   usuarios: any[] = []; // lista de usuarios
@@ -44,6 +48,14 @@ export class CrudusuariosComponent implements OnInit {
       idSucursal: [0],
       pregunta: [''],
       respuesta: [''],
+      idStatusUsuario: [1, Validators.required], // 1 por defecto (activo)
+    });
+
+    // Obtener permisos para usuarios (idOpcion=8)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(9, idRole).subscribe((permiso) => {
+      this.permisosUsuario = permiso;
     });
 
     // Cargar usuarios
@@ -105,7 +117,6 @@ export class CrudusuariosComponent implements OnInit {
     const usuario: Usuario = {
       ...this.usuarioForm.value,
       // valores default
-      idStatusUsuario: 1,
       idRole: 2,
       fechaCreacion: new Date().toISOString(),
       ultimaFechaIngreso: null,
@@ -146,7 +157,12 @@ export class CrudusuariosComponent implements OnInit {
     // Carga todos los campos normales en el formulario
     const { fotografia, ...usuarioData } = usuario;
     this.usuarioForm.patchValue(usuarioData);
-      this.isEditMode = true; // Activar modo edición
+
+    // Deja el campo password vacío y sin required en modo edición
+    const passCtrl = this.usuarioForm.get('password');
+    passCtrl?.reset('');
+    passCtrl?.clearValidators();
+    passCtrl?.updateValueAndValidity();
 
     // Si quieres mostrar la foto en el formulario
     if (fotografia) {
@@ -154,7 +170,7 @@ export class CrudusuariosComponent implements OnInit {
     } else {
       this.imagenPreview = null;
     }
-
+    this.isEditMode = true;
     console.log('Editando usuario:', usuario);
     console.log('Valores del formulario:', this.usuarioForm.value);
   }
@@ -185,35 +201,53 @@ export class CrudusuariosComponent implements OnInit {
     });
   }
 
-  //Método para actualizar usuario
-  onUpdate() {
-    if (this.usuarioForm.invalid) return;
 
-    const usuario: Usuario = {
-      ...this.usuarioForm.value,
+// Método para actualizar usuario (solo modifica lo que venga del form)
+onUpdate() {
+  if (this.usuarioForm.invalid) return;
 
-      // valores default
-      idStatusUsuario: 1,
-      idRole: 2,
-      fechaCreacion: new Date().toISOString(),
-      ultimaFechaIngreso: new Date().toISOString(),
-      intentosDeAcceso: 0,
-      sesionActual: '',
-      ultimaFechaCambioPassword: null,
-      requiereCambiarPassword: 1,
-      usuarioCreacion: 'ADMIN',
-      fechaModificacion: '',
-      usuarioModificacion: 'ADMIN', // temporal
+  const { password, ...changes } = this.usuarioForm.value;
+
+  // Auditoría con el usuario logueado
+  const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+  const usuarioModificacion = usuarioLocal.id || 'ADMIN';
+
+  if (!changes.idUsuario) {
+    alert('No se puede actualizar un usuario sin ID');
+    return;
+  }
+
+  // Buscar el usuario actual en la lista cargada
+  const existing = this.usuarios.find(u => u.idUsuario === changes.idUsuario);
+
+  // Normalizar tipos si vienen de selects como strings
+  const normalizedChanges = {
+    ...changes,
+    idGenero: changes.idGenero !== undefined ? Number(changes.idGenero) : changes.idGenero,
+    idSucursal: changes.idSucursal !== undefined ? Number(changes.idSucursal) : changes.idSucursal,
+    idStatusUsuario: changes.idStatusUsuario !== undefined ? Number(changes.idStatusUsuario) : changes.idStatusUsuario,
+  };
+
+  // Función para mandar el update con merge
+  const doUpdate = (currentUser: any) => {
+    const nowIso = new Date().toISOString();
+
+    const payload: Usuario = {
+      ...currentUser,             // valores actuales (llenan lo que el form no envía)
+      ...normalizedChanges,       // sobrescribe solo lo que cambiaste en el form
+      ...(password && password.trim()
+        ? {
+            password,
+            ultimaFechaCambioPassword: nowIso // solo si cambió la contraseña
+            // opcional: requiereCambiarPassword: 0,
+          }
+        : {}
+      ),
+      fechaModificacion: nowIso,
+      usuarioModificacion: usuarioModificacion,
     };
 
-    if (!usuario.idUsuario) {
-      alert('No se puede actualizar un usuario sin ID');
-      return;
-    }
-
-    console.log('Usuario a actualizar:', usuario);
-
-    this.usuarioService.updateUsuario(usuario.idUsuario, usuario).subscribe({
+    this.usuarioService.updateUsuario(payload.idUsuario, payload).subscribe({
       next: () => {
         alert('Usuario actualizado correctamente');
         this.ngOnInit();
@@ -223,7 +257,28 @@ export class CrudusuariosComponent implements OnInit {
         this.error = 'Error al actualizar usuario';
       },
     });
+  };
+
+  if (existing) {
+    // Tenemos el usuario en memoria: merge directo
+    doUpdate(existing);
+  } else {
+    // Fallback: si no está en memoria, lo pedimos al backend para mergear correctamente
+    this.usuarioService.getUsuarios().subscribe({
+      next: (usuarios) => {
+        const current = usuarios.find((u: any) => u.idUsuario === changes.idUsuario);
+        if (current) {
+          doUpdate(current);
+        } else {
+          this.error = 'No se pudo encontrar el usuario a actualizar';
+        }
+      },
+      error: () => {
+        this.error = 'No se pudo cargar el usuario a actualizar';
+      }
+    });
   }
+}
 
   //Método para resetear el formulario
   onReset() {
@@ -241,6 +296,10 @@ export class CrudusuariosComponent implements OnInit {
       pregunta: '',
       respuesta: '',
     });
-    this.isEditMode = false; // volvemos al modo agregar
+    const passCtrl = this.usuarioForm.get('password');
+    passCtrl?.setValidators([Validators.required]); // requerido para crear
+    passCtrl?.updateValueAndValidity();
+
+    this.isEditMode = false;
   }
 }
