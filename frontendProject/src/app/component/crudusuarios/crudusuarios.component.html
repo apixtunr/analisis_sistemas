@@ -2,7 +2,7 @@
   <h2 class="mb-4 text-center">Gestión de Usuarios</h2>
 
   <!-- Formulario para agregar/editar usuario -->
-  <div class="card mb-5 shadow-sm">
+  <div class="card mb-5 shadow-sm" *ngIf="permisosUsuario">
     <div class="card-body">
       <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
         <div class="row g-3">
@@ -142,19 +142,19 @@
           <!-- Botón Agregar (Alta) -->
           <button
             type="submit"
-            class="btn btn-primary"
-            [disabled]="usuarioForm.invalid || !permisosUsuario?.alta"
-            *ngIf="permisosUsuario?.alta"
+            class="btn btn-primary mb-3"
+            [disabled]="usuarioForm.invalid || !permisosUsuario.alta"
+            *ngIf="!isEditMode && permisosUsuario.alta"
           >
             Agregar
           </button>
           <!-- Botón Actualizar (Cambio) -->
           <button
             type="button"
-            class="btn btn-success"
-            [disabled]="usuarioForm.invalid || !permisosUsuario?.cambio"
+            class="btn btn-success mb-3"
+            [disabled]="usuarioForm.invalid || !permisosUsuario.cambio"
             (click)="onUpdate()"
-            *ngIf="permisosUsuario?.cambio"
+            *ngIf="isEditMode && permisosUsuario.cambio"
           >
             Actualizar
           </button>
@@ -214,8 +214,8 @@
             <button
               class="btn btn-sm btn-info"
               (click)="onEdit(usr)"
-              *ngIf="permisosUsuario?.cambio"
-              [disabled]="!permisosUsuario?.cambio"
+              *ngIf="permisosUsuario && permisosUsuario.cambio"
+              [disabled]="!permisosUsuario.cambio"
             >
               Editar
             </button>
@@ -223,8 +223,8 @@
             <button
               class="btn btn-sm btn-danger"
               (click)="onDelete(usr.idUsuario)"
-              *ngIf="permisosUsuario?.baja"
-              [disabled]="!permisosUsuario?.baja"
+              *ngIf="permisosUsuario && permisosUsuario.baja"
+              [disabled]="!permisosUsuario.baja"
             >
               Eliminar
             </button>

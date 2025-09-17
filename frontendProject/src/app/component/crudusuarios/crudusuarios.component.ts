@@ -15,6 +15,7 @@ import { RolOpcion } from '../../entity/rolopcion';
 })
 export class CrudusuariosComponent implements OnInit {
   permisosUsuario: RolOpcion | undefined;
+  isEditMode = false;
   constructor(
     private usuarioService: UsuarioService,
     private generoService: GeneroService,
@@ -47,6 +48,13 @@ export class CrudusuariosComponent implements OnInit {
       idSucursal: [0],
       pregunta: [''],
       respuesta: [''],
+    });
+
+    // Obtener permisos para usuarios (idOpcion=8)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const idRole = usuario.rol;
+    this.permisoService.getPermisos(9, idRole).subscribe(permiso => {
+      this.permisosUsuario = permiso;
     });
 
     // Cargar usuarios
@@ -166,7 +174,7 @@ export class CrudusuariosComponent implements OnInit {
     } else {
       this.imagenPreview = null;
     }
-
+    this.isEditMode = true;
     console.log('Editando usuario:', usuario);
     console.log('Valores del formulario:', this.usuarioForm.value);
   }
@@ -243,5 +251,6 @@ export class CrudusuariosComponent implements OnInit {
       pregunta: '',
       respuesta: ''
     });
+    this.isEditMode = false;
   }
 }

@@ -17,7 +17,7 @@
             <!-- Botón Guardar (Alta) -->
             <button
               type="submit"
-              class="btn btn-primary"
+              class="btn btn-primary mb-3"
               [disabled]="!roleForm.form.valid || !permisosRole?.alta"
               *ngIf="!isEditMode && permisosRole?.alta"
             >

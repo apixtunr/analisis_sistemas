@@ -30,7 +30,7 @@
           <!-- Botón Crear (Alta) -->
           <button
             type="submit"
-            class="btn btn-primary"
+            class="btn btn-primary mb-3"
             [disabled]="!genero.nombre || genero.nombre.trim() === '' || !permisosGenero?.alta"
             *ngIf="!isEditMode && permisosGenero?.alta"
           >
@@ -39,7 +39,7 @@
           <!-- Botón Actualizar (Cambio) -->
           <button
             type="submit"
-            class="btn btn-primary"
+            class="btn btn-primary mb-3"
             [disabled]="!genero.nombre || genero.nombre.trim() === '' || !permisosGenero?.cambio"
             *ngIf="isEditMode && permisosGenero?.cambio"
           >
