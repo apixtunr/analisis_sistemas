@@ -31,7 +31,8 @@ export class CrudopcionesComponent implements OnInit {
     private crudmenuService: CrudmenuService,
     private fb: FormBuilder,
     private router: Router,
-    private moduloService: ModuloService
+    private moduloService: ModuloService,
+    private permisoService: PermisoService
   ) {}
   regresarAlMenu() {
     this.router.navigate(['/menu']); // Cambia '/menu' por la ruta real de tu menú principal si es diferente
