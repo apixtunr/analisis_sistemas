@@ -108,14 +108,14 @@ export class CrudusuariosComponent implements OnInit {
       idStatusUsuario: 1,
       idRole: 2,
       fechaCreacion: new Date().toISOString(),
-      ultimaFechaIngreso: new Date().toISOString(),
+      ultimaFechaIngreso: null,
       intentosDeAcceso: 0,
       sesionActual: '',
-      ultimaFechaCambioPassword: new Date().toISOString(),
-      requiereCambiarPassword: 1,
+      ultimaFechaCambioPassword: null,
+      requiereCambiarPassword: 0,
       usuarioCreacion: usuarioCreacion,
-      fechaModificacion: '',
-      usuarioModificacion: '',
+      fechaModificacion: null,
+      usuarioModificacion: null,
     };
 
     this.usuarioService.createUsuario(usuario).subscribe({
@@ -199,7 +199,7 @@ export class CrudusuariosComponent implements OnInit {
       ultimaFechaIngreso: new Date().toISOString(),
       intentosDeAcceso: 0,
       sesionActual: '',
-      ultimaFechaCambioPassword: new Date().toISOString(),
+      ultimaFechaCambioPassword: null,
       requiereCambiarPassword: 1,
       usuarioCreacion: 'ADMIN',
       fechaModificacion: '',

@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 import com.SystemAnalisys.Project.dto.UsuarioDTO;
 import com.SystemAnalisys.Project.entity.Usuario;
 import com.SystemAnalisys.Project.repository.UsuarioRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import com.SystemAnalisys.Project.controller.LoginResult;
 
 @Service
@@ -40,43 +44,57 @@ public class UsuarioService {
         usuarioRepository.delete(par_usuario);
     }
 
-    public LoginResult login(String correo, String password, jakarta.servlet.http.HttpServletRequest request) {
-        Optional<Usuario> userOptional = usuarioRepository.findActiveUserByCorreoElectronico(correo);
+    public LoginResult login(String idUsuario, String password, HttpServletRequest request) {
+        // 1. Buscar el usuario en la BD
+        Optional<Usuario> userOptional = usuarioRepository.findById(idUsuario);
 
         if (!userOptional.isPresent()) {
-            // Registrar intento fallido: usuario no existe
+            // 2. Registrar intento fallido: usuario no existe
             bitacoraAccesoService.registrarAcceso(
-                    correo,
-                    "Usuario ingresado no existe", // Nombre exacto en la tabla tipo_acceso
-                    "LOGIN",
-                    request,
-                    null);
+                    idUsuario, // Usuario ingresado
+                    "Usuario ingresado no existe", // Tipo de acceso (de BD)
+                    "LOGIN", // Acción
+                    request, // Request para IP y User-Agent
+                    null // Sesión (aún no se usa)
+            );
+
+            // Retornar resultado del login
             return new LoginResult(false, "Usuario no encontrado", null, "USER_NOT_FOUND");
         }
 
+        // 3. Usuario encontrado
         Usuario usuario = userOptional.get();
 
+        // 4. Verificar contraseña
         if (!passwordService.verifyPassword(password, usuario.getPassword())) {
-            // Registrar intento fallido: contraseña incorrecta / bloqueado
+            // Registrar intento fallido: password incorrecta
             bitacoraAccesoService.registrarAcceso(
                     usuario.getIdUsuario(),
-                    "Bloqueado - Password incorrecto/Numero de intentos exedidos", // Nombre exacto
+                    "Bloqueado - Password incorrecto/Numero de intentos excedidos",
                     "LOGIN",
                     request,
                     null);
+
             return new LoginResult(false, "Contraseña incorrecta", null, "INVALID_PASSWORD");
         }
 
-        // Registrar login exitoso
+        // 5. Login exitoso
         bitacoraAccesoService.registrarAcceso(
                 usuario.getIdUsuario(),
-                "Acceso Concedido", // Nombre exacto
+                "Acceso Concedido",
                 "LOGIN",
                 request,
                 null);
 
+        // 6. Retornar resultado exitoso
         return new LoginResult(true, "Login exitoso", usuario, "LOGIN_OK");
+    }
 
+    public void logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
     }
 
     public void actualizarRolUsuario(String idUsuario, Integer idRole) {
@@ -103,5 +121,4 @@ public class UsuarioService {
         }
         return lista;
     }
-
 }

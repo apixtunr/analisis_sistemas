@@ -14,7 +14,6 @@ import com.SystemAnalisys.Project.entity.Usuario;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, String> {
    
-    Optional<Usuario> findByCorreoElectronicoAndPassword(String correoElectronico, String password);
     @SuppressWarnings("null")
     Optional<Usuario> findById(String idUsuario);
     Optional<Usuario> findByIdUsuario(String idUsuario);

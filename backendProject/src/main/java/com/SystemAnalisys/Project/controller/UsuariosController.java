@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -47,21 +48,21 @@ public class UsuariosController {
     @PostMapping("api/create_usuario")
     public ResponseEntity<?> createUsuarios(@RequestBody Usuario user) {
         try {
-            // Verificar si el usuario ya existe por idUsuario
-            Optional<Usuario> existingUser = usuariosService.findByIdUsuario(user.getIdUsuario());
+            // 1️⃣ Verificar si el usuario ya existe
+            Optional<Usuario> existingUser = usuariosService.findById(user.getIdUsuario());
             if (existingUser.isPresent()) {
                 return ResponseEntity.badRequest().body("El usuario ya existe");
             }
 
-            // Traer la sucursal del usuario
-            Sucursal sucursal = sucursalRepository.findByIdSucursal(user.getIdSucursal())
+            // 2️⃣ Traer la sucursal del usuario
+            Sucursal sucursal = sucursalRepository.findById(user.getIdSucursal())
                     .orElseThrow(() -> new RuntimeException("Sucursal no encontrada"));
 
-            // Traer la empresa asociada a la sucursal
+            // 3️⃣ Traer la empresa asociada a la sucursal
             Empresa empresa = empresaRepository.findById(sucursal.getIdEmpresa())
                     .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
 
-            // Validar la contraseña según los requisitos de la empresa
+            // 4️⃣ Validar la contraseña según los requisitos de la empresa
             if (!validarContrasena(user.getPassword(), empresa)) {
                 return ResponseEntity.badRequest().body(
                         "La contraseña no cumple con los requisitos de la empresa: "
@@ -72,20 +73,21 @@ public class UsuariosController {
                                 + "longitud mínima " + empresa.getPasswordLargo());
             }
 
-            // Hashear la contraseña
+            // 5️⃣ Hashear la contraseña antes de guardar
             String hash = passwordEncoder.encode(user.getPassword());
             user.setPassword(hash);
 
-            // Guardar el usuario
+            // 6️⃣ Guardar el usuario
             Usuario nuevoUsuario = usuariosService.save(user);
 
-            // Ocultar la contraseña antes de devolver la respuesta
+            // 7️⃣ Ocultar la contraseña antes de devolver la respuesta
             nuevoUsuario.setPassword(null);
 
             return ResponseEntity.ok(nuevoUsuario);
 
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error al crear usuario: " + e.getMessage());
+            return ResponseEntity.status(500)
+                    .body("Error al crear usuario: " + e.getMessage());
         }
     }
 
@@ -143,7 +145,7 @@ public class UsuariosController {
             HttpServletRequest request) {
 
         LoginResult result = usuariosService.login(
-                loginData.getCorreoElectronico(),
+                loginData.getIdUsuario(),
                 loginData.getPassword(),
                 request);
 
@@ -152,11 +154,13 @@ public class UsuariosController {
         response.put("message", result.getMessage());
 
         if (result.isSuccess() && result.getUsuario() != null) {
+            // Guardar en sesión
+            request.getSession(true).setAttribute("usuario", result.getUsuario());
+
             Map<String, Object> userData = new HashMap<>();
             userData.put("id", result.getUsuario().getIdUsuario());
             userData.put("nombre", result.getUsuario().getNombre());
             userData.put("apellido", result.getUsuario().getApellido());
-            userData.put("correo", result.getUsuario().getCorreoElectronico());
             userData.put("rol", result.getUsuario().getIdRole());
             response.put("usuario", userData);
         }
@@ -182,7 +186,7 @@ public class UsuariosController {
         return usuariosService.getUsuariosPorRol(idRole);
     }
 
-    // Método para validar contraseña 
+    // Método para validar contraseña
     private boolean validarContrasena(String contrasena, Empresa empresa) {
         int mayusculas = 0, minusculas = 0, numeros = 0, especiales = 0;
         for (char c : contrasena.toCharArray()) {
@@ -214,7 +218,8 @@ public class UsuariosController {
         return ResponseEntity.ok(Map.of("preguntaSeguridad", user.get().getPregunta()));
     }
 
-    //Método para cambiar la contraseña después de validar la respuesta de seguridad
+    // Método para cambiar la contraseña después de validar la respuesta de
+    // seguridad
     @PostMapping("api/cambiarcontrasena")
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> payload) {
         String idUsuario = payload.get("idUsuario");
