@@ -15,7 +15,9 @@
 						<label class="form-label">Menú</label>
 						<select class="form-select" formControlName="idMenu" required>
 							<option value="">Seleccione menú</option>
-							<option *ngFor="let menu of menus" [value]="menu.idmenu">{{ menu.nombre }}</option>
+							<option *ngFor="let menu of menus" [value]="menu.idmenu">
+                {{ menu.nombre }} ({{ getNombreModulo(menu.idmodulo) }})
+              </option>
 						</select>
 					</div>
 					<div class="col-md-3">

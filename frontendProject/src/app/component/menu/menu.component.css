@@ -32,6 +32,7 @@ body {
   gap: 20px;
   padding: 10px 20px;
   color: #fff;
+  cursor: pointer;
 }
 
 .sidebar .descripcion{
@@ -45,6 +46,13 @@ body {
 .sidebar .sub-menu{
   background-color: #023565;
   padding-left: 3%;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar .sub-menu.open {
+  max-height: 500px; /* suficiente para mostrar el contenido */
 }
 
 

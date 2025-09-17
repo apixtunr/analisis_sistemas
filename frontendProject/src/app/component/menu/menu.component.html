@@ -4,17 +4,17 @@
 <div class="sidebar">
   <nav class="nav flex-column">
     <ng-container *ngFor="let modulo of estructuraMenu">
-      <a class="nav-link" href="#" data-bs-toggle="collapse" [attr.data-bs-target]="'#modulo' + modulo.idModulo" aria-expanded="false">
+      <div class="nav-link" (click)="toggleModulo(modulo.idModulo)">
         <span class="icon"><i class="bi bi-shield-lock"></i></span>
         <span class="description">{{ modulo.nombre }} <i class="bi bi-caret-down-fill"></i></span>
-      </a>
-      <div class="sub-menu collapse" [id]="'modulo' + modulo.idModulo">
+      </div>
+      <div class="sub-menu" [class.open]="moduloAbierto === modulo.idModulo">
         <ng-container *ngFor="let menu of modulo.menus">
-          <a class="nav-link" href="#" data-bs-toggle="collapse" [attr.data-bs-target]="'#menu' + menu.idMenu" aria-expanded="false">
+          <div class="nav-link" (click)="toggleMenu(menu.idMenu)">
             <span class="icon"><i class="bi bi-box-seam"></i></span>
             <span class="description">{{ menu.nombre }} <i class="bi bi-caret-down-fill"></i></span>
-          </a>
-          <div class="sub-menu collapse" [id]="'menu' + menu.idMenu">
+          </div>
+          <div class="sub-menu" [class.open]="menuAbierto === menu.idMenu">
             <a class="nav-link" *ngFor="let opcion of menu.opciones" [routerLink]="opcion.url">
               <span class="icon"><i class="bi bi-file-earmark-check"></i></span>
               <span class="description">{{ opcion.nombre }}</span>
