@@ -18,6 +18,7 @@ import { CrudstatususuarioComponent } from './component/crudstatususuario/crudst
 import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.component';
 import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/asignacionrolopcion.component';
 import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursales.component';
+import { CambiopasswordComponent } from './component/cambiopassword/cambiopassword.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursal
     CrudstatususuarioComponent,
     CrudusuariosComponent,
     AsignacionrolopcionComponent,
-    CrudsucursalesComponent
+    CrudsucursalesComponent,
+    CambiopasswordComponent
   ],
   bootstrap: [AppComponent],
   imports: [

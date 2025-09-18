@@ -5,7 +5,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EmpresaService } from '../../service/empresa.service';
 import { PermisoService } from '../../service/permisoservice';
 import { RolOpcion } from '../../entity/rolopcion';
-import { Empresa } from '../../entity/empresa';
 
 @Component({
   selector: 'app-crudsucursales',
@@ -24,7 +23,7 @@ export class CrudsucursalesComponent implements OnInit {
 
   loading = true;
   error = '';
-  isEditMode = false; // por defecto estamos agregando
+  isEditMode = false; //Bandera para el modo edición
 
   sucursalForm!: FormGroup;
   sucursales: any[] = []; // lista de sucursales
@@ -47,7 +46,7 @@ export class CrudsucursalesComponent implements OnInit {
 
     this.sucursalService.getSucursales().subscribe({
       next: (data) => {
-        this.sucursales = data.sort((a: any, b: any) => a.idSucursal - b.idSucursal); // aquí cargás la lista
+        this.sucursales = data.sort((a: any, b: any) => a.idSucursal - b.idSucursal); //Carga la lista de las sucursales ordenadas por idSucursal
         this.loading = false;
       },
       error: () => {
@@ -57,7 +56,7 @@ export class CrudsucursalesComponent implements OnInit {
     });
 
     this.empresaService.getEmpresas().subscribe({
-      next: (data) => (this.empresas = data),
+      next: (data) => (this.empresas = data), //Carga la lista de las empresas
       error: (err) => console.error('Error cargando empresas', err),
     });
   }
@@ -74,8 +73,10 @@ export class CrudsucursalesComponent implements OnInit {
     const formValue = this.sucursalForm.value;
     const idEmpresaNum = Number(formValue.idEmpresa);
 
+    const { idSucursal, ...formValuesWithoutId } = this.sucursalForm.value;
+
     const sucursal: Sucursal = {
-      ...this.sucursalForm.value,
+      ...formValuesWithoutId,
 
       //Valores por default
       idEmpresa: idEmpresaNum,
@@ -159,7 +160,6 @@ export class CrudsucursalesComponent implements OnInit {
       alert('No se puede actualizar una sucursal sin ID');
       return;
     }
-
     this.sucursalService.updateSucursal(sucursal).subscribe({
       next: () => {
         alert('Sucursal actualizada correctamente.');

@@ -26,13 +26,6 @@ export class MenuComponent {
     });
   }
 
-  logout(): void {
-    localStorage.removeItem("usuario");
-    this.router.navigate(['/loginusuarios']);
-  }
-
-  // Funciones para abrir/cerrar menús
-  // Alterna el estado del módulo y cierra el menú si es necesario
   toggleModulo(idModulo: number) {
     this.moduloAbierto = this.moduloAbierto === idModulo ? null : idModulo;
     this.menuAbierto = null; // opcional: cierra menús al cerrar módulo
@@ -42,4 +35,8 @@ export class MenuComponent {
     this.menuAbierto = this.menuAbierto === idMenu ? null : idMenu;
   }
 
+  logout(): void {
+  localStorage.removeItem("usuario");
+  this.router.navigate(['/loginusuarios']);
+}
 }

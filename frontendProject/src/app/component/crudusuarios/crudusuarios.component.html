@@ -4,7 +4,10 @@
   <!-- Formulario para agregar/editar usuario -->
   <div class="card mb-5 shadow-sm" *ngIf="permisosUsuario">
     <div class="card-body">
-      <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
+      <form
+        [formGroup]="usuarioForm"
+        (ngSubmit)="isEditMode ? onUpdate() : onSubmit()"
+      >
         <div class="row g-3">
           <div class="col-md-3">
             <label class="form-label">Usuario</label>
@@ -56,7 +59,6 @@
           <div class="col-md-3">
             <label class="form-label">Género</label>
             <select formControlName="idGenero" class="form-control">
-              <option value="0">Seleccione un género</option>
               <option *ngFor="let genero of generos" [value]="genero.idgenero">
                 {{ genero.nombre }}
               </option>
@@ -70,6 +72,17 @@
               class="form-control"
               placeholder="Ingrese correo"
             />
+          </div>
+          <div class="form-group">
+            <label for="idStatusUsuario">Estado</label>
+            <select
+              id="idStatusUsuario"
+              formControlName="idStatusUsuario"
+              class="form-control"
+            >
+              <option [value]="1">Activo</option>
+              <option [value]="3">Inactivo</option>
+            </select>
           </div>
         </div>
 
@@ -108,8 +121,10 @@
           <div class="col-md-3">
             <label class="form-label">Sucursal</label>
             <select formControlName="idSucursal" class="form-control">
-              <option value="0">Seleccione una sucursal</option>
-              <option *ngFor="let sucursal of sucursales" [value]="sucursal.idSucursal">
+              <option
+                *ngFor="let sucursal of sucursales"
+                [value]="sucursal.idSucursal"
+              >
                 {{ sucursal.nombre }}
               </option>
             </select>
@@ -158,10 +173,18 @@
           >
             Actualizar
           </button>
-          <button type="button" class="btn btn-secondary mb-3" (click)="onReset()">
+          <button
+            type="button"
+            class="btn btn-secondary mb-3"
+            (click)="onReset()"
+          >
             Limpiar
           </button>
-          <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+          <button
+            type="button"
+            class="btn btn-secondary mb-3"
+            routerLink="/menu"
+          >
             Ir al Menú <i class="bi bi-arrow-right"></i>
           </button>
         </div>

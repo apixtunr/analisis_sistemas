@@ -14,6 +14,7 @@ import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/as
 import { CrudGeneroComponent } from './component/crudgenero/crud-genero.component';
 import { CrudstatususuarioComponent } from './component/crudstatususuario/crudstatususuario.component';
 import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursales.component';
+import { CambiopasswordComponent } from './component/cambiopassword/cambiopassword.component';
 
 const routes: Routes = [
 
@@ -24,12 +25,14 @@ const routes: Routes = [
   { path: 'crudrole', component: CrudroleComponent, canActivate: [AuthGuard] },
   { path: 'listusuarios', component: ListusuariosComponent, canActivate: [AuthGuard] },
   { path: 'loginusuarios', component: LoginusuariosComponent },
-  { path: 'menu', component: MenuComponent, canActivate: [AuthGuard] },
-  { path: 'crud-genero', component: CrudGeneroComponent, canActivate: [AuthGuard] },
-  { path: 'crudstatususuario', component: CrudstatususuarioComponent, canActivate: [AuthGuard] },
-  { path: 'crudusuarios', component: CrudusuariosComponent, canActivate: [AuthGuard] },
-  { path: 'asignacionrolopcion', component: AsignacionrolopcionComponent, canActivate: [AuthGuard] },
-  { path: 'crudsucursales', component: CrudsucursalesComponent, canActivate: [AuthGuard] },
+  { path: 'menu', component: MenuComponent },
+  { path: 'crud-genero', component: CrudGeneroComponent },
+  { path: 'crudstatususuario', component: CrudstatususuarioComponent },
+  { path: 'crudusuarios', component: CrudusuariosComponent },
+  { path: 'asignacionrolopcion', component: AsignacionrolopcionComponent },
+  { path: 'crudsucursales', component: CrudsucursalesComponent },
+  { path: 'cambiopassword', component: CambiopasswordComponent },
+  { path: 'menu', component: MenuComponent },
   { path: '', redirectTo: 'loginusuarios', pathMatch: 'full' },
   { path: '**', redirectTo: 'menu', pathMatch: 'full' },
 ];

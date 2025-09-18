@@ -20,8 +20,8 @@ export class CrudusuariosComponent implements OnInit {
     private usuarioService: UsuarioService,
     private generoService: GeneroService,
     private sucursalService: SucursalService,
-    private fb: FormBuilder
-  , private permisoService: PermisoService
+    private fb: FormBuilder,
+    private permisoService: PermisoService
   ) {}
 
   loading = true;
@@ -48,12 +48,13 @@ export class CrudusuariosComponent implements OnInit {
       idSucursal: [0],
       pregunta: [''],
       respuesta: [''],
+      idStatusUsuario: [1, Validators.required], // 1 por defecto (activo)
     });
 
     // Obtener permisos para usuarios (idOpcion=8)
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
     const idRole = usuario.rol;
-    this.permisoService.getPermisos(9, idRole).subscribe(permiso => {
+    this.permisoService.getPermisos(9, idRole).subscribe((permiso) => {
       this.permisosUsuario = permiso;
     });
 
@@ -73,92 +74,81 @@ export class CrudusuariosComponent implements OnInit {
     this.generoService.getGeneros().subscribe({
       next: (data) => {
         this.generos = data;
-        console.log('Géneros cargados:', this.generos);
       },
       error: (err) => {
         console.error('Error al cargar géneros:', err);
-      }
+      },
     });
 
     // Cargar sucursales
     this.sucursalService.getSucursales().subscribe({
       next: (data) => {
         this.sucursales = data;
-        console.log('Sucursales cargadas:', this.sucursales);
       },
       error: (err) => {
         console.error('Error al cargar sucursales:', err);
-      }
+      },
     });
   }
 
   // Método para obtener el nombre del género por ID
   getGeneroNombre(idGenero: number): string {
-    const genero = this.generos.find(g => g.idgenero === idGenero);
+    const genero = this.generos.find((g) => g.idgenero === idGenero);
     return genero ? genero.nombre : 'No especificado';
   }
 
   // Método para obtener el nombre de la sucursal por ID
   getSucursalNombre(idSucursal: number): string {
-    const sucursal = this.sucursales.find(s => s.idSucursal === idSucursal);
+    const sucursal = this.sucursales.find((s) => s.idSucursal === idSucursal);
     return sucursal ? sucursal.nombre : 'No especificado';
   }
 
   //Método para crear usuario
   onSubmit() {
-    console.log('=== INICIANDO onSubmit ===');
-    console.log('Formulario válido:', this.usuarioForm.valid);
-    console.log('Valores del formulario:', this.usuarioForm.value);
-    console.log('Errores del formulario:', this.usuarioForm.errors);
-
     if (this.usuarioForm.invalid) {
-      console.log('Formulario inválido, marcando campos como touched');
       this.usuarioForm.markAllAsTouched();
-      
-      // Ver qué campos específicos están inválidos
-      Object.keys(this.usuarioForm.controls).forEach(key => {
-        const control = this.usuarioForm.get(key);
-        if (control && control.invalid) {
-          console.log(`Campo inválido: ${key}`, control.errors);
-        }
-      });
+      console.log('No se pudo crear el usuario: formulario inválido');
       return;
     }
 
+    const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const usuarioCreacion = usuarioLocal.id || ''; // Esto jala el idUsuario
+
     const usuario: Usuario = {
       ...this.usuarioForm.value,
-
       // valores default
-      idStatusUsuario: 1,
       idRole: 2,
       fechaCreacion: new Date().toISOString(),
-      ultimaFechaIngreso: new Date().toISOString(),
+      ultimaFechaIngreso: null,
       intentosDeAcceso: 0,
       sesionActual: '',
-      ultimaFechaCambioPassword: new Date().toISOString(),
-      requiereCambiarPassword: 1,
-      usuarioCreacion: 'ADMIN',
-      fechaModificacion: '',
-      usuarioModificacion: ''
+      ultimaFechaCambioPassword: null,
+      requiereCambiarPassword: 0,
+      usuarioCreacion: usuarioCreacion,
+      fechaModificacion: null,
+      usuarioModificacion: null,
     };
 
-    console.log('Usuario a crear:', usuario);
-    console.log('=== ENVIANDO AL BACKEND ===');
-
     this.usuarioService.createUsuario(usuario).subscribe({
-      next: (response) => {
-        console.log('✅ Usuario creado exitosamente:', response);
+      next: () => {
+        console.log('Usuario creado correctamente');
         alert('Usuario creado correctamente.');
         this.ngOnInit(); // recargar lista
         this.onReset();
       },
       error: (error) => {
-        console.error('❌ Error al crear usuario:', error);
-        console.error('Detalles del error:', error.error);
-        console.error('Status del error:', error.status);
-        console.error('Mensaje del error:', error.message);
-        this.error = 'El usuario ya está en uso';
-      }
+        const requisitos = error?.error;
+        if (
+          typeof requisitos === 'string' &&
+          requisitos.includes('La contraseña no cumple con los requisitos')
+        ) {
+          alert(requisitos);
+          this.error = requisitos;
+        } else {
+          this.error = 'El usuario ya está en uso';
+          alert(this.error);
+        }
+      },
     });
   }
 
@@ -167,6 +157,12 @@ export class CrudusuariosComponent implements OnInit {
     // Carga todos los campos normales en el formulario
     const { fotografia, ...usuarioData } = usuario;
     this.usuarioForm.patchValue(usuarioData);
+
+    // Deja el campo password vacío y sin required en modo edición
+    const passCtrl = this.usuarioForm.get('password');
+    passCtrl?.reset('');
+    passCtrl?.clearValidators();
+    passCtrl?.updateValueAndValidity();
 
     // Si quieres mostrar la foto en el formulario
     if (fotografia) {
@@ -189,41 +185,69 @@ export class CrudusuariosComponent implements OnInit {
         alert('Usuario eliminado correctamente.');
         this.ngOnInit(); // recargar la lista
       },
-      error: () => {
-        this.error = 'Error al eliminar usuario';
+      error: (error) => {
+        let mensajeError = 'Error al eliminar usuario';
+        const errorMsg = error?.error?.message || '';
+        if (
+          errorMsg.toLowerCase().includes('violates foreign key constraint') ||
+          errorMsg.toLowerCase().includes('is still referenced')
+        ) {
+          mensajeError =
+            'No se puede eliminar el usuario porque está relacionado con la bitácora.';
+        }
+        this.error = mensajeError;
+        alert(this.error);
       },
     });
   }
 
-  //Método para actualizar usuario
-  onUpdate() {
-    if (this.usuarioForm.invalid) return;
 
-    const usuario: Usuario = {
-      ...this.usuarioForm.value,
+// Método para actualizar usuario (solo modifica lo que venga del form)
+onUpdate() {
+  if (this.usuarioForm.invalid) return;
 
-      // valores default
-      idStatusUsuario: 1,
-      idRole: 2,
-      fechaCreacion: new Date().toISOString(),
-      ultimaFechaIngreso: new Date().toISOString(),
-      intentosDeAcceso: 0,
-      sesionActual: '',
-      ultimaFechaCambioPassword: new Date().toISOString(),
-      requiereCambiarPassword: 1,
-      usuarioCreacion: 'ADMIN',
-      fechaModificacion: '',
-      usuarioModificacion: 'ADMIN' // temporal
+  const { password, ...changes } = this.usuarioForm.value;
+
+  // Auditoría con el usuario logueado
+  const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+  const usuarioModificacion = usuarioLocal.id || 'ADMIN';
+
+  if (!changes.idUsuario) {
+    alert('No se puede actualizar un usuario sin ID');
+    return;
+  }
+
+  // Buscar el usuario actual en la lista cargada
+  const existing = this.usuarios.find(u => u.idUsuario === changes.idUsuario);
+
+  // Normalizar tipos si vienen de selects como strings
+  const normalizedChanges = {
+    ...changes,
+    idGenero: changes.idGenero !== undefined ? Number(changes.idGenero) : changes.idGenero,
+    idSucursal: changes.idSucursal !== undefined ? Number(changes.idSucursal) : changes.idSucursal,
+    idStatusUsuario: changes.idStatusUsuario !== undefined ? Number(changes.idStatusUsuario) : changes.idStatusUsuario,
+  };
+
+  // Función para mandar el update con merge
+  const doUpdate = (currentUser: any) => {
+    const nowIso = new Date().toISOString();
+
+    const payload: Usuario = {
+      ...currentUser,             // valores actuales (llenan lo que el form no envía)
+      ...normalizedChanges,       // sobrescribe solo lo que cambiaste en el form
+      ...(password && password.trim()
+        ? {
+            password,
+            ultimaFechaCambioPassword: nowIso // solo si cambió la contraseña
+            // opcional: requiereCambiarPassword: 0,
+          }
+        : {}
+      ),
+      fechaModificacion: nowIso,
+      usuarioModificacion: usuarioModificacion,
     };
 
-    if (!usuario.idUsuario) {
-      alert('No se puede actualizar un usuario sin ID');
-      return;
-    }
-
-    console.log('Usuario a actualizar:', usuario);
-
-    this.usuarioService.updateUsuario(usuario.idUsuario, usuario).subscribe({
+    this.usuarioService.updateUsuario(payload.idUsuario, payload).subscribe({
       next: () => {
         alert('Usuario actualizado correctamente');
         this.ngOnInit();
@@ -231,9 +255,30 @@ export class CrudusuariosComponent implements OnInit {
       },
       error: () => {
         this.error = 'Error al actualizar usuario';
+      },
+    });
+  };
+
+  if (existing) {
+    // Tenemos el usuario en memoria: merge directo
+    doUpdate(existing);
+  } else {
+    // Fallback: si no está en memoria, lo pedimos al backend para mergear correctamente
+    this.usuarioService.getUsuarios().subscribe({
+      next: (usuarios) => {
+        const current = usuarios.find((u: any) => u.idUsuario === changes.idUsuario);
+        if (current) {
+          doUpdate(current);
+        } else {
+          this.error = 'No se pudo encontrar el usuario a actualizar';
+        }
+      },
+      error: () => {
+        this.error = 'No se pudo cargar el usuario a actualizar';
       }
     });
   }
+}
 
   //Método para resetear el formulario
   onReset() {
@@ -249,8 +294,12 @@ export class CrudusuariosComponent implements OnInit {
       telefonoMovil: '',
       idSucursal: 0,
       pregunta: '',
-      respuesta: ''
+      respuesta: '',
     });
+    const passCtrl = this.usuarioForm.get('password');
+    passCtrl?.setValidators([Validators.required]); // requerido para crear
+    passCtrl?.updateValueAndValidity();
+
     this.isEditMode = false;
   }
 }
