@@ -28,7 +28,7 @@ export class MenuComponent {
 
   logout(): void {
     localStorage.removeItem("usuario");
-    this.router.navigate(['/login']);
+    this.router.navigate(['/loginusuarios']);
   }
 
   // Funciones para abrir/cerrar menús
@@ -41,7 +41,5 @@ export class MenuComponent {
   toggleMenu(idMenu: number) {
     this.menuAbierto = this.menuAbierto === idMenu ? null : idMenu;
   }
-  localStorage.removeItem("usuario");
-  this.router.navigate(['/loginusuarios']);
-}
+
 }

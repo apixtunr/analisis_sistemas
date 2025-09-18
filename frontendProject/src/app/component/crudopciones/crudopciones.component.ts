@@ -31,7 +31,8 @@ export class CrudopcionesComponent implements OnInit {
     private crudmenuService: CrudmenuService,
     private fb: FormBuilder,
     private router: Router,
-    private moduloService: ModuloService
+    private moduloService: ModuloService,
+    private permisoService: PermisoService
   ) {}
   regresarAlMenu() {
     this.router.navigate(['/menu']); // Cambia '/menu' por la ruta real de tu menú principal si es diferente
@@ -41,7 +42,7 @@ export class CrudopcionesComponent implements OnInit {
     this.opcionForm = this.fb.group({
       idMenu: ['', Validators.required],
       nombre: ['', Validators.required],
-      pagina: ['', Validators.required],
+      // pagina: ['', Validators.required], // Campo eliminado, ahora lo maneja el backend
       descripcion: [''],
       url: [''],
       fechaCreacion: [''],
@@ -86,6 +87,7 @@ export class CrudopcionesComponent implements OnInit {
     const opcionesDeMenu = this.opciones.filter(o => o.idMenu == idMenuSeleccionado);
     const ordenmenu = opcionesDeMenu.length + 1; // Esto puede generar duplicados si hay eliminaciones
 
+    // El campo 'pagina' ya no se utiliza ni se envía desde el frontend
     const opcion: Opcion = {
       ...this.opcionForm.value,
       ordenmenu,
@@ -93,8 +95,10 @@ export class CrudopcionesComponent implements OnInit {
       usuarioCreacion: nombreUsuario,
       fechaModificacion: '',
       usuarioModificacion: ''
+      // pagina: '', // Ya no se envía, el backend lo asigna por defecto
     };
-    this.opcionService.createOpcion(opcion).subscribe({
+    // Usar el endpoint DTO en el servicio
+    this.opcionService.createOpcionDTO(opcion).subscribe({
       next: () => {
         this.cargarOpciones();
         this.onReset();
@@ -114,12 +118,19 @@ export class CrudopcionesComponent implements OnInit {
     if (this.opcionForm.invalid || this.idEditando == null) return;
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
     const nombreUsuario = usuario?.nombre || 'system';
+
+    // Calcular ordenmenu igual que en onSubmit
+    const idMenuSeleccionado = this.opcionForm.value.idMenu;
+    const opcionesDeMenu = this.opciones.filter(o => o.idMenu == idMenuSeleccionado);
+    const ordenmenu = opcionesDeMenu.length + 1; // O usa el valor actual si lo prefieres
+
     const opcion: Opcion = {
       ...this.opcionForm.value,
+      ordenmenu, // <-- Asegúrate de incluirlo
       fechaModificacion: new Date().toISOString(),
       usuarioModificacion: nombreUsuario
     };
-    this.opcionService.updateOpcion(this.idEditando, opcion).subscribe({
+    this.opcionService.updateOpcionDTO(this.idEditando, opcion).subscribe({
       next: () => {
         this.cargarOpciones();
         this.onReset();
