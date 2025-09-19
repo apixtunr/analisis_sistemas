@@ -75,13 +75,13 @@ export class CrudmenuComponent implements OnInit {
     }
     // Obtener usuario del localStorage
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-    const nombreUsuario = usuario?.nombre || 'system';
+    const idUsuario = usuario.id;
 
     const menu: Menu = {
       ...this.menuForm.value,
-      ordenmenu: this.getNextOrden(), // Asigna el orden automáticamente
-      fechacreacion: new Date(), // <-- Esto envía un objeto Date, no string
-      usuariocreacion: nombreUsuario,
+      ordenmenu: this.getNextOrden(),
+      fechacreacion: new Date(), 
+      usuariocreacion: idUsuario,
       fechamodificacion: null,
       usuariomodificacion: null
     };
@@ -107,7 +107,7 @@ export class CrudmenuComponent implements OnInit {
     if (this.menuForm.invalid || this.idEditando == null) return;
     // Obtener usuario del localStorage
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-    const nombreUsuario = usuario?.nombre || 'system';
+    const idUsuario = usuario?.id || 'system';
 
     // Recupera el ordenmenu guardado al editar
     const ordenmenu = (this.menuForm as any)._ordenmenuEdit;
@@ -116,7 +116,7 @@ export class CrudmenuComponent implements OnInit {
       ...this.menuForm.value,
       ordenmenu: ordenmenu,
       fechamodificacion: new Date().toISOString(),
-      usuariomodificacion: nombreUsuario
+      usuariomodificacion: idUsuario
     };
     this.crudmenuService.updateMenu(this.idEditando, menu).subscribe({
       next: () => {
