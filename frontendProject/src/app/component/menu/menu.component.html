@@ -4,7 +4,7 @@
 <!-- menu.component.html -->
 <div class="sidebar">
   <nav class="nav flex-column">
-    
+
     <!-- Información del usuario logueado -->
     <div class="user-info" *ngIf="usuarioActual">
       <div class="welcome-text">Bienvenido</div>
@@ -19,7 +19,7 @@
     <!-- Módulo de Seguridad -->
     <ng-container *ngIf="getModuloSeguridad() as moduloSeguridad">
       <!-- Header del módulo -->
-      <div class="nav-link module-header" 
+      <div class="nav-link module-header"
            (click)="toggleModulo(moduloSeguridad.idModulo)"
            [class.active]="moduloAbierto === moduloSeguridad.idModulo">
         <span class="icon"><i class="bi bi-shield-lock-fill"></i></span>
@@ -28,23 +28,23 @@
           <i class="bi bi-chevron-down"></i>
         </span>
       </div>
-      
+
       <!-- Submenús del módulo Seguridad -->
       <div class="sub-menu" [class.open]="moduloAbierto === moduloSeguridad.idModulo">
         <ng-container *ngFor="let menu of moduloSeguridad.menus">
           <!-- Header del submenú -->
-          <div class="nav-link submenu-header" 
+          <div class="nav-link submenu-header"
                (click)="toggleMenu(menu.idMenu)"
                [class.active]="menuAbierto === menu.idMenu">
-            
+
             <span class="icon">
               <i class="bi bi-gear-fill" *ngIf="menu.idMenu === 2" style="color: #ff6b6b;"></i>
               <i class="bi bi-people-fill" *ngIf="menu.idMenu === 3" style="color: #4ecdc4;"></i>
               <i class="bi bi-box-seam" *ngIf="menu.idMenu !== 2 && menu.idMenu !== 3" style="color: #45b7d1;"></i>
             </span>
-            
+
             <span class="description">{{ menu.nombre }}</span>
-            
+
             <!-- Badges -->
             <div class="badges">
               <span *ngIf="menu.idMenu === 2 && esAdmin()" class="badge-admin">
@@ -58,12 +58,12 @@
               </span>
             </div>
           </div>
-          
+
           <!-- Opciones del submenú -->
           <div class="sub-menu" [class.open]="menuAbierto === menu.idMenu">
             <ng-container *ngFor="let opcion of menu.opciones">
-              <a class="nav-link option-link" 
-                 *ngIf="puedeVerOpcion(opcion, menu.idMenu)" 
+              <a class="nav-link option-link"
+                 *ngIf="puedeVerOpcion(opcion, menu.idMenu)"
                  [routerLink]="opcion.url"
                  routerLinkActive="active"
                  [routerLinkActiveOptions]="{exact: true}">
@@ -102,10 +102,10 @@
     <div class="icon-box">
       <i class="bi bi-shield-lock-fill"></i>
     </div>
-    
+
     <h1>Sistema de Gestión de Seguridad</h1>
     <p>Plataforma integral para la administración y control de seguridad empresarial</p>
-    
+
     <!-- Información del usuario en el área principal -->
     <div *ngIf="usuarioActual" class="user-main-info">
       <div class="user-header">
@@ -117,7 +117,7 @@
           <div class="user-status">Sesión activa</div>
         </div>
       </div>
-      
+
       <div class="user-role-box">
         <i class="bi bi-shield-check-fill" [style.color]="esAdmin() ? '#ff6b6b' : '#4ecdc4'"></i>
         <span [style.color]="esAdmin() ? '#ff6b6b' : '#4ecdc4'">

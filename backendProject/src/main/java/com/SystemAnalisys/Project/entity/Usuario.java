@@ -63,7 +63,6 @@ public class Usuario {
     private String apellido;
 
     @Column(name = "fechanacimiento")
-    @Temporal(TemporalType.DATE)
     private Date fechaNacimiento;
 
     @Column(name = "idstatususuario")

@@ -50,11 +50,12 @@
           <div class="col-md-3">
             <label class="form-label">Contraseña</label>
             <input
-              type="password"
-              formControlName="password"
-              class="form-control"
-              placeholder="Ingrese contraseña"
-            />
+                type="password"
+                formControlName="password"
+                class="form-control"
+                placeholder="Ingrese contraseña"
+                [readonly]="isEditMode"
+              />
           </div>
           <div class="col-md-3">
             <label class="form-label">Género</label>
@@ -73,8 +74,8 @@
               placeholder="Ingrese correo"
             />
           </div>
-          <div class="form-group">
-            <label for="idStatusUsuario">Estado</label>
+          <div class="col-md-3" *ngIf="isEditMode">
+            <label for="idStatusUsuario" class="form-label">Estado</label>
             <select
               id="idStatusUsuario"
               formControlName="idStatusUsuario"
@@ -126,6 +127,14 @@
                 [value]="sucursal.idSucursal"
               >
                 {{ sucursal.nombre }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Rol</label>
+            <select formControlName="idRole" class="form-control">
+              <option *ngFor="let rol of roles" [value]="rol.idRole">
+                {{ rol.nombre }}
               </option>
             </select>
           </div>

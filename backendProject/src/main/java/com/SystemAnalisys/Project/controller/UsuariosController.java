@@ -176,6 +176,7 @@ public class UsuariosController {
                             }
                             user.setRequiereCambiarPassword(expirada ? 1 : 0);
                             user.setUltimaFechaIngreso(new Date());
+                            user.setSesionActual("Activa");
                             usuariosService.save(user);
                         }
                     }

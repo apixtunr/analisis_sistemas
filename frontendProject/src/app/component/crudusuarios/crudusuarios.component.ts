@@ -6,6 +6,7 @@ import { Usuario } from '../../entity/usuario';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PermisoService } from '../../service/permisoservice';
 import { RolOpcion } from '../../entity/rolopcion';
+import { RoleService } from '../../service/role.service';
 
 @Component({
   selector: 'app-crudusuarios',
@@ -21,7 +22,8 @@ export class CrudusuariosComponent implements OnInit {
     private generoService: GeneroService,
     private sucursalService: SucursalService,
     private fb: FormBuilder,
-    private permisoService: PermisoService
+    private permisoService: PermisoService,
+    private roleService: RoleService
   ) {}
 
   loading = true;
@@ -32,6 +34,7 @@ export class CrudusuariosComponent implements OnInit {
   usuarios: any[] = []; // lista de usuarios
   generos: any[] = []; // lista de géneros
   sucursales: any[] = []; // lista de sucursales
+  roles: any[] = []; // lista de roles
 
   //Método para inicializar el componente
   ngOnInit(): void {
@@ -49,6 +52,16 @@ export class CrudusuariosComponent implements OnInit {
       pregunta: [''],
       respuesta: [''],
       idStatusUsuario: [1, Validators.required], // 1 por defecto (activo)
+      idRole: [2, Validators.required], // Rol por defecto
+    });
+    // Cargar roles
+    this.roleService.getRoles().subscribe({
+      next: (data) => {
+        this.roles = data;
+      },
+      error: (err) => {
+        console.error('Error al cargar roles:', err);
+      },
     });
 
     // Obtener permisos para usuarios (idOpcion=8)
@@ -120,6 +133,7 @@ export class CrudusuariosComponent implements OnInit {
       // valores default
       idRole: 2,
       fechaCreacion: new Date().toISOString(),
+      idStatusUsuario: 1, // Siempre activo al crear
       ultimaFechaIngreso: null,
       intentosDeAcceso: 0,
       sesionActual: '',
@@ -155,11 +169,15 @@ export class CrudusuariosComponent implements OnInit {
 
   //Editar usuario (trae los datos al formulario)
   onEdit(usuario: Usuario) {
-    // Carga todos los campos normales en el formulario
-    const { fotografia, ...usuarioData } = usuario;
+    // Carga todos los campos normales en el formulario excepto la contraseña
+    const { fotografia, password, ...usuarioData } = usuario;
     this.usuarioForm.patchValue(usuarioData);
+    // Asignar el rol actual al formulario
+    if (usuario.idRole) {
+      this.usuarioForm.get('idRole')?.setValue(usuario.idRole);
+    }
 
-    // Deja el campo password vacío y sin required en modo edición
+    // Bloquea el campo password en modo edición
     const passCtrl = this.usuarioForm.get('password');
     passCtrl?.reset('');
     passCtrl?.clearValidators();
@@ -207,6 +225,7 @@ export class CrudusuariosComponent implements OnInit {
 onUpdate() {
   if (this.usuarioForm.invalid) return;
 
+  // No tomar el campo password del formulario en edición
   const { password, ...changes } = this.usuarioForm.value;
 
   // Auditoría con el usuario logueado
@@ -227,23 +246,17 @@ onUpdate() {
     idGenero: changes.idGenero !== undefined ? Number(changes.idGenero) : changes.idGenero,
     idSucursal: changes.idSucursal !== undefined ? Number(changes.idSucursal) : changes.idSucursal,
     idStatusUsuario: changes.idStatusUsuario !== undefined ? Number(changes.idStatusUsuario) : changes.idStatusUsuario,
+    idRole: changes.idRole !== undefined ? Number(changes.idRole) : changes.idRole,
   };
 
   // Función para mandar el update con merge
   const doUpdate = (currentUser: any) => {
-    const nowIso = new Date().toISOString();
+    const nowIso = new Date();
 
+    // Si el campo password está vacío, no lo sobrescribas
     const payload: Usuario = {
       ...currentUser,             // valores actuales (llenan lo que el form no envía)
       ...normalizedChanges,       // sobrescribe solo lo que cambiaste en el form
-      ...(password && password.trim()
-        ? {
-            password,
-            ultimaFechaCambioPassword: nowIso // solo si cambió la contraseña
-            // opcional: requiereCambiarPassword: 0,
-          }
-        : {}
-      ),
       fechaModificacion: nowIso,
       usuarioModificacion: usuarioModificacion,
       fechaNacimiento: this.toDateOnly(this.usuarioForm.value.fechaNacimiento)
@@ -299,6 +312,8 @@ onUpdate() {
       idSucursal: 0,
       pregunta: '',
       respuesta: '',
+      idStatusUsuario: 1, // Siempre activo en alta
+      idRole: 2,
     });
     const passCtrl = this.usuarioForm.get('password');
     passCtrl?.setValidators([Validators.required]); // requerido para crear
