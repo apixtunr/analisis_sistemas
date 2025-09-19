@@ -116,6 +116,7 @@ export class CrudusuariosComponent implements OnInit {
 
     const usuario: Usuario = {
       ...this.usuarioForm.value,
+      fechaNacimiento: this.toDateOnly(this.usuarioForm.value.fechaNacimiento),
       // valores default
       idRole: 2,
       fechaCreacion: new Date().toISOString(),
@@ -245,7 +246,10 @@ onUpdate() {
       ),
       fechaModificacion: nowIso,
       usuarioModificacion: usuarioModificacion,
+      fechaNacimiento: this.toDateOnly(this.usuarioForm.value.fechaNacimiento)
     };
+
+    console.log(this.toDateOnly(this.usuarioForm.value.fechaNacimiento));
 
     this.usuarioService.updateUsuario(payload.idUsuario, payload).subscribe({
       next: () => {
@@ -302,4 +306,18 @@ onUpdate() {
 
     this.isEditMode = false;
   }
+
+  // Normaliza a 'YYYY-MM-DD' sin hora ni zona
+private toDateOnly(value: any): string {
+  if (!value) return '';
+  // Si ya viene como 'YYYY-MM-DD', úsalo tal cual
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+
+  const d = new Date(value); // puede venir como Date (MatDatepicker) o string con hora
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 }
