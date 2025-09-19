@@ -168,13 +168,15 @@ public class UsuariosController {
                         Integer diasCaducidad = empresa.getPasswordCantidadCaducidadDias();
                         if (diasCaducidad != null && diasCaducidad > 0) {
                             Date lastChange = user.getUltimaFechaCambioPassword();
-                            if (lastChange == null) {
-                                expirada = true; // nunca la cambió
-                            } else {
+                            if (lastChange != null) {
                                 long days = Duration.between(lastChange.toInstant(), Instant.now()).toDays();
                                 expirada = days >= diasCaducidad;
+                            } else {
+                                expirada = false;
                             }
                             user.setRequiereCambiarPassword(expirada ? 1 : 0);
+                            user.setUltimaFechaIngreso(new Date());
+                            user.setSesionActual("Activa");
                             usuariosService.save(user);
                         }
                     }

@@ -7,48 +7,58 @@ import { Role } from '../entity/role';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
-	private apiUrl = 'http://localhost:8080';
+  private apiUrl = 'http://localhost:8080';
 
-	constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {}
 
-	getUsuarios(): Observable<Usuario[]> {
-		return this.http.get<Usuario[]>(this.apiUrl + '/api/list_usuario');
-	}
+  getUsuarios(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(this.apiUrl + '/api/list_usuario');
+  }
 
   deleteUsuario(idUsuario: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/api/delete_usuario/${idUsuario}`);
+    return this.http.delete<void>(
+      `${this.apiUrl}/api/delete_usuario/${idUsuario}`
+    );
   }
 
   updateUsuario(idUsuario: string, usuario: Usuario): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.apiUrl}/api/update_usuario/${usuario.idUsuario}`, usuario);
+    return this.http.put<Usuario>(
+      `${this.apiUrl}/api/update_usuario/${usuario.idUsuario}`,
+      usuario
+    );
   }
 
   createUsuario(usuario: Usuario): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/api/create_usuario`, usuario);
   }
 
+  logout(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/api/logout`, {});
+  }
+
   login(usuario: Usuario): Observable<any> {
     let httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
+        'Content-Type': 'application/json',
+      }),
     };
     // El backend retorna un objeto { success, message, usuario }
-    return this.http.post<any>(this.apiUrl + "/api/login", usuario, httpOptions);
+    return this.http.post<any>(
+      this.apiUrl + '/api/login',
+      usuario,
+      httpOptions
+    );
   }
 
-    getRoles(): Observable<Role[]> {
-      return this.http.get<Role[]>(this.apiUrl + '/api/list_role');
-    }
+  getRoles(): Observable<Role[]> {
+    return this.http.get<Role[]>(this.apiUrl + '/api/list_role');
+  }
 
-    actualizarRolUsuario(idUsuario: string, idRol: number): Observable<void> {
-  return this.http.put<void>(
-    `${this.apiUrl}/usuario/${idUsuario}/rol`,
-    idRol,
-    { headers: { 'Content-Type': 'application/json' } }
-  );
+  actualizarRolUsuario(idUsuario: string, idRol: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.apiUrl}/usuario/${idUsuario}/rol`,
+      idRol,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+  }
 }
-}
-
-
-
