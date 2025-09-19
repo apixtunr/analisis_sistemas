@@ -4,7 +4,7 @@
 <!-- menu.component.html -->
 <div class="sidebar">
   <nav class="nav flex-column">
-    
+
     <!-- Información del usuario logueado -->
     <div class="user-info" *ngIf="usuarioActual">
       <div class="welcome-text">Bienvenido</div>
@@ -94,10 +94,10 @@
     <div class="icon-box">
       <i class="bi bi-shield-lock-fill"></i>
     </div>
-    
+
     <h1>Sistema de Gestión de Seguridad</h1>
     <p>Plataforma integral para la administración y control de seguridad empresarial</p>
-    
+
     <!-- Información del usuario en el área principal -->
     <div *ngIf="usuarioActual" class="user-main-info">
       <div class="user-header">
@@ -109,7 +109,7 @@
           <div class="user-status">Sesión activa</div>
         </div>
       </div>
-      
+
       <div class="user-role-box">
         <i class="bi bi-shield-check-fill" [style.color]="esAdmin() ? '#ff6b6b' : '#4ecdc4'"></i>
         <span [style.color]="esAdmin() ? '#ff6b6b' : '#4ecdc4'">

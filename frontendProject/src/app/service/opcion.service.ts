@@ -31,4 +31,12 @@ export class OpcionService {
   getOpcionesPorMenu(idMenu: number): Observable<Opcion[]> {
     return this.http.get<Opcion[]>(`http://localhost:8080/api/opciones_por_menu/${idMenu}`);
   }
+
+  createOpcionDTO(opcion: Opcion): Observable<Opcion> {
+    return this.http.post<Opcion>(`${this.apiBase}/create_opcion_dto`, opcion);
+  }
+
+  updateOpcionDTO(id: number, opcion: Opcion): Observable<Opcion> {
+    return this.http.put<Opcion>(`${this.apiBase}/update_opcion_dto/${id}`, opcion);
+  }
 }
