@@ -19,6 +19,7 @@ import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.com
 import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/asignacionrolopcion.component';
 import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursales.component';
 import { CambiopasswordComponent } from './component/cambiopassword/cambiopassword.component';
+import { CierreMesCRUDComponent } from './component/cierre-mes-crud/cierre-mes-crud.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { CambiopasswordComponent } from './component/cambiopassword/cambiopasswo
     CrudusuariosComponent,
     AsignacionrolopcionComponent,
     CrudsucursalesComponent,
-    CambiopasswordComponent
+    CambiopasswordComponent,
+    CierreMesCRUDComponent
   ],
   bootstrap: [AppComponent],
   imports: [
