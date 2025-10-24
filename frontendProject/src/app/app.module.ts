@@ -21,6 +21,8 @@ import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursal
 import { CambiopasswordComponent } from './component/cambiopassword/cambiopassword.component';
 import { CierreMesCRUDComponent } from './component/cierre-mes-crud/cierre-mes-crud.component';
 import { MovimientosComponent } from './component/movimientos/movimientos.component';
+import { TipoMovimientoCxcComponent } from './component/tipo-movimiento-cxc/tipo-movimiento-cxc.component';
+import { CrudstatuscuentaComponent } from './component/crudstatuscuenta/crudstatuscuenta.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +43,8 @@ import { MovimientosComponent } from './component/movimientos/movimientos.compon
     CambiopasswordComponent,    
     MovimientosComponent,
     CierreMesCRUDComponent,
+    TipoMovimientoCxcComponent,
+    CrudstatuscuentaComponent,
   ],
   bootstrap: [AppComponent],
   imports: [

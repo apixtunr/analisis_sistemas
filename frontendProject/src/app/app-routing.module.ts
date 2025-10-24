@@ -17,6 +17,8 @@ import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursal
 import { CambiopasswordComponent } from './component/cambiopassword/cambiopassword.component';
 import { CierreMesCRUDComponent } from './component/cierre-mes-crud/cierre-mes-crud.component';
 import { MovimientosComponent } from './component/movimientos/movimientos.component';
+import { TipoMovimientoCxcComponent } from './component/tipo-movimiento-cxc/tipo-movimiento-cxc.component';
+import { CrudstatuscuentaComponent } from './component/crudstatuscuenta/crudstatuscuenta.component';
 
 const routes: Routes = [
 
@@ -37,6 +39,8 @@ const routes: Routes = [
   { path: 'menu', component: MenuComponent },
   { path: 'movimientos', component: MovimientosComponent, canActivate: [AuthGuard] },
   { path: 'cierre-mes', component: CierreMesCRUDComponent, canActivate: [AuthGuard] },
+  { path: 'tipo-movimiento-cxc', component: TipoMovimientoCxcComponent, canActivate: [AuthGuard] },
+  { path: 'crudstatuscuenta', component: CrudstatuscuentaComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: 'loginusuarios', pathMatch: 'full' },
   { path: '**', redirectTo: 'menu', pathMatch: 'full' },
 ];
