@@ -13,7 +13,16 @@ export class StatusCuentaService {
 
   getStatusCuentas(): Observable<StatusCuenta[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
-      map(items => items.map(item => this.fromApi(item)))
+      map(items => {
+        console.log('Status cuentas raw del backend:', items);
+        const mapped = items.map(item => {
+          const result = this.fromApi(item);
+          console.log('Mapeo:', item, '->', result);
+          return result;
+        });
+        console.log('Status cuentas mapeados:', mapped);
+        return mapped;
+      })
     );
   }
 
@@ -38,23 +47,23 @@ export class StatusCuentaService {
   // --- Helpers para mapear entre API <-> Frontend model ---
   private fromApi(apiObj: any): StatusCuenta {
     return {
-      idStatusCuenta: apiObj?.id ?? apiObj?.idStatusCuenta ?? 0,
+      idStatusCuenta: apiObj?.idstatuscuenta ?? apiObj?.idStatusCuenta ?? 0,
       descripcion: apiObj?.nombre ?? apiObj?.descripcion ?? '',
-      fechaCreacion: apiObj?.fechaCreacion ?? apiObj?.fechacreacion ?? '',
-      usuarioCreacion: apiObj?.usuarioCreacion ?? apiObj?.usuariocreacion ?? '',
-      fechaModificacion: apiObj?.fechaModificacion ?? apiObj?.fechamodificacion ?? '',
-      usuarioModificacion: apiObj?.usuarioModificacion ?? apiObj?.usuariomodificacion ?? ''
+      fechaCreacion: apiObj?.fechacreacion ?? apiObj?.fechaCreacion ?? '',
+      usuarioCreacion: apiObj?.usuariocreacion ?? apiObj?.usuarioCreacion ?? '',
+      fechaModificacion: apiObj?.fechamodificacion ?? apiObj?.fechaModificacion ?? '',
+      usuarioModificacion: apiObj?.usuariomodificacion ?? apiObj?.usuarioModificacion ?? ''
     };
   }
 
   private toApi(model: StatusCuenta): any {
     return {
-      id: model.idStatusCuenta || undefined,
+      idstatuscuenta: model.idStatusCuenta || undefined,
       nombre: model.descripcion,
-      fechaCreacion: model.fechaCreacion,
-      usuarioCreacion: model.usuarioCreacion,
-      fechaModificacion: model.fechaModificacion,
-      usuarioModificacion: model.usuarioModificacion
+      fechacreacion: model.fechaCreacion,
+      usuariocreacion: model.usuarioCreacion,
+      fechamodificacion: model.fechaModificacion,
+      usuariomodificacion: model.usuarioModificacion
     };
   }
 }
