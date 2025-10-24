@@ -1,5 +1,7 @@
 package com.SystemAnalisys.Project.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.SystemAnalisys.Project.entity.StatusCuenta;
+import com.SystemAnalisys.Project.repository.StatusCuentaRepository;
 import com.SystemAnalisys.Project.service.StatusCuentaService;
 import java.util.List;
 
@@ -18,7 +21,9 @@ import java.util.List;
 @RequestMapping("/api/statuscuenta")
 public class StatusCuentaController {
 
-    
+    @Autowired
+    private StatusCuentaRepository statusCuentaRepository;
+
     private final StatusCuentaService service;
 
     public StatusCuentaController(StatusCuentaService service) {
@@ -50,4 +55,12 @@ public class StatusCuentaController {
     public void eliminar(@PathVariable Long id) {
         service.eliminar(id);
     }
+
+    @GetMapping
+    public ResponseEntity<List<StatusCuenta>> listarTodos() {
+        List<StatusCuenta> statusList = statusCuentaRepository.findAll();
+        return ResponseEntity.ok(statusList);
+    }
+
 }
+

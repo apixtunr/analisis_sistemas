@@ -19,6 +19,10 @@ import { CierreMesCRUDComponent } from './component/cierre-mes-crud/cierre-mes-c
 import { MovimientosComponent } from './component/movimientos/movimientos.component';
 import { TipoMovimientoCxcComponent } from './component/tipo-movimiento-cxc/tipo-movimiento-cxc.component';
 import { CrudstatuscuentaComponent } from './component/crudstatuscuenta/crudstatuscuenta.component';
+import { CuentaComponent } from './component/cuenta/cuenta.component';
+import { ConsultaSaldoComponent } from './component/consulta-saldo/consulta-saldo/consulta-saldo.component';
+
+import { GestionpersonasComponent } from './component/gestionpersonas/gestionpersonas.component';
 
 const routes: Routes = [
 
@@ -41,6 +45,9 @@ const routes: Routes = [
   { path: 'cierre-mes', component: CierreMesCRUDComponent, canActivate: [AuthGuard] },
   { path: 'tipo-movimiento-cxc', component: TipoMovimientoCxcComponent, canActivate: [AuthGuard] },
   { path: 'crudstatuscuenta', component: CrudstatuscuentaComponent, canActivate: [AuthGuard] },
+  { path: 'cuenta', component: CuentaComponent, canActivate: [AuthGuard] },
+  { path: 'consulta-saldo', component: ConsultaSaldoComponent, canActivate: [AuthGuard] },
+  { path: 'gestionpersonas', component: GestionpersonasComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: 'loginusuarios', pathMatch: 'full' },
   { path: '**', redirectTo: 'menu', pathMatch: 'full' },
 ];

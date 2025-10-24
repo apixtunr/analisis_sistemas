@@ -32,8 +32,8 @@ public class StatusCuentaService {
     public StatusCuenta actualizar(Long id, StatusCuenta nuevo) {
         return repository.findById(id).map(existente -> {
             existente.setNombre(nuevo.getNombre());
-            existente.setFechaModificacion(nuevo.getFechaModificacion());
-            existente.setUsuarioModificacion(nuevo.getUsuarioModificacion());
+            existente.setFechamodificacion(nuevo.getFechamodificacion());
+            existente.setUsuariomodificacion(nuevo.getUsuariomodificacion());
             return repository.save(existente);
         }).orElseThrow(() -> new RuntimeException("Estado no encontrado"));
     }
