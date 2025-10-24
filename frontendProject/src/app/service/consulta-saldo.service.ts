@@ -84,7 +84,7 @@ export class ConsultaSaldoService {
 
   // Obtener todos los status de cuenta  
   obtenerStatusCuenta(): Observable<StatusCuenta[]> {
-    return this.http.get<StatusCuenta[]>(`${this.apiBase}/status-cuenta`);
+    return this.http.get<StatusCuenta[]>(`${this.apiBase}/statuscuenta`);
   }
 
   // Método unificado para cualquier tipo de consulta
