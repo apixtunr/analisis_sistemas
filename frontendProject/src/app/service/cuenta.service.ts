@@ -63,7 +63,7 @@ export class CuentaService {
 
   // Método para obtener nombre completo de persona por ID
   obtenerNombrePersonaPorId(idPersona: number): Observable<string> {
-    return this.http.get(`${this.apiBase}/persona/${idPersona}`, { responseType: 'text' });
+    return this.http.get(`http://localhost:8080/${idPersona}`, { responseType: 'text' });
   }
 
   // Método para obtener documentos de una persona

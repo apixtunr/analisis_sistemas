@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/saldo-cuentas")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:3000"})
 public class SaldoCuentaController {
 
     private final SaldoCuentaCrudService service;

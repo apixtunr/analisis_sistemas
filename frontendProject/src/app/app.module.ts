@@ -21,6 +21,7 @@ import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/as
 import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursales.component';
 import { CambiopasswordComponent } from './component/cambiopassword/cambiopassword.component';
 import { CierreMesCRUDComponent } from './component/cierre-mes-crud/cierre-mes-crud.component';
+import { GestionpersonasComponent } from './component/gestionpersonas/gestionpersonas.component';
 import { MovimientosComponent } from './component/movimientos/movimientos.component';
 import { ConsultaSaldoComponent } from './component/consulta-saldo/consulta-saldo/consulta-saldo.component';
 import { CuentaComponent } from './component/cuenta/cuenta.component';
@@ -41,7 +42,10 @@ import { CuentaComponent } from './component/cuenta/cuenta.component';
     CrudusuariosComponent,
     AsignacionrolopcionComponent,
     CrudsucursalesComponent,
-    CambiopasswordComponent,    
+    CambiopasswordComponent,
+    CierreMesCRUDComponent,
+    GestionpersonasComponent,
+    CambiopasswordComponent,
     MovimientosComponent,
     CierreMesCRUDComponent,
     ConsultaSaldoComponent,

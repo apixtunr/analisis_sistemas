@@ -74,7 +74,7 @@ export class ConsultaSaldoService {
 
   // Obtener nombre de persona por ID
   obtenerNombrePersona(idPersona: number): Observable<string> {
-    return this.http.get(`${this.apiBase}/persona/${idPersona}`, { responseType: 'text' });
+    return this.http.get(`http://localhost:8080/${idPersona}`, { responseType: 'text' });
   }
 
   // Obtener todos los tipos de saldo

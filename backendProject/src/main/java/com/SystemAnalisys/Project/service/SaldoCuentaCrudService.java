@@ -114,7 +114,7 @@ public class SaldoCuentaCrudService {
         
         // Para cada persona encontrada, buscar sus cuentas
         for (Persona persona : personas) {
-            List<SaldoCuenta> cuentasPersona = repository.findByIdpersona(persona.getIdpersona().intValue());
+            List<SaldoCuenta> cuentasPersona = repository.findByIdpersona(persona.getIdPersona().intValue());
             todasLasCuentas.addAll(cuentasPersona);
         }
         
