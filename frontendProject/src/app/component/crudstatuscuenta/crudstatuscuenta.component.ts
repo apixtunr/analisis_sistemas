@@ -29,7 +29,7 @@ export class CrudstatuscuentaComponent implements OnInit {
 
   guardar(): void {
     const usuario = 'admin';
-    const fecha = new Date().toISOString();
+    const fecha = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString();
 
     if (this.editando) {
       this.nuevoStatus.fechaModificacion = fecha;
