@@ -179,7 +179,7 @@
                 <dd class="col-sm-6">{{ resultadoCliente.cuentas.length }}</dd>
                 <dt class="col-sm-6">Saldo Total:</dt>
                 <dd class="col-sm-6" [ngClass]="obtenerClaseSaldo(calcularTotalSaldos(resultadoCliente.cuentas))">
-                  <strong>{{ calcularTotalSaldos(resultadoCliente.cuentas) | currency:'Q ':'symbol':'1.2-2' }}</strong>
+                  <strong>Q {{ calcularTotalSaldos(resultadoCliente.cuentas) | number:'1.2-2' }}</strong>
                 </dd>
               </dl>
             </div>
