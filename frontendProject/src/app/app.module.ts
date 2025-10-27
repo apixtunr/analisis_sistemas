@@ -27,6 +27,7 @@ import { TipoMovimientoCxcComponent } from './component/tipo-movimiento-cxc/tipo
 import { CrudstatuscuentaComponent } from './component/crudstatuscuenta/crudstatuscuenta.component';
 import { ConsultaSaldoComponent } from './component/consulta-saldo/consulta-saldo/consulta-saldo.component';
 import { CuentaComponent } from './component/cuenta/cuenta.component';
+import { DetalleCuentaComponent } from './component/detalle-cuenta/detalle-cuenta.component';
 
 @NgModule({
   declarations: [
@@ -62,9 +63,9 @@ import { CuentaComponent } from './component/cuenta/cuenta.component';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    CommonModule,
-
-  ],
+  CommonModule,
+  DetalleCuentaComponent
+],
   providers: [provideHttpClient(withInterceptorsFromDi())]
 })
 export class AppModule { }

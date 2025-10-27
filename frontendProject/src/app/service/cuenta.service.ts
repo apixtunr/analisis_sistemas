@@ -7,7 +7,7 @@ export interface CuentaDto {
   idpersona: number;
   idsucursal?: number;
   idtiposaldocuenta?: number;
-  saldoinicial?: number;
+  saldoanterior?: number;
   debitos?: number;
   creditos?: number;
 }

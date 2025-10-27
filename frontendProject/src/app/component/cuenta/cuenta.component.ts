@@ -210,7 +210,7 @@ export class CuentaComponent implements OnInit {
 
   // Calcular saldo usando la fórmula: SaldoActual = SaldoAnterior + Debitos - Creditos
   calcularSaldoFormula(cuenta: CuentaDto): number {
-    const saldoAnterior = cuenta.saldoinicial || 0;
+    const saldoAnterior = cuenta.saldoanterior || 0;
     const debitos = cuenta.debitos || 0;
     const creditos = cuenta.creditos || 0;
     return saldoAnterior + debitos - creditos;

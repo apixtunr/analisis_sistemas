@@ -14,7 +14,12 @@
           
           <!-- Selector de tipo de búsqueda -->
           <div class="mb-4">
-            <label class="form-label">Tipo de Consulta</label>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label mb-0">Tipo de Consulta</label>
+              <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+                Ir al Menú <i class="bi bi-arrow-right"></i>
+              </button>
+            </div>
             <div class="btn-group w-100" role="group">
               <input type="radio" class="btn-check" id="tipoCliente" autocomplete="off" 
                      [checked]="tipoBusqueda === 'cliente'" (change)="cambiarTipoBusqueda('cliente')">
@@ -153,7 +158,7 @@
         <div class="card-header bg-success text-white">
           <h6 class="mb-0">
             <i class="bi bi-person-check"></i>
-            Saldos de {{ resultadoCliente.persona.nombreCompleto }}
+            Cuentas y Saldos encontrados
           </h6>
         </div>
         <div class="card-body">
