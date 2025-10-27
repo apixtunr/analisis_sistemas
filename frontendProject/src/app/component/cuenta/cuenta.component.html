@@ -213,7 +213,7 @@
           <div>
             <h6 class="mb-0">
               <i class="bi bi-credit-card-2-front"></i>
-              Cuentas asociadas a {{ nombrePersona }}
+              Cuentas asociadas a la persona<!--{{ nombrePersona }}-->
             </h6>
           </div>
           <button class="btn btn-light btn-sm" (click)="cargarCuentasPersona()">
@@ -239,6 +239,9 @@
                   <tr>
                     <th>ID Cuenta</th>
                     <th>Tipo</th>
+                    <th>Fecha de Creación</th>
+                    <th>Usuario</th>
+                    <th>Estado</th>
                     <!--<th>Saldo Anterior</th>
                     <th>Débitos</th>
                     <th>Créditos</th>
@@ -254,6 +257,21 @@
                         {{ obtenerNombreTipoSaldo(cuenta.idtiposaldocuenta || 0) }}
                       </span>
                     </td>
+                    <td>
+                      <span>
+                        {{ cuenta.fechacreacion | date:'dd/MM/yyyy HH:mm' }}
+                      </span>
+                    </td>      
+                    <td>
+                      <span>
+                        {{ cuenta.usuariocreacion }}
+                      </span>
+                    </td>  
+                    <td>
+            <span class="badge bg-success">
+              {{ obtenerNombreStatus(cuenta.idstatuscuenta || 0) }}
+            </span>
+          </td>         
                     <!--<td>{{ cuenta.saldoanterior | currency:'Q':'symbol':'1.2-2' }}</td>
                     <td class="text-success">{{ cuenta.debitos || 0 | currency:'Q':'symbol':'1.2-2' }}</td>
                     <td class="text-danger">{{ cuenta.creditos || 0 | currency:'Q':'symbol':'1.2-2' }}</td>
