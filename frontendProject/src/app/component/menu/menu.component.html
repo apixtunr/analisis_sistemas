@@ -19,7 +19,7 @@
     <!-- Mostrar todos los módulos y sus menús -->
     <ng-container *ngFor="let modulo of estructuraMenu">
       <!-- Header del módulo -->
-      <div class="nav-link module-header" 
+      <div class="nav-link module-header"
            (click)="toggleModulo(modulo.idModulo)"
            [class.active]="moduloAbierto === modulo.idModulo">
         <span class="icon"><i class="bi bi-shield-lock-fill"></i></span>
@@ -34,7 +34,7 @@
           <!-- Solo mostrar el menú si tiene opciones visibles para el usuario -->
           <ng-container *ngIf="getOpcionesVisibles(menu).length > 0">
             <!-- Header del submenú -->
-            <div class="nav-link submenu-header" 
+            <div class="nav-link submenu-header"
                  (click)="toggleMenu(menu.idMenu)"
                  [class.active]="menuAbierto === menu.idMenu">
               <span class="icon">
@@ -59,8 +59,8 @@
             <!-- Opciones del submenú -->
             <div class="sub-menu" [class.open]="menuAbierto === menu.idMenu">
               <ng-container *ngFor="let opcion of menu.opciones">
-                <a class="nav-link option-link" 
-                   *ngIf="puedeVerOpcion(opcion, menu.idMenu)" 
+                <a class="nav-link option-link"
+                   *ngIf="puedeVerOpcion(opcion, menu.idMenu)"
                    [routerLink]="opcion.url"
                    routerLinkActive="active"
                    [routerLinkActiveOptions]="{exact: true}">
@@ -96,7 +96,7 @@
     </div>
 
     <h1>Sistema de Gestión de Seguridad</h1>
-    <p>Proyecto análisis de sistemas II</p>
+    <p>Proyecto Análisis de Sistemas II</p>
 
     <!-- Información del usuario en el área principal -->
     <div *ngIf="usuarioActual" class="user-main-info">

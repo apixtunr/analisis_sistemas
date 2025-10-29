@@ -1,6 +1,9 @@
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -19,6 +22,14 @@ import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.com
 import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/asignacionrolopcion.component';
 import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursales.component';
 import { CambiopasswordComponent } from './component/cambiopassword/cambiopassword.component';
+import { CierreMesCRUDComponent } from './component/cierre-mes-crud/cierre-mes-crud.component';
+import { GestionpersonasComponent } from './component/gestionpersonas/gestionpersonas.component';
+import { MovimientosComponent } from './component/movimientos/movimientos.component';
+import { TipoMovimientoCxcComponent } from './component/tipo-movimiento-cxc/tipo-movimiento-cxc.component';
+import { CrudstatuscuentaComponent } from './component/crudstatuscuenta/crudstatuscuenta.component';
+import { ConsultaSaldoComponent } from './component/consulta-saldo/consulta-saldo/consulta-saldo.component';
+import { CuentaComponent } from './component/cuenta/cuenta.component';
+import { DetalleCuentaComponent } from './component/detalle-cuenta/detalle-cuenta.component';
 
 @NgModule({
   declarations: [
@@ -36,17 +47,34 @@ import { CambiopasswordComponent } from './component/cambiopassword/cambiopasswo
     CrudusuariosComponent,
     AsignacionrolopcionComponent,
     CrudsucursalesComponent,
-    CambiopasswordComponent
+    CambiopasswordComponent,
+    CierreMesCRUDComponent,
+    GestionpersonasComponent,
+    CambiopasswordComponent,
+    MovimientosComponent,
+    CierreMesCRUDComponent,
+    TipoMovimientoCxcComponent,
+    CrudstatuscuentaComponent,
+    ConsultaSaldoComponent,
+    CuentaComponent
   ],
-  bootstrap: [AppComponent],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    CommonModule,
-
-  ],
-  providers: [provideHttpClient(withInterceptorsFromDi())]
+bootstrap: [AppComponent],
+imports: [
+  BrowserModule,
+  AppRoutingModule,
+  HttpClientModule,
+  FormsModule,
+  ReactiveFormsModule,
+  CommonModule,
+  DetalleCuentaComponent
+],
+providers: [
+  provideHttpClient(withInterceptorsFromDi()),
+  { provide: LOCALE_ID, useValue: 'es' }
+]
 })
-export class AppModule { }
+export class AppModule {
+  constructor() {
+    registerLocaleData(localeEs);
+  }
+}
