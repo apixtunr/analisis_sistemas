@@ -16,71 +16,63 @@
       </div>
     </div>
 
-    <!-- Módulo de Seguridad -->
-    <ng-container *ngIf="getModuloSeguridad() as moduloSeguridad">
+    <!-- Mostrar todos los módulos y sus menús -->
+    <ng-container *ngFor="let modulo of estructuraMenu">
       <!-- Header del módulo -->
-      <div class="nav-link module-header"
-           (click)="toggleModulo(moduloSeguridad.idModulo)"
-           [class.active]="moduloAbierto === moduloSeguridad.idModulo">
+      <div class="nav-link module-header" 
+           (click)="toggleModulo(modulo.idModulo)"
+           [class.active]="moduloAbierto === modulo.idModulo">
         <span class="icon"><i class="bi bi-shield-lock-fill"></i></span>
-        <span class="description">{{ moduloSeguridad.nombre }}</span>
-        <span class="chevron" [style.transform]="moduloAbierto === moduloSeguridad.idModulo ? 'rotate(180deg)' : 'rotate(0deg)'">
+        <span class="description">{{ modulo.nombre }}</span>
+        <span class="chevron" [style.transform]="moduloAbierto === modulo.idModulo ? 'rotate(180deg)' : 'rotate(0deg)'">
           <i class="bi bi-chevron-down"></i>
         </span>
       </div>
-
-      <!-- Submenús del módulo Seguridad -->
-      <div class="sub-menu" [class.open]="moduloAbierto === moduloSeguridad.idModulo">
-        <ng-container *ngFor="let menu of moduloSeguridad.menus">
-          <!-- Header del submenú -->
-          <div class="nav-link submenu-header"
-               (click)="toggleMenu(menu.idMenu)"
-               [class.active]="menuAbierto === menu.idMenu">
-
-            <span class="icon">
-              <i class="bi bi-gear-fill" *ngIf="menu.idMenu === 2" style="color: #ff6b6b;"></i>
-              <i class="bi bi-people-fill" *ngIf="menu.idMenu === 3" style="color: #4ecdc4;"></i>
-              <i class="bi bi-box-seam" *ngIf="menu.idMenu !== 2 && menu.idMenu !== 3" style="color: #45b7d1;"></i>
-            </span>
-
-            <span class="description">{{ menu.nombre }}</span>
-
-            <!-- Badges -->
-            <div class="badges">
-              <span *ngIf="menu.idMenu === 2 && esAdmin()" class="badge-admin">
-                <i class="bi bi-star-fill me-1"></i>ADMIN
+      <!-- Submenús del módulo -->
+      <div class="sub-menu" [class.open]="moduloAbierto === modulo.idModulo">
+        <ng-container *ngFor="let menu of modulo.menus">
+          <!-- Solo mostrar el menú si tiene opciones visibles para el usuario -->
+          <ng-container *ngIf="getOpcionesVisibles(menu).length > 0">
+            <!-- Header del submenú -->
+            <div class="nav-link submenu-header" 
+                 (click)="toggleMenu(menu.idMenu)"
+                 [class.active]="menuAbierto === menu.idMenu">
+              <span class="icon">
+                <i class="bi bi-gear-fill" *ngIf="menu.idMenu === 2" style="color: #ff6b6b;"></i>
+                <i class="bi bi-people-fill" *ngIf="menu.idMenu === 3" style="color: #4ecdc4;"></i>
+                <i class="bi bi-box-seam" *ngIf="menu.idMenu !== 2 && menu.idMenu !== 3" style="color: #45b7d1;"></i>
               </span>
-              <span *ngIf="menu.idMenu === 2 && !esAdmin()" class="badge-restricted">
-                <i class="bi bi-lock-fill me-1"></i>RESTRINGIDO
-              </span>
-              <span class="chevron" [style.transform]="menuAbierto === menu.idMenu ? 'rotate(180deg)' : 'rotate(0deg)'">
-                <i class="bi bi-chevron-down"></i>
-              </span>
-            </div>
-          </div>
-
-          <!-- Opciones del submenú -->
-          <div class="sub-menu" [class.open]="menuAbierto === menu.idMenu">
-            <ng-container *ngFor="let opcion of menu.opciones">
-              <a class="nav-link option-link"
-                 *ngIf="puedeVerOpcion(opcion, menu.idMenu)"
-                 [routerLink]="opcion.url"
-                 routerLinkActive="active"
-                 [routerLinkActiveOptions]="{exact: true}">
-                <span class="icon"><i class="bi bi-file-earmark-check-fill"></i></span>
-                <span class="description">{{ opcion.nombre }}</span>
-                <span *ngIf="menu.idMenu === 2" class="sensitive-icon">
-                  <i class="bi bi-shield-exclamation"></i>
+              <span class="description">{{ menu.nombre }}</span>
+              <!-- Badges -->
+              <div class="badges">
+                <span *ngIf="menu.idMenu === 2 && esAdmin()" class="badge-admin">
+                  <i class="bi bi-star-fill me-1"></i>ADMIN
                 </span>
-              </a>
-            </ng-container>
-
-            <!-- Mensaje sin permisos -->
-            <div *ngIf="getOpcionesVisibles(menu).length === 0 && menu.opciones && menu.opciones.length > 0" class="no-permisos">
-              <i class="bi bi-lock-fill me-2"></i>
-              No tienes permisos para estas opciones
+                <span *ngIf="menu.idMenu === 2 && !esAdmin()" class="badge-restricted">
+                  <i class="bi bi-lock-fill me-1"></i>RESTRINGIDO
+                </span>
+                <span class="chevron" [style.transform]="menuAbierto === menu.idMenu ? 'rotate(180deg)' : 'rotate(0deg)'">
+                  <i class="bi bi-chevron-down"></i>
+                </span>
+              </div>
             </div>
-          </div>
+            <!-- Opciones del submenú -->
+            <div class="sub-menu" [class.open]="menuAbierto === menu.idMenu">
+              <ng-container *ngFor="let opcion of menu.opciones">
+                <a class="nav-link option-link" 
+                   *ngIf="puedeVerOpcion(opcion, menu.idMenu)" 
+                   [routerLink]="opcion.url"
+                   routerLinkActive="active"
+                   [routerLinkActiveOptions]="{exact: true}">
+                  <span class="icon"><i class="bi bi-file-earmark-check-fill"></i></span>
+                  <span class="description">{{ opcion.nombre }}</span>
+                  <span *ngIf="menu.idMenu === 2" class="sensitive-icon">
+                    <i class="bi bi-shield-exclamation"></i>
+                  </span>
+                </a>
+              </ng-container>
+            </div>
+          </ng-container>
         </ng-container>
       </div>
     </ng-container>
