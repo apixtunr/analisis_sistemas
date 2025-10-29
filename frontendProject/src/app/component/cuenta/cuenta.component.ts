@@ -36,7 +36,10 @@ export class CuentaComponent implements OnInit {
     saldoanterior: 0,
     debitos: 0,
     creditos: 0,
-    usuariocreacion: 'system'
+    usuariocreacion: (() => {
+      const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+      return usuario.id || 'system';
+    })()
   };
 
   // Propiedades para documentos
@@ -130,6 +133,9 @@ export class CuentaComponent implements OnInit {
     this.successMessage = null;
 
     // Preparar el objeto para envío
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const nombreUsuario = usuario?.id;
+    console.log('Nombre de usuario para creación:', nombreUsuario);
     const cuentaParaCrear: CreateCuentaRequest = {
       idpersona: this.personaId,
       idstatuscuenta: Number(this.nuevaCuenta.idstatuscuenta),
@@ -138,7 +144,7 @@ export class CuentaComponent implements OnInit {
       debitos: this.nuevaCuenta.debitos || 0,
       creditos: this.nuevaCuenta.creditos || 0,
       fechacreacion: new Date().toISOString(),
-      usuariocreacion: this.nuevaCuenta.usuariocreacion || 'system'
+      usuariocreacion: nombreUsuario || 'system'
     };
 
     console.log('Enviando cuenta:', cuentaParaCrear); // Para debug
@@ -241,7 +247,9 @@ export class CuentaComponent implements OnInit {
     }
   }
 
+  
   limpiarFormularioCreacion() {
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
     this.nuevaCuenta = {
       idpersona: this.personaId || 0,
       idstatuscuenta: this.statusCuenta.length > 0 ? this.statusCuenta[0].idstatuscuenta : 0,
@@ -249,7 +257,7 @@ export class CuentaComponent implements OnInit {
       saldoanterior: 0,
       debitos: 0,
       creditos: 0,
-      usuariocreacion: 'system'
+      usuariocreacion: usuario.id || 'system'
     };
   }
 
