@@ -1,3 +1,4 @@
+import { TipoDocumento } from './entity/tipoDocumento';
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { registerLocaleData } from '@angular/common';
@@ -10,6 +11,9 @@ import { AppComponent } from './app.component';
 import { ListusuariosComponent } from './component/listusuarios/listusuarios.component';
 import { LoginusuariosComponent } from './component/loginusuarios/loginusuarios/loginusuarios.component';
 import { CrudempresasComponent } from './component/crudempresas/crudempresas.component';
+import { CrudestadocivilComponent } from './component/crudestadocivil/crudestadocivil.component';
+import { CrudtipodocumentoComponent } from './component/crudtipodocumento/crudtipodocumento.component';
+import { CrudTipoCuentaComponent } from './component/crudtipocuenta/crudtipocuenta.component';
 import { CommonModule } from '@angular/common';
 import { CrudroleComponent } from './component/crudrole/crudrole.component';
 import { CrudmoduloComponent } from './component/crudmodulo/crudmodulo.component';
@@ -47,6 +51,9 @@ import { DetalleCuentaComponent } from './component/detalle-cuenta/detalle-cuent
     CrudusuariosComponent,
     AsignacionrolopcionComponent,
     CrudsucursalesComponent,
+    CrudestadocivilComponent,
+    CrudTipoCuentaComponent,
+    CrudtipodocumentoComponent,
     CambiopasswordComponent,
     CierreMesCRUDComponent,
     GestionpersonasComponent,

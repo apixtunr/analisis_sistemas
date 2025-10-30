@@ -20,7 +20,7 @@ public class DocumentoPersonaController {
         this.service = service;
     }
 
-    @PostMapping
+    @PostMapping("/crear")
     public ResponseEntity<?> create(@RequestBody DocumentoPersonaRequest req) {
         var created = service.create(req);
         if (created == null) return ResponseEntity.status(409).body("Documento ya existe");

@@ -9,18 +9,20 @@ export class EstadoCivilService {
 
   constructor(private http: HttpClient) {}
 
-  // ===== ESTADOS CIVILES =====
   getEstadosCiviles(): Observable<EstadoCivil[]> {
-    return this.http.get<EstadoCivil[]>(this.apiUrl + '/api/list_estado_civil');
+    return this.http.get<EstadoCivil[]>(`${this.apiUrl}/api/list_estado_civil`);
   }
 
   createEstadoCivil(estadoCivil: EstadoCivil): Observable<EstadoCivil> {
-    return this.http.post<EstadoCivil>(`${this.apiUrl}/api/create_estado_civil`, estadoCivil);
+    return this.http.post<EstadoCivil>(
+      `${this.apiUrl}/api/create_estado_civil`,
+      estadoCivil
+    );
   }
 
-  updateEstadoCivil(idEstadoCivil: number, estadoCivil: EstadoCivil): Observable<EstadoCivil> {
+  updateEstadoCivil(estadoCivil: EstadoCivil): Observable<EstadoCivil> {
     return this.http.put<EstadoCivil>(
-      `${this.apiUrl}/api/update_estado_civil/${idEstadoCivil}`,
+      `${this.apiUrl}/api/update_estado_civil/${estadoCivil.idEstadoCivil}`,
       estadoCivil
     );
   }

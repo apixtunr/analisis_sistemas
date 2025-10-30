@@ -220,82 +220,97 @@ export class CrudusuariosComponent implements OnInit {
     });
   }
 
+  // Método para actualizar usuario (solo modifica lo que venga del form)
+  onUpdate() {
+    if (this.usuarioForm.invalid) return;
 
-// Método para actualizar usuario (solo modifica lo que venga del form)
-onUpdate() {
-  if (this.usuarioForm.invalid) return;
+    // No tomar el campo password del formulario en edición
+    const { password, ...changes } = this.usuarioForm.value;
 
-  // No tomar el campo password del formulario en edición
-  const { password, ...changes } = this.usuarioForm.value;
+    // Auditoría con el usuario logueado
+    const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const usuarioModificacion = usuarioLocal.id || 'ADMIN';
 
-  // Auditoría con el usuario logueado
-  const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
-  const usuarioModificacion = usuarioLocal.id || 'ADMIN';
+    if (!changes.idUsuario) {
+      alert('No se puede actualizar un usuario sin ID');
+      return;
+    }
 
-  if (!changes.idUsuario) {
-    alert('No se puede actualizar un usuario sin ID');
-    return;
-  }
+    // Buscar el usuario actual en la lista cargada
+    const existing = this.usuarios.find(
+      (u) => u.idUsuario === changes.idUsuario
+    );
 
-  // Buscar el usuario actual en la lista cargada
-  const existing = this.usuarios.find(u => u.idUsuario === changes.idUsuario);
-
-  // Normalizar tipos si vienen de selects como strings
-  const normalizedChanges = {
-    ...changes,
-    idGenero: changes.idGenero !== undefined ? Number(changes.idGenero) : changes.idGenero,
-    idSucursal: changes.idSucursal !== undefined ? Number(changes.idSucursal) : changes.idSucursal,
-    idStatusUsuario: changes.idStatusUsuario !== undefined ? Number(changes.idStatusUsuario) : changes.idStatusUsuario,
-    idRole: changes.idRole !== undefined ? Number(changes.idRole) : changes.idRole,
-  };
-
-  // Función para mandar el update con merge
-  const doUpdate = (currentUser: any) => {
-    const nowIso = new Date();
-
-    // Si el campo password está vacío, no lo sobrescribas
-    const payload: Usuario = {
-      ...currentUser,             // valores actuales (llenan lo que el form no envía)
-      ...normalizedChanges,       // sobrescribe solo lo que cambiaste en el form
-      fechaModificacion: nowIso,
-      usuarioModificacion: usuarioModificacion,
-      fechaNacimiento: this.toDateOnly(this.usuarioForm.value.fechaNacimiento)
+    // Normalizar tipos si vienen de selects como strings
+    const normalizedChanges = {
+      ...changes,
+      idGenero:
+        changes.idGenero !== undefined
+          ? Number(changes.idGenero)
+          : changes.idGenero,
+      idSucursal:
+        changes.idSucursal !== undefined
+          ? Number(changes.idSucursal)
+          : changes.idSucursal,
+      idStatusUsuario:
+        changes.idStatusUsuario !== undefined
+          ? Number(changes.idStatusUsuario)
+          : changes.idStatusUsuario,
+      idRole:
+        changes.idRole !== undefined ? Number(changes.idRole) : changes.idRole,
     };
 
-    console.log(this.toDateOnly(this.usuarioForm.value.fechaNacimiento));
+    // Función para mandar el update con merge
+    const doUpdate = (currentUser: any) => {
+      const nowIso = new Date();
 
-    this.usuarioService.updateUsuario(payload.idUsuario, payload).subscribe({
-      next: () => {
-        alert('Usuario actualizado correctamente');
-        this.ngOnInit();
-        this.onReset();
-      },
-      error: () => {
-        this.error = 'Error al actualizar usuario';
-      },
-    });
-  };
+      // Si el campo password está vacío, no lo sobrescribas
+      const payload: Usuario = {
+        ...currentUser, // valores actuales (llenan lo que el form no envía)
+        ...normalizedChanges, // sobrescribe solo lo que cambiaste en el form
+        fechaModificacion: nowIso,
+        usuarioModificacion: usuarioModificacion,
+        fechaNacimiento: this.toDateOnly(
+          this.usuarioForm.value.fechaNacimiento
+        ),
+      };
 
-  if (existing) {
-    // Tenemos el usuario en memoria: merge directo
-    doUpdate(existing);
-  } else {
-    // Fallback: si no está en memoria, lo pedimos al backend para mergear correctamente
-    this.usuarioService.getUsuarios().subscribe({
-      next: (usuarios) => {
-        const current = usuarios.find((u: any) => u.idUsuario === changes.idUsuario);
-        if (current) {
-          doUpdate(current);
-        } else {
-          this.error = 'No se pudo encontrar el usuario a actualizar';
-        }
-      },
-      error: () => {
-        this.error = 'No se pudo cargar el usuario a actualizar';
-      }
-    });
+      console.log(this.toDateOnly(this.usuarioForm.value.fechaNacimiento));
+
+      this.usuarioService.updateUsuario(payload.idUsuario, payload).subscribe({
+        next: () => {
+          alert('Usuario actualizado correctamente');
+          this.ngOnInit();
+          this.onReset();
+        },
+        error: () => {
+          this.error = 'Error al actualizar usuario';
+        },
+      });
+    };
+
+    if (existing) {
+      // Tenemos el usuario en memoria: merge directo
+      doUpdate(existing);
+    } else {
+      // Fallback: si no está en memoria, lo pedimos al backend para mergear correctamente
+      this.usuarioService.getUsuarios().subscribe({
+        next: (usuarios) => {
+          const current = usuarios.find(
+            (u: any) => u.idUsuario === changes.idUsuario
+          );
+          if (current) {
+            doUpdate(current);
+          } else {
+            this.error = 'No se pudo encontrar el usuario a actualizar';
+          }
+        },
+        error: () => {
+          this.error = 'No se pudo cargar el usuario a actualizar';
+        },
+      });
+    }
   }
-}
 
   //Método para resetear el formulario
   onReset() {
@@ -323,16 +338,16 @@ onUpdate() {
   }
 
   // Normaliza a 'YYYY-MM-DD' sin hora ni zona
-private toDateOnly(value: any): string {
-  if (!value) return '';
-  // Si ya viene como 'YYYY-MM-DD', úsalo tal cual
-  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  private toDateOnly(value: any): string {
+    if (!value) return '';
+    // Si ya viene como 'YYYY-MM-DD', úsalo tal cual
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value))
+      return value;
 
-  const d = new Date(value); // puede venir como Date (MatDatepicker) o string con hora
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
+    const d = new Date(value); // puede venir como Date (MatDatepicker) o string con hora
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 }
