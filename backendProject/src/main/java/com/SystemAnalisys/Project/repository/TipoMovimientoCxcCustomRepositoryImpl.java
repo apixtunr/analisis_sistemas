@@ -27,7 +27,7 @@ public class TipoMovimientoCxcCustomRepositoryImpl implements TipoMovimientoCxcC
         return results.stream()
                 .map(row -> new TipoMovimientoCxcResponse(
                         (String) row[0],
-                        (Integer) row[1]
+                        ((Long) row[1]).intValue()
                 ))
                 .collect(Collectors.toList());
     }

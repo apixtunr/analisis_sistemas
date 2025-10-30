@@ -9,13 +9,23 @@
         <div class="row g-3">
           <div class="col-md-4">
             <label class="form-label">Persona</label>
-            <select class="form-select" formControlName="idPersona" (change)="onPersonaChange()">
+            <select
+              class="form-select"
+              formControlName="idPersona"
+              (change)="onPersonaChange()"
+            >
               <option [ngValue]="null">Seleccione persona</option>
               <option *ngFor="let p of personas" [ngValue]="p.idPersona">
                 {{ p.nombreCompleto }}
               </option>
             </select>
-            <div *ngIf="movimientoForm.get('idPersona')?.touched && movimientoForm.get('idPersona')?.invalid" class="text-danger small">
+            <div
+              *ngIf="
+                movimientoForm.get('idPersona')?.touched &&
+                movimientoForm.get('idPersona')?.invalid
+              "
+              class="text-danger small"
+            >
               Persona requerida
             </div>
           </div>
@@ -28,10 +38,21 @@
                 {{ c.nombreTipoSaldo }}
               </option>
             </select>
-            <div *ngIf="movimientoForm.get('idSldCuenta')?.touched && movimientoForm.get('idSldCuenta')?.invalid" class="text-danger small">
+            <div
+              *ngIf="
+                movimientoForm.get('idSldCuenta')?.touched &&
+                movimientoForm.get('idSldCuenta')?.invalid
+              "
+              class="text-danger small"
+            >
               Cuenta requerida
             </div>
-            <div *ngIf="!cuentas || cuentas.length === 0" class="text-muted small mt-1">Seleccione una persona para cargar cuentas</div>
+            <div
+              *ngIf="!cuentas || cuentas.length === 0"
+              class="text-muted small mt-1"
+            >
+              Seleccione una persona para cargar cuentas
+            </div>
           </div>
 
           <div class="col-md-4">
@@ -42,30 +63,61 @@
                 {{ t.nombre }}
               </option>
             </select>
-            <div *ngIf="movimientoForm.get('idTM')?.touched && movimientoForm.get('idTM')?.invalid" class="text-danger small">
+            <div
+              *ngIf="
+  movimientoForm.get('idTM')?.touched &&
+  movimientoForm.get('idTM')?.errors?.['required']
+"
+              class="text-danger small"
+            >
               Tipo requerido
             </div>
           </div>
 
           <div class="col-md-4 mt-3">
             <label class="form-label">Monto</label>
-            <input type="number" step="0.01" formControlName="monto" class="form-control" placeholder="0.00" />
-            <div *ngIf="movimientoForm.get('monto')?.touched && movimientoForm.get('monto')?.invalid" class="text-danger small">
+            <input
+              type="number"
+              step="0.01"
+              formControlName="monto"
+              class="form-control"
+              placeholder="0.00"
+            />
+            <div
+              *ngIf="
+                movimientoForm.get('monto')?.touched &&
+                movimientoForm.get('monto')?.invalid
+              "
+              class="text-danger small"
+            >
               Monto inválido
             </div>
           </div>
 
           <div class="col-md-8 mt-3">
             <label class="form-label">Descripción (opcional)</label>
-            <input type="text" formControlName="descripcion" class="form-control" placeholder="Descripción" />
+            <input
+              type="text"
+              formControlName="descripcion"
+              class="form-control"
+              placeholder="Descripción"
+            />
           </div>
         </div>
 
         <div class="mt-4 d-flex gap-2">
-          <button type="submit" class="btn btn-primary" [disabled]="movimientoForm.invalid || loading">
-            {{ loading ? 'Guardando...' : 'Registrar Movimiento' }}
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="movimientoForm.invalid || loading"
+          >
+            {{ loading ? "Guardando..." : "Registrar Movimiento" }}
           </button>
-          <button type="button" class="btn btn-secondary" (click)="movimientoForm.reset(); cuentas = []; message = '';">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="movimientoForm.reset(); cuentas = []; message = ''"
+          >
             Limpiar
           </button>
         </div>

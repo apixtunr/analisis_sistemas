@@ -5,5 +5,6 @@ import com.SystemAnalisys.Project.entity.TipoMovimientosCxc;
 
 public interface TipoMovimientosCxcRepository extends JpaRepository<TipoMovimientosCxc, Long> {
 
-    
+     
+     
 }
