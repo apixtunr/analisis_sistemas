@@ -50,14 +50,14 @@ export class MenuComponent implements OnInit {
   // Verificar permisos para opciones
   puedeVerOpcion(opcion: any, idMenu: number): boolean {
     if (!this.usuarioActual) return false;
-    
+
     const rolUsuario = this.usuarioActual.rol || this.usuarioActual.idrole;
-    
+
     // Si el menú es "Acciones" (idMenu = 2), solo admin (rol = 1) puede ver
     if (idMenu === 2) {
       return rolUsuario === 1;
     }
-    
+
     return true;
   }
 

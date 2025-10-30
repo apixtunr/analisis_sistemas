@@ -10,6 +10,10 @@ import { EstadoCivil } from '../../entity/estadoCivil';
 import { TipoDocumento } from '../../entity/tipoDocumento';
 import { Genero } from '../../entity/genero';
 import { RolOpcion } from '../../entity/rolopcion';
+import { DocumentoPersona } from '../../entity/documentoPersona';
+import { DocumentoPersonaRequest } from '../../entity/documentoPersonaRequest';
+import { DocumentoPersonaService } from '../../service/documentopersona.service';
+import { CuentaService } from '../../service/cuenta.service';
 
 @Component({
   selector: 'app-gestionpersonas',
@@ -18,16 +22,25 @@ import { RolOpcion } from '../../entity/rolopcion';
   styleUrl: './gestionpersonas.component.css'
 })
 export class GestionpersonasComponent implements OnInit {
+  personaEditando?: Persona;
   permisosUsuario: RolOpcion | undefined;
   isEditMode = false;
+
+  // Documentos de persona
+  documentosPersona: DocumentoPersona[] = [];
+  mostrarModalDocumento = false;
+  documentoForm!: FormGroup;
+  documentoEditando: DocumentoPersona | null = null;
 
   constructor(
     private personaService: PersonaService,
     private generoService: GeneroService,
     private estadoCivilService: EstadoCivilService,
     private tipoDocumentoService: TipoDocumentoService,
+    private documentoPersonaService: DocumentoPersonaService,
     private fb: FormBuilder,
-    private permisoService: PermisoService
+    private permisoService: PermisoService,
+    private cuentaService: CuentaService
   ) {}
 
   loading = true;
@@ -52,13 +65,11 @@ export class GestionpersonasComponent implements OnInit {
       telefono: [''],
       correoElectronico: ['', [Validators.email]],
       idEstadoCivil: [null, Validators.required],
-      idTipoDocumento: [null, Validators.required],
-      numeroDocumento: ['', Validators.required],
       // Campos de auditoría (solo lectura)
-      fechaCreacion: [{value: '', disabled: true}],
-      usuarioCreacion: [{value: '', disabled: true}],
-      fechaModificacion: [{value: '', disabled: true}],
-      usuarioModificacion: [{value: '', disabled: true}]
+      fechacreacion: [{value: '', disabled: true}],
+      usuariocreacion: [{value: '', disabled: true}],
+      fechamodificacion: [{value: '', disabled: true}],
+      usuariomodificacion: [{value: '', disabled: true}]
     });
 
     // Obtener permisos para gestión de personas (asumiendo idOpcion=10 para personas)
@@ -130,7 +141,7 @@ export class GestionpersonasComponent implements OnInit {
     return tipoDoc ? tipoDoc.nombre : ''; //Agregar mensaje vacio si no se encuentra el tipo de documento
   }
 
-  // Método para crear persona
+  // Método para crear persona (con un solo documento)
   onSubmit() {
     if (this.personaForm.invalid) {
       this.personaForm.markAllAsTouched();
@@ -138,12 +149,18 @@ export class GestionpersonasComponent implements OnInit {
       return;
     }
 
-    const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
-    const usuarioCreacion = usuarioLocal.nombre || 'system';
+  const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+  const usuarioCreacion = usuarioLocal.idusuario || usuarioLocal.nombre || 'system';
 
     const persona: Persona = {
-      ...this.personaForm.value,
+      nombre: this.personaForm.value.nombre,
+      apellido: this.personaForm.value.apellido,
       fechaNacimiento: this.toDateOnly(this.personaForm.value.fechaNacimiento),
+      idGenero: this.personaForm.value.idGenero,
+      direccion: this.personaForm.value.direccion,
+      telefono: this.personaForm.value.telefono,
+      correoElectronico: this.personaForm.value.correoElectronico,
+      idEstadoCivil: this.personaForm.value.idEstadoCivil,
       fechaCreacion: new Date().toISOString(),
       usuarioCreacion: usuarioCreacion,
       fechaModificacion: null,
@@ -153,9 +170,7 @@ export class GestionpersonasComponent implements OnInit {
     this.personaService.createPersona(persona).subscribe({
       next: () => {
         alert('Persona creada correctamente.');
-        console.log('Persona creada correctamente');
         this.onReset();
-        // Recargar la lista
         this.personaService.getPersonas().subscribe(data => {
           this.personas = data;
         });
@@ -169,10 +184,13 @@ export class GestionpersonasComponent implements OnInit {
 
   // Editar persona (trae los datos al formulario)
   onEdit(persona: Persona) {
+    this.personaEditando = persona;
     this.personaForm.patchValue(persona);
-    this.isEditMode = true;
-    console.log('Editando persona:', persona);
-    console.log('Valores del formulario:', this.personaForm.value);
+  this.isEditMode = true;
+  // Cargar documentos de la persona seleccionada
+  this.cargarDocumentosPersona(persona.idPersona!);
+  console.log('Editando persona:', persona);
+  console.log('Valores del formulario:', this.personaForm.value);
   }
 
   // Método para eliminar persona
@@ -203,69 +221,40 @@ export class GestionpersonasComponent implements OnInit {
       return;
     }
 
-    const changes = this.personaForm.value;
+  const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+  const usuarioModificacion = usuarioLocal.idusuario || usuarioLocal.nombre || 'system';
 
-    // Auditoría con el usuario logueado
-    const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
-    const usuarioModificacion = usuarioLocal.nombre || 'system';
+    const personaId = Number(this.personaForm.value.idPersona);
 
-    if (!changes.idPersona) {
-      console.error('No se puede actualizar: ID de persona no encontrado');
-      return;
-    }
-
-    // Asegurar que el ID es un número
-    const personaId = Number(changes.idPersona);
-    if (isNaN(personaId)) {
-      console.error('ID de persona inválido:', changes.idPersona);
-      return;
-    }
-
-    // Buscar la persona actual en la lista cargada
-    const existing = this.personas.find(p => p.idPersona === personaId);
-
-    // Normalizar tipos
-    const normalizedChanges = {
-      ...changes,
-      idEstadoCivil: Number(changes.idEstadoCivil),
-      idGenero: Number(changes.idGenero),
-      idTipoDocumento: changes.idTipoDocumento ? Number(changes.idTipoDocumento) : null
+    const persona: Persona = {
+      idPersona: personaId,
+      nombre: this.personaForm.value.nombre,
+      apellido: this.personaForm.value.apellido,
+      fechaNacimiento: this.toDateOnly(this.personaForm.value.fechaNacimiento),
+      idGenero: this.personaForm.value.idGenero,
+      direccion: this.personaForm.value.direccion,
+      telefono: this.personaForm.value.telefono,
+      correoElectronico: this.personaForm.value.correoElectronico,
+      idEstadoCivil: this.personaForm.value.idEstadoCivil,
+      fechaCreacion: this.personaEditando?.fechaCreacion ?? new Date().toISOString(),
+      usuarioCreacion: this.personaEditando?.usuarioCreacion ?? usuarioModificacion,
+      fechaModificacion: new Date().toISOString(),
+      usuarioModificacion: usuarioModificacion
     };
 
-    // Función para mandar el update con merge
-    const doUpdate = (currentPersona: Persona) => {
-      const updatedPersona: Persona = {
-        ...currentPersona,
-        ...normalizedChanges,
-        idPersona: personaId, // Asegurar que el ID sea correcto
-        fechaNacimiento: this.toDateOnly(normalizedChanges.fechaNacimiento),
-        fechaModificacion: new Date().toISOString(),
-        usuarioModificacion: usuarioModificacion
-      };
-
-      this.personaService.updatePersona(personaId, updatedPersona).subscribe({
-        next: () => {
-          alert('Persona actualizada correctamente.');
-          console.log('Persona actualizada correctamente');
-          this.onReset();
-          // Recargar la lista
-          this.personaService.getPersonas().subscribe(data => {
-            this.personas = data;
-          });
-        },
-        error: (error: any) => {
-          console.error('Error al actualizar persona:', error);
-          alert('Error al actualizar la persona.');
-        }
-      });
-    };
-
-    if (existing) {
-      doUpdate(existing);
-    } else {
-      console.error('Persona no encontrada en la lista local');
-      alert('Error: Persona no encontrada');
-    }
+    this.personaService.updatePersona(personaId, persona).subscribe({
+      next: () => {
+        alert('Persona actualizada correctamente.');
+        this.onReset();
+        this.personaService.getPersonas().subscribe(data => {
+          this.personas = data;
+        });
+      },
+      error: (error) => {
+        console.error('Error al actualizar persona:', error);
+        alert('Error al actualizar la persona.');
+      }
+    });
   }
 
   // Método para resetear el formulario
@@ -280,15 +269,105 @@ export class GestionpersonasComponent implements OnInit {
       telefono: '',
       correoElectronico: '',
       idEstadoCivil: null,
-      idTipoDocumento: null,
-      numeroDocumento: '',
       // Limpiar campos de auditoría
-      fechaCreacion: '',
-      usuarioCreacion: '',
-      fechaModificacion: '',
-      usuarioModificacion: ''
+      fechacreacion: '',
+      usuariocreacion: '',
+      fechamodificacion: '',
+      usuariomodificacion: ''
     });
     this.isEditMode = false;
+    this.documentosPersona = [];
+    this.cerrarModalDocumento();
+  }
+
+  // ----------- DOCUMENTOS PERSONA -----------
+  cargarDocumentosPersona(idPersona: number) {
+    this.documentoPersonaService.getAllByPersona(idPersona).subscribe({
+      next: (docs) => this.documentosPersona = docs,
+      error: () => this.documentosPersona = []
+    });
+  }
+
+  abrirModalDocumento() {
+    this.documentoEditando = null;
+    this.initDocumentoForm();
+    this.mostrarModalDocumento = true;
+  }
+  // Variable para almacenar la persona seleccionada para agregar documento
+  personaParaDocumento: Persona | null = null;
+
+  cerrarModalDocumento() {
+    this.mostrarModalDocumento = false;
+    this.documentoEditando = null;
+    this.personaParaDocumento = null;
+    if (this.documentoForm) this.documentoForm.reset();
+  }
+
+  initDocumentoForm() {
+    this.documentoForm = this.fb.group({
+      idtipodocumento: [this.documentoEditando?.idtipodocumento || '', Validators.required],
+      nodocumento: [this.documentoEditando?.nodocumento || '', Validators.required]
+    });
+  }
+
+  guardarDocumento() {
+    if (this.documentoForm.invalid) return;
+    // Determinar el id de persona: si hay personaParaDocumento, usar ese; si no, usar el del formulario de persona (modo edición)
+    const idPersona = this.personaParaDocumento?.idPersona || this.personaForm.value.idPersona;
+    if (!idPersona) return;
+    const usuarioLocal = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const usuario = usuarioLocal.nombre || 'system';
+    const docReq: DocumentoPersonaRequest = {
+      idtipodocumento: Number(this.documentoForm.value.idtipodocumento),
+      idpersona: idPersona,
+      nodocumento: this.documentoForm.value.nodocumento,
+      fechacreacion: new Date().toISOString(),
+      usuariocreacion: usuario
+    };
+    if (this.documentoEditando) {
+      // Actualizar (puedes ajustar si el backend espera el request también en update)
+      this.documentoPersonaService.update(docReq.idtipodocumento, docReq.idpersona, docReq).subscribe({
+        next: () => {
+          this.cargarDocumentosPersona(docReq.idpersona);
+          this.cerrarModalDocumento();
+        },
+        error: () => alert('Error al actualizar documento')
+      });
+    } else {
+      // Crear
+      this.documentoPersonaService.create(docReq).subscribe({
+        next: () => {
+          alert('Documento creado correctamente.');
+          this.cargarDocumentosPersona(docReq.idpersona);
+          this.cerrarModalDocumento();
+        },
+        error: (err) => {
+          if (err.status === 409) alert('Ya existe un documento de ese tipo para esta persona');
+          else alert('Error al agregar documento');
+        }
+      });
+    }
+  }
+
+  editarDocumento(doc: DocumentoPersona) {
+    this.documentoEditando = doc;
+    this.initDocumentoForm();
+    this.mostrarModalDocumento = true;
+  }
+
+  eliminarDocumento(doc: DocumentoPersona) {
+    if (!confirm('¿Eliminar este documento?')) return;
+    this.documentoPersonaService.delete(doc.idtipodocumento, doc.idpersona).subscribe({
+      next: () => this.cargarDocumentosPersona(doc.idpersona),
+      error: () => alert('Error al eliminar documento')
+    });
+  }
+
+  abrirModalDocumentoDesdeTabla(persona: Persona) {
+    this.personaParaDocumento = persona;
+    this.initDocumentoForm();
+    this.documentoEditando = null;
+    this.mostrarModalDocumento = true;
   }
 
   // Normaliza a 'YYYY-MM-DD' sin hora ni zona
@@ -303,4 +382,28 @@ export class GestionpersonasComponent implements OnInit {
     const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
+
+// Propiedades para mostrar documentos en modal
+documentosParaVer: DocumentoPersona[] = [];
+mostrarModalVerDocumentos = false;
+personaDocumentosNombre: string = '';
+
+verDocumentosPersona(persona: Persona) {
+  this.documentoPersonaService.getAllByPersona(persona.idPersona!).subscribe({
+    next: (docs) => {
+      this.documentosParaVer = Array.isArray(docs) ? docs : [];
+      this.personaDocumentosNombre = persona.nombre + ' ' + persona.apellido;
+      this.mostrarModalVerDocumentos = true;
+    },
+    error: () => {
+      this.documentosParaVer = [];
+      this.mostrarModalVerDocumentos = true;
+    }
+  });
+}
+
+cerrarModalVerDocumentos() {
+  this.mostrarModalVerDocumentos = false;
+  this.documentosParaVer = [];
+}
 }

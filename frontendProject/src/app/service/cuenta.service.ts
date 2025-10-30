@@ -7,9 +7,13 @@ export interface CuentaDto {
   idpersona: number;
   idsucursal?: number;
   idtiposaldocuenta?: number;
-  saldoinicial?: number;
+  idstatuscuenta?: number;
+  saldoanterior?: number;
   debitos?: number;
   creditos?: number;
+  fechacreacion?: string;
+  usuariocreacion?: string;
+  fechamodificacion?: string;
 }
 
 export interface CreateCuentaRequest {
@@ -71,7 +75,7 @@ export class CuentaService {
     return this.http.get<DocumentoPersona[]>(`${this.apiBase}/documentos-persona/persona/${idPersona}`);
   }
 
-  // Métodos adicionales para gestión de cuentas si los necesitas
+  // Métodos adicionales para gestión de cuentas
   listByPersona(idPersona: number): Observable<CuentaDto[]> {
     return this.http.get<CuentaDto[]>(`${this.base}/persona/${idPersona}`);
   }

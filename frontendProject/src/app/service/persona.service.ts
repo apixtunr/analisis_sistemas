@@ -18,6 +18,7 @@ export class PersonaService {
     return this.http.post<Persona>(`${this.apiUrl}/api/create_persona`, persona);
   }
 
+
   updatePersona(idPersona: number, persona: Persona): Observable<Persona> {
     return this.http.put<Persona>(
       `${this.apiUrl}/api/update_persona/${idPersona}`,
@@ -30,4 +31,5 @@ export class PersonaService {
       `${this.apiUrl}/api/delete_persona/${idPersona}`
     );
   }
+
 }

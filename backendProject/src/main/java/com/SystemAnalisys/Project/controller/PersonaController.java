@@ -17,6 +17,7 @@ import com.SystemAnalisys.Project.dto.DocumentoPersonaDto;
 import com.SystemAnalisys.Project.entity.Persona;
 import com.SystemAnalisys.Project.service.PersonaService;
 
+
 @RestController
 public class PersonaController {
 
@@ -85,4 +86,6 @@ public class PersonaController {
         }
         return ResponseEntity.ok(documentos);
     }
+
+
 }

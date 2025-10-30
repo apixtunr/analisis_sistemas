@@ -33,6 +33,7 @@ import { TipoMovimientoCxcComponent } from './component/tipo-movimiento-cxc/tipo
 import { CrudstatuscuentaComponent } from './component/crudstatuscuenta/crudstatuscuenta.component';
 import { ConsultaSaldoComponent } from './component/consulta-saldo/consulta-saldo/consulta-saldo.component';
 import { CuentaComponent } from './component/cuenta/cuenta.component';
+import { DetalleCuentaComponent } from './component/detalle-cuenta/detalle-cuenta.component';
 
 @NgModule({
   declarations: [
@@ -64,20 +65,20 @@ import { CuentaComponent } from './component/cuenta/cuenta.component';
     ConsultaSaldoComponent,
     CuentaComponent
   ],
-  bootstrap: [AppComponent],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    CommonModule,
-
-  ],
-  providers: [
-    provideHttpClient(withInterceptorsFromDi()),
-    { provide: LOCALE_ID, useValue: 'es' }
-  ]
+bootstrap: [AppComponent],
+imports: [
+  BrowserModule,
+  AppRoutingModule,
+  HttpClientModule,
+  FormsModule,
+  ReactiveFormsModule,
+  CommonModule,
+  DetalleCuentaComponent
+],
+providers: [
+  provideHttpClient(withInterceptorsFromDi()),
+  { provide: LOCALE_ID, useValue: 'es' }
+]
 })
 export class AppModule {
   constructor() {
