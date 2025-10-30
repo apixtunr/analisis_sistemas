@@ -8,13 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.SystemAnalisys.Project.dto.DocumentoPersonaDto;
+
 import com.SystemAnalisys.Project.entity.DocumentoPersona;
 import com.SystemAnalisys.Project.entity.Persona;
 import com.SystemAnalisys.Project.entity.TipoDocumento;
 import com.SystemAnalisys.Project.repository.DocumentoPersonaRepository;
 
+
 import com.SystemAnalisys.Project.repository.PersonaRepository;
 import com.SystemAnalisys.Project.repository.TipoDocumentoRepository;
+
+
 
 @Service
 public class PersonaService {
@@ -81,4 +85,6 @@ public class PersonaService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+
 }

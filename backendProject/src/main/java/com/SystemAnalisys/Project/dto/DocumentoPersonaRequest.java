@@ -11,4 +11,5 @@ public class DocumentoPersonaRequest {
     private String nodocumento;
     private Date fechacreacion;
     private String usuariocreacion;
+
 }
