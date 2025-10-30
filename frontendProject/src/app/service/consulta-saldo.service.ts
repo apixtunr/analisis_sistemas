@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 // Interfaces para la consulta de saldos
 export interface ConsultaSaldoRequest {
@@ -67,9 +67,11 @@ export class ConsultaSaldoService {
 
   // Consultar saldo por nombre y apellido
   consultarPorNombreApellido(nombre: string, apellido: string): Observable<SaldoCuentaEntity[]> {
-    return this.http.get<SaldoCuentaEntity[]>(`${this.apiBase}/saldo-cuentas/consultar-por-nombre`, {
-      params: { nombre, apellido }
-    });
+    return this.http.get<SaldoCuentaEntity[]>(`${this.apiBase}/saldo-cuentas/consultar-por-nombre`, 
+      { params: { nombre, apellido } }
+    ).pipe(
+      map(res => res || [])
+    );
   }
 
   // Obtener nombre de persona por ID

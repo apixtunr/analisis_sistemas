@@ -125,7 +125,11 @@ export class ConsultaSaldoComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error en consulta de saldo:', error);
-        this.error = 'Error al consultar el saldo: ' + (error.error?.message || error.message || 'Error desconocido');
+        if (error.status === 404) {
+          this.error = 'No se encontró la cuenta o cliente solicitado.';
+        } else {
+          this.error = 'Error al consultar el saldo: ' + (error.error?.message || error.message || 'Error desconocido');
+        }
         this.buscando = false;
         this.consultaRealizada = true;
       }
@@ -145,7 +149,11 @@ export class ConsultaSaldoComponent implements OnInit {
 
   // Procesar resultado para búsqueda por cliente
   private procesarResultadoCliente(cuentas: SaldoCuentaEntity[]): void {
-    if (cuentas.length === 0) return;
+    cuentas = cuentas || [];
+    if (cuentas.length === 0) {
+      this.resultadoCliente = null;
+      return;
+    }
 
     const idPersona = cuentas[0].idpersona;
     

@@ -32,10 +32,6 @@ export class UsuarioService {
     return this.http.post<void>(`${this.apiUrl}/api/create_usuario`, usuario);
   }
 
-  logout(): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/api/logout`, {});
-  }
-
   login(usuario: Usuario): Observable<any> {
     let httpOptions = {
       headers: new HttpHeaders({

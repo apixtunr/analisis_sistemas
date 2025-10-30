@@ -30,7 +30,7 @@ export class TipoMovimientoCxcComponent implements OnInit {
   guardar(): void {
     // Asignar usuario y fechas automáticamente
     const usuarioActual = 'admin'; // <-- puedes obtenerlo luego del login real
-    const fechaActual = new Date().toISOString();
+    const fechaActual = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString();
 
     if (this.editando) {
       this.nuevoMovimiento.fechaModificacion = fechaActual;

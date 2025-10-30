@@ -71,12 +71,11 @@
       </thead>
       <tbody>
         <tr *ngFor="let mov of movimientos">
-          <td>{{ mov.idTipoMovimientoCxc }}</td>
           <td>{{ mov.nombre }}</td>
           <td>{{ mov.operacionCuentaCorriente === 1 ? 'Cargo' : 'Abono' }}</td>
-          <td>{{ mov.fechaCreacion | date:'dd/MM/yyyy' }}</td>
+          <td>{{ mov.fechaCreacion | date:'dd/MM/yyyy HH:mm:ss':'GMT-6':'es-GT' }}</td>
           <td>{{ mov.usuarioCreacion }}</td>
-          <td>{{ mov.fechaModificacion | date:'dd/MM/yyyy' }}</td>
+          <td>{{ mov.fechaModificacion | date:'dd/MM/yyyy HH:mm:ss':'GMT-6':'es-GT' }}</td>
           <td>{{ mov.usuarioModificacion }}</td>
           <td class="sticky-buttons">
             <div class="d-flex justify-content-center gap-2">
