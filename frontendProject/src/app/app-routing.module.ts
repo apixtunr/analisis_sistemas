@@ -9,10 +9,13 @@ import { CrudopcionesComponent } from './component/crudopciones/crudopciones.com
 import { MenuComponent } from './component/menu/menu.component';
 import { CrudmoduloComponent } from './component/crudmodulo/crudmodulo.component';
 import { CrudroleComponent } from './component/crudrole/crudrole.component';
+import { CrudestadocivilComponent } from './component/crudestadocivil/crudestadocivil.component';
 import { CrudusuariosComponent } from './component/crudusuarios/crudusuarios.component';
 import { AsignacionrolopcionComponent } from './component/asignacionrolopcion/asignacionrolopcion.component';
 import { CrudGeneroComponent } from './component/crudgenero/crud-genero.component';
 import { CrudstatususuarioComponent } from './component/crudstatususuario/crudstatususuario.component';
+import { CrudtipodocumentoComponent } from './component/crudtipodocumento/crudtipodocumento.component';
+import { CrudTipoCuentaComponent } from './component/crudtipocuenta/crudtipocuenta.component';
 import { CrudsucursalesComponent } from './component/crudsucursales/crudsucursales.component';
 import { CambiopasswordComponent } from './component/cambiopassword/cambiopassword.component';
 import { CierreMesCRUDComponent } from './component/cierre-mes-crud/cierre-mes-crud.component';
@@ -37,6 +40,9 @@ const routes: Routes = [
   { path: 'crud-genero', component: CrudGeneroComponent },
   { path: 'crudstatususuario', component: CrudstatususuarioComponent },
   { path: 'crudusuarios', component: CrudusuariosComponent },
+  { path: 'crudestadocivil', component: CrudestadocivilComponent, canActivate: [AuthGuard] },
+  { path: 'crudtipodocumento', component: CrudtipodocumentoComponent, canActivate: [AuthGuard] },
+  { path: 'crudtipocuenta', component: CrudTipoCuentaComponent, canActivate: [AuthGuard] },
   { path: 'asignacionrolopcion', component: AsignacionrolopcionComponent },
   { path: 'crudsucursales', component: CrudsucursalesComponent },
   { path: 'cambiopassword', component: CambiopasswordComponent },

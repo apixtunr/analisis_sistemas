@@ -1,8 +1,8 @@
 export interface TipoDocumento {
-  idTipoDocumento?: number;
+  idTipoDocumento?: number | null;
   nombre: string;
-  fechaCreacion: string | null;
+  fechaCreacion: Date | null;
   usuarioCreacion: string | null;
-  fechaModificacion: string | null;
+  fechaModificacion: Date | null;
   usuarioModificacion: string | null;
 }
