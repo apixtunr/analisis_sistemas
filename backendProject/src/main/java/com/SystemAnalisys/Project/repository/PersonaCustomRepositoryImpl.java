@@ -27,7 +27,7 @@ public class PersonaCustomRepositoryImpl implements PersonaCustomRepository {
         return results.stream()
                 .map(row -> new PersonaSimpleDTO(
                         (String) row[0], // Corresponde a nombreCompleto
-                        (Integer) row[1]  // Corresponde a idPersona
+                        ((Long) row[1]).intValue()  // Corresponde a idPersona
                 ))
                 .collect(Collectors.toList());
     }

@@ -5,17 +5,21 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.SystemAnalisys.Project.dto.TipoMovimientoCxcResponse;
 import com.SystemAnalisys.Project.entity.TipoMovimientosCxc;
 import com.SystemAnalisys.Project.repository.TipoMovimientosCxcRepository;
+import com.SystemAnalisys.Project.repository.TipoMovimientoCxcCustomRepository;
 
 
 @Service
 public class TipoMovimientoCxcService {
 
     private final TipoMovimientosCxcRepository repository;
+    private final TipoMovimientoCxcCustomRepository tipoMovimientoCxcCustomRepository;
 
-    public TipoMovimientoCxcService(TipoMovimientosCxcRepository repository) {
+    public TipoMovimientoCxcService(TipoMovimientosCxcRepository repository, TipoMovimientoCxcCustomRepository tipoMovimientoCxcCustomRepository) {
         this.repository = repository;
+        this.tipoMovimientoCxcCustomRepository = tipoMovimientoCxcCustomRepository;
     }
 
     // Listar todos los tipos de movimiento
@@ -42,6 +46,10 @@ public class TipoMovimientoCxcService {
             existente.setUsuarioModificacion(nuevo.getUsuarioModificacion());
             return repository.save(existente);
         }).orElseThrow(() -> new RuntimeException("Tipo de movimiento no encontrado"));
+    }
+
+    public List<TipoMovimientoCxcResponse> getAllTipoMovimientoCxc() {
+        return tipoMovimientoCxcCustomRepository.findAllTipoMovimientoCxc();
     }
 
     // Eliminar por ID
