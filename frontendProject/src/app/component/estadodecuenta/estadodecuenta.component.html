@@ -1,0 +1,92 @@
+<div class="container mt-4">
+  <h3>Estado de Cuenta</h3>
+
+  <form [formGroup]="filtroForm" class="row g-3">
+    <div class="col-md-3">
+      <label class="form-label">Persona</label>
+      <select
+        class="form-select"
+        formControlName="idPersona"
+        (change)="cargarCuentas()"
+      >
+        <option value="">Seleccione persona</option>
+        <option *ngFor="let p of personas" [value]="p.idPersona">
+          {{ p.idPersona }} - {{ p.nombreCompleto }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Cuenta</label>
+      <select class="form-select" formControlName="idCuenta">
+        <option value="">Seleccione cuenta</option>
+        <option *ngFor="let c of cuentas" [value]="c.idSaldoCuenta">
+          {{ c.nombreTipoSaldo }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Fecha Inicio</label>
+      <input type="date" class="form-control" formControlName="fechaInicio" />
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Fecha Fin</label>
+      <input type="date" class="form-control" formControlName="fechaFin" />
+    </div>
+
+    <div class="col-md-12 d-flex gap-2 mt-3">
+      <button type="button" class="btn btn-primary" (click)="buscar()">
+        Buscar
+      </button>
+      <button type="button" class="btn btn-warning" (click)="limpiar()">
+        Limpiar
+      </button>
+      <button
+        type="button"
+        class="btn btn-success"
+        (click)="exportarPDF()"
+        [disabled]="movimientos.length === 0"
+      >
+        Descargar PDF
+      </button>
+    </div>
+  </form>
+
+  <div *ngIf="movimientos.length > 0" class="mt-3 p-3 border rounded">
+    <p><strong>Cliente:</strong> {{ nombrePersona }}</p>
+    <p><strong>Cuenta:</strong> {{ nombreCuenta }}</p>
+    <p><strong>Fecha de Emisión:</strong> {{ today | date : "short" }}</p>
+    <p>
+      <strong>Periodo:</strong> {{ filtroForm.value.fechaInicio }} al
+      {{ filtroForm.value.fechaFin }}
+    </p>
+  </div>
+
+  <!-- Tabla -->
+  <table class="table table-striped mt-4" *ngIf="movimientos.length > 0">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Descripción</th>
+        <th>Tipo</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let m of movimientos">
+        <td>{{ m.fechaMovimiento | date : "short" }}</td>
+        <td>{{ m.descripcion }}</td>
+        <td>{{ getTipoMovimientoNombre(m.idTipoMovimientoCXC) }}</td>
+        <td>{{ m.valorMovimiento | number: '1.2-2' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="mt-3 text-end" *ngIf="movimientos.length > 0">
+    <p><strong>Total Cargos:</strong> {{ totalCargos | number: '1.2-2' }}</p>
+    <p><strong>Total Abonos:</strong> {{ totalAbonos | number: '1.2-2' }}</p>
+    <p><strong>Saldo Final:</strong> {{ saldoFinal | number: '1.2-2' }}</p>
+  </div>
+</div>
