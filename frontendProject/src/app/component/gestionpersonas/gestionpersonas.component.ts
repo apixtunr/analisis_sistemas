@@ -193,23 +193,48 @@ export class GestionpersonasComponent implements OnInit {
   console.log('Valores del formulario:', this.personaForm.value);
   }
 
-  // Método para eliminar persona
+  // Método para eliminar persona con validación de documentos asociados
   onDelete(idPersona: number) {
     const confirmado = confirm('¿Estás seguro de eliminar esta persona?');
     if (!confirmado) return;
 
-    this.personaService.deletePersona(idPersona).subscribe({
-      next: () => {
-        alert('Persona eliminada correctamente.');
-        console.log('Persona eliminada correctamente');
-        // Recargar la lista
-        this.personaService.getPersonas().subscribe(data => {
-          this.personas = data;
+    // Validar si la persona tiene documentos asociados antes de eliminar
+    this.documentoPersonaService.getAllByPersona(idPersona).subscribe({
+      next: (docs) => {
+        if (docs && docs.length > 0) {
+          alert('No se puede eliminar la persona porque tiene documentos asociados.');
+          return;
+        }
+        // Si no tiene documentos, proceder a eliminar
+        this.personaService.deletePersona(idPersona).subscribe({
+          next: () => {
+            alert('Persona eliminada correctamente.');
+            console.log('Persona eliminada correctamente');
+            // Recargar la lista
+            this.personaService.getPersonas().subscribe(data => {
+              this.personas = data;
+            });
+          },
+          error: (error) => {
+            console.error('Error al eliminar persona:', error);
+            alert('Error al eliminar la persona.');
+          }
         });
       },
       error: (error) => {
-        console.error('Error al eliminar persona:', error);
-        alert('Error al eliminar la persona.');
+        // Si ocurre un error al consultar documentos, permitir eliminar (o puedes bloquear según tu lógica)
+        this.personaService.deletePersona(idPersona).subscribe({
+          next: () => {
+            alert('Persona eliminada correctamente.');
+            this.personaService.getPersonas().subscribe(data => {
+              this.personas = data;
+            });
+          },
+          error: (err) => {
+            console.error('Error al eliminar persona:', err);
+            alert('Error al eliminar la persona.');
+          }
+        });
       }
     });
   }
