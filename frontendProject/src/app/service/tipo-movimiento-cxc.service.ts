@@ -7,7 +7,7 @@ import { TipoMovimientoCxc } from "../entity/tipo-movimiento-cxc";
   providedIn: "root",
 })
 export class TipoMovimientoCxcService {
-  private apiUrl = "http://localhost:8080/api/tipo-movimiento-cxc";
+  private apiUrl = "http://localhost:8080/api/v1/tipo-movimiento-cxc";
 
   constructor(private http: HttpClient) {}
 
@@ -20,6 +20,12 @@ export class TipoMovimientoCxcService {
 
   getTipoMovimientoCxc(id: number): Observable<TipoMovimientoCxc> {
     return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(map(item => this.fromApi(item)));
+  }
+
+  getTipoMovimientoCxcListar(): Observable<TipoMovimientoCxc[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/listar`).pipe(
+      map(items => items.map(item => this.fromApi(item)))
+    );
   }
 
   createTipoMovimientoCxc(tipoMovimiento: TipoMovimientoCxc): Observable<TipoMovimientoCxc> {

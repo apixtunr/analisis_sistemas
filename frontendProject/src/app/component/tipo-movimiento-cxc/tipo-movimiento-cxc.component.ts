@@ -10,6 +10,7 @@ import { TipoMovimientoCxcService } from '../../service/tipo-movimiento-cxc.serv
 })
 export class TipoMovimientoCxcComponent implements OnInit {
   movimientos: TipoMovimientoCxc[] = [];
+  listarMovimientos: TipoMovimientoCxc[] = [];
   nuevoMovimiento: TipoMovimientoCxc = this.inicializarMovimiento();
   editando: boolean = false;
   message: string = '';
@@ -18,11 +19,19 @@ export class TipoMovimientoCxcComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarMovimientos();
+    this.cargarMovimientosListar();
   }
 
   cargarMovimientos(): void {
     this.movimientoCxcService.getTiposMovimientoCxc().subscribe({
       next: (movimientos) => (this.movimientos = movimientos),
+      error: (err) => console.error('Error al cargar movimientos', err),
+    });
+  }
+
+  cargarMovimientosListar(): void {
+    this.movimientoCxcService.getTipoMovimientoCxcListar().subscribe({
+      next: (listarMovimientos) => (this.listarMovimientos = listarMovimientos),
       error: (err) => console.error('Error al cargar movimientos', err),
     });
   }
