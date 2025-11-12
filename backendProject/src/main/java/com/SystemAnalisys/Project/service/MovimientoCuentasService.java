@@ -7,6 +7,7 @@ import com.SystemAnalisys.Project.repository.MovimientoCuentasCustomRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -23,10 +24,15 @@ public class MovimientoCuentasService {
         return movimientoCuentasCustomRepository.ejecutarRegistroMovimientos(request);
     }
 
-     public List<EstadoDeCuentaDTO> obtenerMovimientosPorCuentaYFechas(
+    public List<EstadoDeCuentaDTO> obtenerMovimientosPorCuentaYFechas(
             Integer idCuenta, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
         return movimientoCuentasCustomRepository.obtenerMovimientosPorCuentaYFechas(
-                idCuenta, fechaInicio, fechaFin
-        );
+                idCuenta, fechaInicio, fechaFin);
+    }
+
+    public Map<String, Object> obtenerEstadoCuentaConSaldos(
+            Integer idCuenta, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        return movimientoCuentasCustomRepository.obtenerEstadoCuentaConSaldos(
+                idCuenta, fechaInicio, fechaFin);
     }
 }

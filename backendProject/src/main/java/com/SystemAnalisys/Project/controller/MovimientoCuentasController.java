@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/movimientos-cuenta")
@@ -40,10 +41,19 @@ public class MovimientoCuentasController {
     public ResponseEntity<List<EstadoDeCuentaDTO>> obtenerEstadoCuenta(
             @RequestParam Integer idCuenta,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin
-    ) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin) {
         List<EstadoDeCuentaDTO> movimientos = movimientoCuentasService
                 .obtenerMovimientosPorCuentaYFechas(idCuenta, fechaInicio, fechaFin);
         return ResponseEntity.ok(movimientos);
+    }
+
+    @GetMapping("/estado-cuenta-con-saldos")
+    public ResponseEntity<Map<String, Object>> obtenerEstadoCuentaConSaldos(
+            @RequestParam Integer idCuenta,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin) {
+        Map<String, Object> resultado = movimientoCuentasService
+                .obtenerEstadoCuentaConSaldos(idCuenta, fechaInicio, fechaFin);
+        return ResponseEntity.ok(resultado);
     }
 }

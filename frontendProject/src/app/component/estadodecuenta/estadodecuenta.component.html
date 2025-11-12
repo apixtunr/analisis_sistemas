@@ -1,3 +1,4 @@
+<!-- src/app/estadodecuenta/estadodecuenta.component.html -->
 <div class="container mt-4">
   <h3>Estado de Cuenta</h3>
 
@@ -72,6 +73,7 @@
         <th>Descripción</th>
         <th>Tipo</th>
         <th>Valor</th>
+        <th>Saldo</th> <!-- Agregamos la columna Saldo -->
       </tr>
     </thead>
     <tbody>
@@ -80,6 +82,7 @@
         <td>{{ m.descripcion }}</td>
         <td>{{ getTipoMovimientoNombre(m.idTipoMovimientoCXC) }}</td>
         <td>{{ m.valorMovimiento | number: '1.2-2' }}</td>
+        <td>{{ m.saldo | number: '1.2-2' }}</td> <!-- Mostramos el saldo del movimiento -->
       </tr>
     </tbody>
   </table>
