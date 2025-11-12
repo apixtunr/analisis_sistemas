@@ -145,20 +145,20 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="form-label">Saldo Anterior</label>
-                <input type="number" class="form-control" [(ngModel)]="nuevaCuenta.saldoanterior" 
+                <input type="number" class="form-control" [disabled]="true" [(ngModel)]="nuevaCuenta.saldoanterior" 
                        name="saldoAnterior" step="0.01" min="0">
               </div>
               
               <div class="col-md-6 mb-3">
                 <label class="form-label">Débitos</label>
-                <input type="number" class="form-control" [(ngModel)]="nuevaCuenta.debitos" 
+                <input type="number" class="form-control" [disabled]="true" [(ngModel)]="nuevaCuenta.debitos" 
                        name="debitos" step="0.01" min="0">
               </div>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Créditos</label>
-              <input type="number" class="form-control" [(ngModel)]="nuevaCuenta.creditos" 
+              <input type="number" class="form-control" [disabled]="true" [(ngModel)]="nuevaCuenta.creditos" 
                      name="creditos" step="0.01" min="0">
             </div>
 
@@ -240,7 +240,7 @@
                     <th>ID Cuenta</th>
                     <th>Tipo</th>
                     <th>Fecha de Creación</th>
-                    <th>Usuario</th>
+                    <th>Usuario Creación</th>
                     <th>Estado</th>
                     <!--<th>Saldo Anterior</th>
                     <th>Débitos</th>
