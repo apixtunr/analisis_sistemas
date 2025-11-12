@@ -3,7 +3,6 @@ package com.SystemAnalisys.Project.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-
 @Entity
 @Table(name = "tipo_movimiento_cxc", schema = "proyectoanalisis")
 public class TipoMovimientosCxc {

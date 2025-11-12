@@ -15,9 +15,9 @@
               (change)="onPersonaChange()"
             >
               <option [ngValue]="null">Seleccione persona</option>
-              <option *ngFor="let p of personas" [ngValue]="p.idPersona">
-                {{ p.nombreCompleto }}
-              </option>
+              <option *ngFor="let p of personas" [value]="p.idPersona">
+          {{ p.idPersona }} - {{ p.nombreCompleto }}
+        </option>
             </select>
             <div
               *ngIf="

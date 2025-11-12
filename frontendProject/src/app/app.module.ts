@@ -34,6 +34,7 @@ import { CrudstatuscuentaComponent } from './component/crudstatuscuenta/crudstat
 import { ConsultaSaldoComponent } from './component/consulta-saldo/consulta-saldo/consulta-saldo.component';
 import { CuentaComponent } from './component/cuenta/cuenta.component';
 import { DetalleCuentaComponent } from './component/detalle-cuenta/detalle-cuenta.component';
+import { EstadodecuentaComponent } from './component/estadodecuenta/estadodecuenta.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +64,8 @@ import { DetalleCuentaComponent } from './component/detalle-cuenta/detalle-cuent
     TipoMovimientoCxcComponent,
     CrudstatuscuentaComponent,
     ConsultaSaldoComponent,
-    CuentaComponent
+    CuentaComponent,
+    EstadodecuentaComponent
   ],
 bootstrap: [AppComponent],
 imports: [

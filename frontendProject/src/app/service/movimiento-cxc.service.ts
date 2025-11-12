@@ -6,17 +6,20 @@ import { PersonaDto } from '../entity/persona.dto';
 import { CuentaDto } from '../entity/cuenta.dto';
 import { RegistroMovimientoRequest } from '../entity/registro-movimiento.request';
 import { RegistroMovimientoResponse } from '../entity/registro-movimiento.response';
+import { EstadoCuentaDto } from '../entity/estado-cuenta.dto';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MovimientoCxcService {
   private baseUrl = 'http://localhost:8080/api'; // ❌ Quita el /v1
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getTiposMovimientoCxc(): Observable<TipoMovimientoCxcDto[]> {
-    return this.http.get<TipoMovimientoCxcDto[]>(`${this.baseUrl}/v1/tipo-movimiento-cxc`);
+    return this.http.get<TipoMovimientoCxcDto[]>(
+      `${this.baseUrl}/v1/tipo-movimiento-cxc`
+    );
   }
 
   getPersonas(): Observable<PersonaDto[]> {
@@ -26,10 +29,27 @@ export class MovimientoCxcService {
 
   getCuentasPorPersona(idPersona: number): Observable<CuentaDto[]> {
     // ✅ Corrige también este endpoint
-    return this.http.get<CuentaDto[]>(`${this.baseUrl}/personas/${idPersona}/cuentas`);
+    return this.http.get<CuentaDto[]>(
+      `${this.baseUrl}/personas/${idPersona}/cuentas`
+    );
   }
 
-  registrarMovimiento(request: RegistroMovimientoRequest): Observable<RegistroMovimientoResponse> {
-    return this.http.post<RegistroMovimientoResponse>(`${this.baseUrl}/v1/movimientos-cuenta`, request);
+  registrarMovimiento(
+    request: RegistroMovimientoRequest
+  ): Observable<RegistroMovimientoResponse> {
+    return this.http.post<RegistroMovimientoResponse>(
+      `${this.baseUrl}/v1/movimientos-cuenta`,
+      request
+    );
+  }
+
+  getEstadoCuenta(
+    idCuenta: number,
+    fechaInicio: string,
+    fechaFin: string
+  ): Observable<EstadoCuentaDto[]> {
+    return this.http.get<EstadoCuentaDto[]>(
+      `${this.baseUrl}/v1/movimientos-cuenta/estado-cuenta?idCuenta=${idCuenta}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
+    );
   }
 }
